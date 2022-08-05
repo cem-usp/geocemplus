@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from "../services/api";
+import Form from 'react-bootstrap/Form';
 
-function Form() {
+function LayerForm() {
 
     const [category, setCategory] = useState('')
     const [categories, setCategories] = useState([])
@@ -35,12 +36,10 @@ function Form() {
 
 
     return (
-        <form>
-            <label>Escolha uma Categoria</label>
+        <Form>
             <SelectCategories value={category} categories={categories} onCategoryChange={handleCategoryChange}/>
-            <label>Escolha uma Camada</label>
             <SelectLayer layers={layers}/>
-        </form>
+        </Form>
     );
 }
 
@@ -54,9 +53,15 @@ function SelectCategories(props) {
     }
 
     return (
-        <select defaultValue={props.value} onChange={handleChange} >
-            {options}
-       </select>
+        <Form.Group className="mb-3" controlId="formLayerCategory">
+            <Form.Label>Categoria</Form.Label>
+            <Form.Select tria-label="Escolha uma Categoria" defaultValue={props.value} onChange={handleChange}>
+                {options}
+            </Form.Select>
+            <Form.Text className="text-muted">
+                Escolha uma Categoria para exibir as camadas disponíveis
+            </Form.Text>
+        </Form.Group>
     );
 }
 
@@ -67,11 +72,17 @@ function SelectLayer(props) {
      );
 
      return (
-         <select>
-             {options}
-        </select>
+         <Form.Group className="mb-3" controlId="formLayer">
+             <Form.Label>Categoria</Form.Label>
+             <Form.Select tria-label="Escolha uma Camada">
+                 {options}
+             </Form.Select>
+             <Form.Text className="text-muted">
+                 Escolha uma Camada
+             </Form.Text>
+         </Form.Group>
      );
 }
 
 
-export default Form
+export default LayerForm
