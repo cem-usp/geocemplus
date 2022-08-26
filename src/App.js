@@ -1,22 +1,20 @@
 import logo from './logo.svg';
 import './App.css';
 
-import React, { useEffect, useState } from "react";
-import api from "./services/api";
+import React, { useEffect, useState, useRef } from "react";
 import FormLayer from "./components/FormLayer";
-import Container from 'react-bootstrap/Container';
+import Map from "./components/MapGeo";
+import { Container } from 'react-bootstrap';
 
 function App() {
-
-      return (
-        <div className="App">
-            <Container>
-                <div>
-                    <FormLayer />
-                </div>
-            </Container>
-        </div>
-      );
+	
+	return (
+		<div className="App">
+			<Container>
+				<FormLayer />
+			</Container>
+		</div>
+	);
 }
 
 export default App;

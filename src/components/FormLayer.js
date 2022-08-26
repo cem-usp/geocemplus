@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {api_geocem, axios} from "../services/api";
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import {Button, Row, Col, Card} from 'react-bootstrap/';
+import Map from './MapGeo'
 
 function LayerForm() {
 
+    //Loads categories
     const [categories, setCategories] = useState([])
     useEffect(() => {
         api_geocem
@@ -18,6 +20,7 @@ function LayerForm() {
 
     }, []);
 
+    //Action when category changes -> loads layers of the category
     const [category, setCategory] = useState('')
     useEffect(() => {
         api_geocem
@@ -31,23 +34,28 @@ function LayerForm() {
 
     }, [category]);
 
+    //Action when layer changes -> set layer
     const [layers, setLayers] = useState([])
     useEffect(() => {
         setLayer((layers[0] != undefined) ? layers[0].id : 0)
     }, [layers]);
 
+    //Action when layer is set -> enables or disables submit button
     const [submitReady, setSubmit] = useState(['disabled'])
     const [layer, setLayer] = useState(null)
     useEffect(() => {
         setSubmit((layer > 0) ? false : true)
     }, [layer]);
 
+    const [layerGeoJSON, setLayerGeoJSON] = useState(null)
+
+    //Action when form is submitted
     function handleSubmit(e) {
         api_geocem
         .get("/layers/"+ layer)
         .then((response) => {
             const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
-            getGeoJSON(json_url)
+            setLayerGeoJSON(json_url)
         })
         .catch((err) => {
             console.error("ops! ocorreu um erro" + err);
@@ -56,26 +64,28 @@ function LayerForm() {
         e.preventDefault();
     }
 
-    function getGeoJSON(url) {
-        axios
-        .get(url)
-        .then(response => {
-            const geojson = response
-            console.log(geojson)
-        })
-        .catch((err) => {
-            console.error("ops! ocorreu um erro" + err);
-        });
-    }
-
-    return (
-        <Form onSubmit={handleSubmit}>
-            <SelectCategories value={category} categories={categories} onCategoryChange={setCategory}/>
-            <SelectLayer layers={layers} onLayerChange={setLayer} />
-            <Button variant="primary" type="submit" disabled={submitReady}>
-                Selecionar
-            </Button>
-        </Form>
+    return (<div>
+                <Card>
+                    <Card.Header>Formulário da Camada</Card.Header>
+                    <Card.Body>
+                        <Form onSubmit={handleSubmit}>
+                            <SelectCategories value={category} categories={categories} onCategoryChange={setCategory}/>
+                            <SelectLayer layers={layers} onLayerChange={setLayer} />
+                            <Button variant="primary" type="submit" disabled={submitReady}>
+                                Selecionar
+                            </Button>
+                        </Form>
+                    </Card.Body>
+                </Card>
+                <br />
+                <Card>
+                    <Card.Header>Pré-Visualizar</Card.Header>
+                    <Card.Body>
+                        <Map geoJSON={layerGeoJSON} />
+                    </Card.Body>
+                </Card>
+            </div>
+        
     );
 }
 
