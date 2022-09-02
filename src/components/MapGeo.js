@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { OSM, Vector as VectorSource } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
-import TileLayer from 'ol/layer/Tile';
+import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
@@ -9,12 +9,10 @@ import VectorTileLayer from 'ol/layer/VectorTile';
 import { Fill, Stroke, Style } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
+import {points,square,bbox} from '@turf/turf'
+import {fromLonLat} from 'ol/proj';
 
 import 'ol/ol.css';
-
-const styles = [
-
-];
 
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
@@ -71,35 +69,29 @@ function MapGeo(props) {
 	})
 
 	const [map, setMap] = useState(initialMap)
+	const [geoJSON, setGeoJSON] = useState()
 
 	useEffect(() => {
 		map.setTarget(mapElement.current)
 
-		if (props.geoJSON !== null) {
-			
-			const style = new Style({
-				fill: new Fill({
-				  color: '#eeeeee',
-				}),
-			  });
-			const layer = new VectorTileLayer({
-				background: '#1a2b39',
-				style: function (feature) {
-					const color = feature.get('COLOR') || '#eeeeee';
-					style.getFill().setColor(color);
-					return style;
-				},
-			});
+		var layer = null
+
+		if (props.geoJSON !== null && geoJSON !== props.geoJSON) {
+			setGeoJSON(props.geoJSON)
+
+			// Adds layer as Vector Tile
+			layer = new VectorTileLayer({properties: 'id'})
 
 			fetch(props.geoJSON)
 				.then(function (response) {
 					return response.json();
 				})
 				.then(function (json) {
-					const featureCenter = center(json)
+					// const centerWebMercator = center(json).geometry.coordinates
+					// const tExtent = square(bbox(json))
 					const tileIndex = geojsonvt(json, {
 						extent: 4096,
-						debug: 1,
+						debug: 0,
 					});
 					const format = new GeoJSON({
 						// Data returned from geojson-vt is in tile pixel units
@@ -134,15 +126,34 @@ function MapGeo(props) {
 					});
 
 					layer.setSource(vectorSource);
+					layer.set('id', 'Thematic')
+
+					//Remove layer
+					map.getLayers().forEach((layer) => {
+						if(layer.get('id') == 'Thematic')
+							map.removeLayer(layer)
+					})
+					
 					map.addLayer(layer)
-					console.log(featureCenter.geometry.coordinates)
+					
+					// //Focus the added layer
+					const features = new GeoJSON().readFeatures(json)
+					const convertedJson = JSON.parse(new GeoJSON().writeFeatures(features, {
+						dataProjection: 'EPSG:3857',
+						featureProjection: 'EPSG:4326'
+						})
+					)
+
+					const centerWebMercator = center(convertedJson).geometry.coordinates
+					const tExtent = bbox(convertedJson)
 					map.setView(new View({
-						center: featureCenter.geometry.coordinates,
-						zoom: 2,
+						center: centerWebMercator,
+						zoom: 6
 					}))
-					console.log('adicionou')
+					map.getView().fit(tExtent)
+
 				})
-		};
+		}
 	})
 
 	return (

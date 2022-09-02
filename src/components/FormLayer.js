@@ -52,15 +52,14 @@ function LayerForm() {
     //Action when form is submitted
     function handleSubmit(e) {
         api_geocem
-        .get("/layers/"+ layer)
-        .then((response) => {
-            const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
-            setLayerGeoJSON(json_url)
-        })
-        .catch((err) => {
-            console.error("ops! ocorreu um erro" + err);
-        });
-        alert('The form has been submitted with the layer ' + layer + ' selected')
+            .get("/layers/"+ layer)
+            .then((response) => {
+                const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
+                setLayerGeoJSON(json_url)
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
         e.preventDefault();
     }
 
