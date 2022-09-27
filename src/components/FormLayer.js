@@ -68,8 +68,8 @@ function LayerForm() {
                     <Card.Header>Formulário da Camada</Card.Header>
                     <Card.Body>
                         <Form onSubmit={handleSubmit}>
-                            <SelectCategories value={category} categories={categories} onCategoryChange={setCategory}/>
-                            <SelectLayer layers={layers} onLayerChange={setLayer} />
+                            {/* <SelectCategories value={category} categories={categories} onCategoryChange={setCategory}/>
+                            <SelectLayer layers={layers} onLayerChange={setLayer} /> */}
                             <Button variant="primary" type="submit" disabled={submitReady}>
                                 Selecionar
                             </Button>
@@ -80,7 +80,7 @@ function LayerForm() {
                 <Card>
                     <Card.Header>Pré-Visualizar</Card.Header>
                     <Card.Body>
-                        <Map geoJSON={layerGeoJSON} />
+                        {/* <Map geoJSON={layerGeoJSON} /> */}
                     </Card.Body>
                 </Card>
             </div>
