@@ -12,6 +12,8 @@ import center from '@turf/center';
 import {points,square,bbox} from '@turf/turf'
 import {fromLonLat} from 'ol/proj';
 
+import Toolbar from './Toolbar.js'
+
 import 'ol/ol.css';
 
 // Converts geojson-vt data to GeoJSON
@@ -56,11 +58,15 @@ const replacer = function (key, value) {
 
 function MapGeo(props) {
 	const mapElement = useRef()
+	const layer_osm = new TileLayer({
+		source: new OSM(),
+	})
+	layer_osm.set('id', 'OSM')
+
+
 	const initialMap = new Map({
 		layers: [
-			new TileLayer({
-				source: new OSM(),
-			})
+			layer_osm
 		],
 		view: new View({
 			center: [0, 0],
@@ -158,6 +164,7 @@ function MapGeo(props) {
 
 	return (
 		<div>
+			<Toolbar />
 			<div ref={mapElement} className="map-container"></div>
 		</div>
 	);
