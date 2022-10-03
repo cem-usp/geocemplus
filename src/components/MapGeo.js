@@ -55,19 +55,39 @@ const replacer = function (key, value) {
 	};
   };
 
+const layer_osm = new TileLayer({
+	source: new OSM(),
+})
+layer_osm.set('id', 'OSM')
+
+
+//Remove Layer from map
+function removeLayer(map, id) {
+	const layer = getLayer(map, id)
+	map.removeLayer(layer)
+}
+
+//Get Layer
+function getLayer(map, id) {
+	let found_layer = null
+	map.getLayers(map, id).forEach((layer) => {
+		if(layer.get('id') == id){
+			found_layer = layer
+		}
+	})
+	return found_layer
+}
 
 function MapGeo(props) {
-	const mapElement = useRef()
-	const layer_osm = new TileLayer({
-		source: new OSM(),
-	})
-	layer_osm.set('id', 'OSM')
+	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 
+	const handleBasicOptionsChange = (event, newOptions) => {
+		setBasicOptions(newOptions);
+	};
+
+	const mapElement = useRef()
 
 	const initialMap = new Map({
-		layers: [
-			layer_osm
-		],
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
@@ -79,6 +99,14 @@ function MapGeo(props) {
 
 	useEffect(() => {
 		map.setTarget(mapElement.current)
+
+		const map_layer_osm = getLayer(map, 'OSM')
+		
+		if(basicOptions.includes('map') && map_layer_osm === null) {
+			map.addLayer(layer_osm)
+		} else {
+			map.removeLayer(map_layer_osm)
+		}
 
 		var layer = null
 
@@ -164,7 +192,10 @@ function MapGeo(props) {
 
 	return (
 		<div>
-			<Toolbar />
+			<Toolbar 
+				basicOptions={basicOptions}
+				onBasicOptionsChange={handleBasicOptionsChange}
+			/>
 			<div ref={mapElement} className="map-container"></div>
 		</div>
 	);

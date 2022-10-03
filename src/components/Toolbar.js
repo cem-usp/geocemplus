@@ -35,16 +35,16 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   },
 }));
 
-export default function Toolbar() {
+export default function Toolbar(props) {
   const [basicOptions, setBasicOptions] = useState(() => ['map']);
 
-  const handleOptions = (event, newOptions) => {
-    setBasicOptions(newOptions);
-  };
+  // const handleOptions = (event, newOptions) => {
+  //   setBasicOptions(newOptions);
+  // };
 
-  useEffect(() => {
-    console.log(basicOptions)
-  }, [basicOptions])
+  // useEffect(() => {
+  //   console.log(basicOptions)
+  // }, [basicOptions])
 
   return (
     <div>
@@ -58,8 +58,8 @@ export default function Toolbar() {
         >
             <StyledToggleButtonGroup
                 size="small"
-                value={basicOptions}
-                onChange={handleOptions}
+                value={props.basicOptions}
+                onChange={props.onBasicOptionsChange}
                 aria-label="basic options"
             >
                 <ToggleButton value="map" aria-label="map">
