@@ -16,6 +16,9 @@ import Toolbar from './Toolbar.js'
 
 import 'ol/ol.css';
 
+//Max Zoom
+const max_zoom = 20
+
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
 	if (!value || !value.geometry) {
@@ -53,12 +56,14 @@ const replacer = function (key, value) {
 	  },
 	  'properties': value.tags,
 	};
-  };
+};
 
 const layer_osm = new TileLayer({
 	source: new OSM(),
+	maxZoom: max_zoom
 })
 layer_osm.set('id', 'OSM')
+layer_osm.setZIndex(0)
 
 
 //Remove Layer from map
@@ -91,22 +96,18 @@ function MapGeo(props) {
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
+			maxZoom: max_zoom,
 		}),
 	})
 
 	const [map, setMap] = useState(initialMap)
 	const [geoJSON, setGeoJSON] = useState()
 
+	var tExtent = null
+
+	//Atualiza layer temático
 	useEffect(() => {
 		map.setTarget(mapElement.current)
-
-		const map_layer_osm = getLayer(map, 'OSM')
-		
-		if(basicOptions.includes('map') && map_layer_osm === null) {
-			map.addLayer(layer_osm)
-		} else {
-			map.removeLayer(map_layer_osm)
-		}
 
 		var layer = null
 
@@ -114,7 +115,7 @@ function MapGeo(props) {
 			setGeoJSON(props.geoJSON)
 
 			// Adds layer as Vector Tile
-			layer = new VectorTileLayer({properties: 'id'})
+			layer = new VectorTileLayer({properties: 'id', zIndex: 10})
 
 			fetch(props.geoJSON)
 				.then(function (response) {
@@ -125,6 +126,7 @@ function MapGeo(props) {
 					// const tExtent = square(bbox(json))
 					const tileIndex = geojsonvt(json, {
 						extent: 4096,
+						maxZoom: 20,
 						debug: 0,
 					});
 					const format = new GeoJSON({
@@ -164,7 +166,7 @@ function MapGeo(props) {
 
 					//Remove layer
 					map.getLayers().forEach((layer) => {
-						if(layer.get('id') == 'Thematic')
+						if(layer !== undefined && layer.get('id') == 'Thematic')
 							map.removeLayer(layer)
 					})
 					
@@ -179,16 +181,40 @@ function MapGeo(props) {
 					)
 
 					const centerWebMercator = center(convertedJson).geometry.coordinates
-					const tExtent = bbox(convertedJson)
+					tExtent = bbox(convertedJson)
 					map.setView(new View({
 						center: centerWebMercator,
-						zoom: 6
+						extent: tExtent,
+						zoom: 6,
+						maxZoom: max_zoom
 					}))
 					map.getView().fit(tExtent)
 
 				})
 		}
-	})
+	}, [props.geoJSON])
+
+	useEffect(() => {
+		const map_layer_osm = getLayer(map, 'OSM')
+
+		//Base Map option
+		if(basicOptions.includes('map') && map_layer_osm === null) {
+			map.addLayer(layer_osm)
+		} else if(!basicOptions.includes('map')) {
+			map.removeLayer(map_layer_osm)
+		}
+
+		//Bounds option
+		if(basicOptions.includes('bounds')) {
+			map.getView().set('extent', tExtent)
+			console.log('tExtent', tExtent)
+		} else {
+			map.getView().set('extent', undefined)
+			map.getView().set('extent', tExtent)
+		}
+
+
+	}, [basicOptions])
 
 	return (
 		<div>

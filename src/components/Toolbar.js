@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import MapIcon from '@mui/icons-material/Map';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
 
 import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
@@ -65,11 +67,12 @@ export default function Toolbar(props) {
                 <ToggleButton value="map" aria-label="map">
                     <MapIcon />
                 </ToggleButton>
-                <ToggleButton value="zoom" aria-label="zoom">
+                {/* <ToggleButton value="zoom" aria-label="zoom">
                     <ZoomInIcon />
-                </ToggleButton>
+                    <ZoomOutIcon />
+                </ToggleButton> */}
                 <ToggleButton value="bounds" aria-label="bounds">
-                    <ZoomOutMapIcon />
+                    <ZoomInMapIcon />
                 </ToggleButton>
             </StyledToggleButtonGroup>
         </Paper>
