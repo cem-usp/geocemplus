@@ -38,15 +38,6 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 }));
 
 export default function Toolbar(props) {
-  const [basicOptions, setBasicOptions] = useState(() => ['map']);
-
-  // const handleOptions = (event, newOptions) => {
-  //   setBasicOptions(newOptions);
-  // };
-
-  // useEffect(() => {
-  //   console.log(basicOptions)
-  // }, [basicOptions])
 
   return (
     <div>

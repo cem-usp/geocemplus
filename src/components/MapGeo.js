@@ -179,16 +179,18 @@ function MapGeo(props) {
 						featureProjection: 'EPSG:4326'
 						})
 					)
-
+					
 					const centerWebMercator = center(convertedJson).geometry.coordinates
 					tExtent = bbox(convertedJson)
 					map.setView(new View({
 						center: centerWebMercator,
-						extent: tExtent,
+						extent: (basicOptions.includes('bounds')) ? tExtent : undefined,
 						zoom: 6,
 						maxZoom: max_zoom
 					}))
 					map.getView().fit(tExtent)
+					layer.set('center', centerWebMercator)
+					layer.set('extent', tExtent)
 
 				})
 		}
@@ -196,6 +198,7 @@ function MapGeo(props) {
 
 	useEffect(() => {
 		const map_layer_osm = getLayer(map, 'OSM')
+		const map_layer_thematic = getLayer(map, 'Thematic')
 
 		//Base Map option
 		if(basicOptions.includes('map') && map_layer_osm === null) {
@@ -204,16 +207,25 @@ function MapGeo(props) {
 			map.removeLayer(map_layer_osm)
 		}
 
-		//Bounds option
-		if(basicOptions.includes('bounds')) {
-			map.getView().set('extent', tExtent)
-			console.log('tExtent', tExtent)
-		} else {
-			map.getView().set('extent', undefined)
-			map.getView().set('extent', tExtent)
+		if (map_layer_thematic !== null) {
+			//Bounds option
+			if(basicOptions.includes('bounds')) {
+				map.setView(new View({
+					center: map_layer_thematic.get('center'),
+					extent: map_layer_thematic.get('extent'),
+					zoom: 6,
+					maxZoom: max_zoom
+				}))
+			} else{
+				map.setView(new View({
+					center: map_layer_thematic.get('center'),
+					zoom: 6,
+					maxZoom: max_zoom
+				}))
+				map.getView().fit(map_layer_thematic.get('extent'))
+			}
+
 		}
-
-
 	}, [basicOptions])
 
 	return (
