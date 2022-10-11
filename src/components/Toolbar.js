@@ -21,6 +21,9 @@ import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     margin: theme.spacing(0.5),
@@ -66,6 +69,9 @@ export default function Toolbar(props) {
                     <ZoomInMapIcon />
                 </ToggleButton>
             </StyledToggleButtonGroup>
+            <TextField id="filled-basic" label="Título" variant="filled" 
+              value={props.titulo} onChange={props.onTituloChange}/>
+
         </Paper>
     </div>
   );

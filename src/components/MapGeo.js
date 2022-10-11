@@ -11,6 +11,7 @@ import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {points,square,bbox} from '@turf/turf'
 import {fromLonLat} from 'ol/proj';
+import Control from 'ol/control/Control';
 
 import Toolbar from './Toolbar.js'
 
@@ -85,12 +86,18 @@ function getLayer(map, id) {
 
 function MapGeo(props) {
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
+	const [textTitulo, setTextTitulo] = useState(() => '')
 
 	const handleBasicOptionsChange = (event, newOptions) => {
 		setBasicOptions(newOptions);
 	};
 
+	const handleTituloChange = (event) => {
+		setTextTitulo(event.target.value);
+	};
+
 	const mapElement = useRef()
+	const olControl = useRef()
 
 	const initialMap = new Map({
 		view: new View({
@@ -99,6 +106,36 @@ function MapGeo(props) {
 			maxZoom: max_zoom,
 		}),
 	})
+
+	const controlTitle = `
+							<div class="info ol-control ol-info" id="ol-control">
+								<h4 id="ol-control-title"></h4>
+							</div>
+						 `
+
+	let controlEl= document.createElement('div');
+	controlEl.innerHTML= controlTitle;
+
+	initialMap.addControl(new Control({element: controlEl}))
+
+	// const info = document.getElementById('ol-control');
+	// console.log(info)
+	// if(info) {
+	// 	info.innerText = 'Teste';
+	// 	info.style.opacity = 1;
+	// }
+
+	// function showInfo(event) {
+	// 	const features = map.getFeaturesAtPixel(event.pixel);
+	// 	if (features.length == 0) {
+	// 		info.innerText = '';
+	// 		info.style.opacity = 0;
+	// 		return;
+	// 	}
+	// 	const properties = features[0].getProperties();
+	// 	info.innerText = JSON.stringify(properties, null, 2);
+	// 	info.style.opacity = 1;
+	// }
 
 	const [map, setMap] = useState(initialMap)
 	const [geoJSON, setGeoJSON] = useState()
@@ -228,13 +265,21 @@ function MapGeo(props) {
 		}
 	}, [basicOptions])
 
+	useEffect(() => {
+		const infoEl = document.getElementById('ol-control-title')
+		infoEl.innerHTML = textTitulo
+	}, [textTitulo])
+
 	return (
 		<div>
 			<Toolbar 
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
+				titulo={textTitulo}
+				onTituloChange={handleTituloChange}
 			/>
-			<div ref={mapElement} className="map-container"></div>
+			<div ref={mapElement} className="map-container">
+			</div>
 		</div>
 	);
 }
