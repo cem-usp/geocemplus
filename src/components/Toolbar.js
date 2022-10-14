@@ -24,6 +24,11 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     margin: theme.spacing(0.5),
@@ -41,6 +46,15 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 }));
 
 export default function Toolbar(props) {
+
+  const [attrNames, setAtrNames] = useState(null)
+
+  useEffect(() => {
+    const names = (props.attributes) ? props.attributes.map((attribute) =>
+                    <MenuItem>{attribute.attribute}</MenuItem>
+                  ) : null;
+    setAtrNames(names)
+  },[props.attributes])
 
   return (
     <div>
@@ -69,9 +83,27 @@ export default function Toolbar(props) {
                     <ZoomInMapIcon />
                 </ToggleButton>
             </StyledToggleButtonGroup>
+            
             <TextField id="filled-basic" label="Título" variant="filled" 
               value={props.titulo} onChange={props.onTituloChange}/>
 
+            <Divider orientation="vertical" variant="middle" sx={{ mx:1 }} flexItem />
+            
+            <FormControl variant="filled"  sx={{ minWidth: 120 }}>
+              <InputLabel id="select-var-filled-label">Var</InputLabel>
+              <Select
+                labelId="select-var-filled-label"
+                id="var-select-filled"
+                value={props.var}
+                onChange={props.onVarChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {attrNames}
+
+              </Select>
+            </FormControl>
         </Paper>
     </div>
   );

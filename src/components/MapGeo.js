@@ -3,7 +3,7 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
 import Projection from 'ol/proj/Projection';
-import { Map, View } from 'ol';
+import { Collection, Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import { Fill, Stroke, Style } from 'ol/style';
@@ -218,6 +218,8 @@ function MapGeo(props) {
 					)
 					
 					const centerWebMercator = center(convertedJson).geometry.coordinates
+
+					const featuresC = new Collection(features)
 					tExtent = bbox(convertedJson)
 					map.setView(new View({
 						center: centerWebMercator,
@@ -277,6 +279,7 @@ function MapGeo(props) {
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
 				onTituloChange={handleTituloChange}
+				attributes={props.attributes}
 			/>
 			<div ref={mapElement} className="map-container">
 			</div>

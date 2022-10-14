@@ -48,6 +48,7 @@ function LayerForm() {
     }, [layer]);
 
     const [layerGeoJSON, setLayerGeoJSON] = useState(null)
+    const [attributes, setAttributes] = useState(null)
 
     //Action when form is submitted
     function handleSubmit(e) {
@@ -60,7 +61,21 @@ function LayerForm() {
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);
             });
+        
+        getLayerAttributes(layer)
+
         e.preventDefault();
+    }
+
+    function getLayerAttributes(layer_id) {
+        api_geocem
+            .get("/v2/layers/" + layer_id + "/attribute_set")
+            .then((response) => {
+                setAttributes(response.data.attributes)
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
     }
 
     return (<div>
@@ -80,7 +95,7 @@ function LayerForm() {
                 <Card>
                     <Card.Header>Pré-Visualizar</Card.Header>
                     <Card.Body>
-                        <Map geoJSON={layerGeoJSON} />
+                        <Map geoJSON={layerGeoJSON} attributes={attributes}/>
                     </Card.Body>
                 </Card>
             </div>
