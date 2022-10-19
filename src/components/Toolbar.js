@@ -1,31 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
+//Button Icons
 import { styled } from '@mui/material/styles';
 import MapIcon from '@mui/icons-material/Map';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap';
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
 import HelpIcon from '@mui/icons-material/Help';
 
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
-import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+//Buttons and other toolbar components
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import IconButton from '@mui/material/IconButton';
-
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -43,6 +31,7 @@ import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 
+//Button toogle style
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     margin: theme.spacing(0.5),
@@ -61,8 +50,8 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 export default function Toolbar(props) {
 
+  //Attributes names of the layer
   const [attrNames, setAtrNames] = useState(null)
-
   useEffect(() => {
     const names = (props.attributes) ? props.attributes.map((attribute) =>
                     <MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
@@ -88,6 +77,7 @@ export default function Toolbar(props) {
     p: 4,
   };
 
+  //Table style
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -108,6 +98,7 @@ export default function Toolbar(props) {
     },
   }));
 
+  //Handle table pagination
   const [page, setPage] = React.useState(0);
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -132,10 +123,6 @@ export default function Toolbar(props) {
                 <ToggleButton value="map" aria-label="map">
                     <MapIcon />
                 </ToggleButton>
-                {/* <ToggleButton value="zoom" aria-label="zoom">
-                    <ZoomInIcon />
-                    <ZoomOutIcon />
-                </ToggleButton> */}
                 <ToggleButton value="bounds" aria-label="bounds">
                     <ZoomInMapIcon />
                 </ToggleButton>

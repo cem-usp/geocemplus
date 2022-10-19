@@ -10,7 +10,6 @@ import { Fill, Stroke, Style } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {points,square,bbox} from '@turf/turf'
-import {fromLonLat} from 'ol/proj';
 import Control from 'ol/control/Control';
 
 import Toolbar from './Toolbar.js'
@@ -59,6 +58,7 @@ const replacer = function (key, value) {
 	};
 };
 
+//Base map layer (Open Street Map)
 const layer_osm = new TileLayer({
 	source: new OSM(),
 	maxZoom: max_zoom
@@ -66,14 +66,7 @@ const layer_osm = new TileLayer({
 layer_osm.set('id', 'OSM')
 layer_osm.setZIndex(0)
 
-
-//Remove Layer from map
-function removeLayer(map, id) {
-	const layer = getLayer(map, id)
-	map.removeLayer(layer)
-}
-
-//Get Layer
+//Function get a Layer by ID property
 function getLayer(map, id) {
 	let found_layer = null
 	map.getLayers(map, id).forEach((layer) => {
@@ -85,6 +78,7 @@ function getLayer(map, id) {
 }
 
 function MapGeo(props) {
+	//Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
 
@@ -96,9 +90,10 @@ function MapGeo(props) {
 		setTextTitulo(event.target.value);
 	};
 
+	//Prevent map element to re-render	
 	const mapElement = useRef()
-	const olControl = useRef()
 
+	//Initialize map
 	const initialMap = new Map({
 		view: new View({
 			center: [0, 0],
@@ -107,6 +102,7 @@ function MapGeo(props) {
 		}),
 	})
 
+	//Title control
 	const controlTitle = `
 							<div class="info ol-control ol-info" id="ol-control">
 								<h4 id="ol-control-title"></h4>
@@ -140,14 +136,13 @@ function MapGeo(props) {
 	const [map, setMap] = useState(initialMap)
 	const [geoJSON, setGeoJSON] = useState()
 
-	var tExtent = null
-
-	//Atualiza layer temático
+	//Updates thematic layer
 	useEffect(() => {
 		map.setTarget(mapElement.current)
 
 		var layer = null
 
+		//Updates GeoJSON
 		if (props.geoJSON !== null && geoJSON !== props.geoJSON) {
 			setGeoJSON(props.geoJSON)
 
@@ -199,28 +194,30 @@ function MapGeo(props) {
 					});
 
 					layer.setSource(vectorSource);
-					layer.set('id', 'Thematic')
+					layer.set('id', 'Thematic') //Define the layer as a thematic one
 
-					//Remove layer
+					//Remove previous thematic layer, if any
 					map.getLayers().forEach((layer) => {
 						if(layer !== undefined && layer.get('id') == 'Thematic')
 							map.removeLayer(layer)
 					})
-					
+					//Adds thematic layer
 					map.addLayer(layer)
 					
-					// //Focus the added layer
+					//Focus the added layer
+						//Convert GeoJSON Projection
 					const features = new GeoJSON().readFeatures(json)
 					const convertedJson = JSON.parse(new GeoJSON().writeFeatures(features, {
 						dataProjection: 'EPSG:3857',
 						featureProjection: 'EPSG:4326'
 						})
 					)
-					
+						//Get center of the layer
 					const centerWebMercator = center(convertedJson).geometry.coordinates
 
+					//Set the center of the view
 					const featuresC = new Collection(features)
-					tExtent = bbox(convertedJson)
+					const tExtent = bbox(convertedJson)
 					map.setView(new View({
 						center: centerWebMercator,
 						extent: (basicOptions.includes('bounds')) ? tExtent : undefined,
@@ -235,6 +232,7 @@ function MapGeo(props) {
 		}
 	}, [props.geoJSON])
 
+	//Handle Basic Options change
 	useEffect(() => {
 		const map_layer_osm = getLayer(map, 'OSM')
 		const map_layer_thematic = getLayer(map, 'Thematic')
@@ -267,6 +265,7 @@ function MapGeo(props) {
 		}
 	}, [basicOptions])
 
+	//Handle title change
 	useEffect(() => {
 		const infoEl = document.getElementById('ol-control-title')
 		infoEl.innerHTML = textTitulo

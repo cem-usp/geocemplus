@@ -103,6 +103,7 @@ function LayerForm() {
     );
 }
 
+//Select Layer Category component
 function SelectCategories(props) {
     const options = props.categories.map((category) =>
        <option key={category.identifier} value={category.identifier} >{category.gn_description}</option>
@@ -125,6 +126,7 @@ function SelectCategories(props) {
     );
 }
 
+//Select Layer component
 function SelectLayer(props) {
 
     function handleChange(e) {
