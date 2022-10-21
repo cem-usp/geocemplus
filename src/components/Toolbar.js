@@ -134,12 +134,12 @@ export default function Toolbar(props) {
             <Divider orientation="vertical" variant="middle" sx={{ mx:1 }} flexItem />
             
             <FormControl variant="filled"  sx={{ minWidth: 120 }}>
-              <InputLabel id="select-var-filled-label">Var</InputLabel>
+              <InputLabel id="select-var-filled-label">Attributo</InputLabel>
               <Select
                 labelId="select-var-filled-label"
                 id="var-select-filled"
-                value={props.var}
-                onChange={props.onVarChange}
+                value={props.attribute}
+                onChange={props.onAttributeChange}
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -205,5 +205,6 @@ export default function Toolbar(props) {
           </Box>
         </Modal>
     </div>
+    
   );
 }

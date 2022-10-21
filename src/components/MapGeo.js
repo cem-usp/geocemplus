@@ -81,6 +81,7 @@ function MapGeo(props) {
 	//Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
+	const [attribute, setAttribute] = useState(() => '')
 
 	const handleBasicOptionsChange = (event, newOptions) => {
 		setBasicOptions(newOptions);
@@ -88,6 +89,11 @@ function MapGeo(props) {
 
 	const handleTituloChange = (event) => {
 		setTextTitulo(event.target.value);
+	};
+
+	const handleAttributeChange = (event) => {
+		console.log('event', event.target.value)
+		setAttribute(event.target.value);
 	};
 
 	//Prevent map element to re-render	
@@ -271,6 +277,24 @@ function MapGeo(props) {
 		infoEl.innerHTML = textTitulo
 	}, [textTitulo])
 
+	//Handle Attribute change
+	useEffect(() => {
+		const thematic_layer = getLayer(map, 'Thematic')
+		
+		if(thematic_layer !== null) {
+			const thematic_source = thematic_layer.getSource()
+			console.log(thematic_source)
+			const features = thematic_source.getFeaturesInExtent(thematic_layer.get('extent'))
+			let attr_values = []
+			features.map((feature) => {
+				attr_values.push(feature.get(attribute))
+			})
+			console.log(attr_values)
+
+		}
+
+	}, [attribute])
+
 	return (
 		<div>
 			<Toolbar 
@@ -279,6 +303,8 @@ function MapGeo(props) {
 				titulo={textTitulo}
 				onTituloChange={handleTituloChange}
 				attributes={props.attributes}
+				attribute={attribute}
+				onAttributeChange={handleAttributeChange}
 			/>
 			<div ref={mapElement} className="map-container">
 			</div>
