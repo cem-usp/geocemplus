@@ -16,6 +16,11 @@ import Toolbar from './Toolbar.js'
 
 import 'ol/ol.css';
 
+import {Fill as MapFill} from '../utils/Fill'
+
+//Fill
+const mapFill = new MapFill([3, 10, 18, 20, 30, 40, 50], 'quantile', 'GREEN', 5)
+
 //Max Zoom
 const max_zoom = 20
 
@@ -92,7 +97,6 @@ function MapGeo(props) {
 	};
 
 	const handleAttributeChange = (event) => {
-		console.log('event', event.target.value)
 		setAttribute(event.target.value);
 	};
 
@@ -289,7 +293,18 @@ function MapGeo(props) {
 			features.map((feature) => {
 				attr_values.push(feature.get(attribute))
 			})
-			console.log(attr_values)
+
+			mapFill.updateParameters(attr_values, null, null, null) 
+
+			thematic_layer.setStyle(function (feature) {
+				const color = mapFill.getColor(feature.get(attribute));
+				const style = new Style({
+					fill: new Fill({
+						color: color,
+					})
+				})
+				return style;
+			})
 
 		}
 
