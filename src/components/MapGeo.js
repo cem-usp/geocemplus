@@ -9,10 +9,10 @@ import VectorTileLayer from 'ol/layer/VectorTile';
 import { Fill, Stroke, Style } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
-import {points,square,bbox} from '@turf/turf'
+import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
 
-import Toolbar from './Toolbar.js'
+import ToolbarMain from './Toolbar/ToolbarMain.js'
 
 import 'ol/ol.css';
 
@@ -287,7 +287,6 @@ function MapGeo(props) {
 		
 		if(thematic_layer !== null) {
 			const thematic_source = thematic_layer.getSource()
-			console.log(thematic_source)
 			const features = thematic_source.getFeaturesInExtent(thematic_layer.get('extent'))
 			let attr_values = []
 			features.map((feature) => {
@@ -297,7 +296,8 @@ function MapGeo(props) {
 			mapFill.updateParameters(attr_values, null, null, null) 
 
 			thematic_layer.setStyle(function (feature) {
-				const color = mapFill.getColor(feature.get(attribute));
+				const value = feature.get(attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : '#808080';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -312,7 +312,7 @@ function MapGeo(props) {
 
 	return (
 		<div>
-			<Toolbar 
+			<ToolbarMain 
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}

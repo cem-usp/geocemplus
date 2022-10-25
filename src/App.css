@@ -45,3 +45,12 @@ html, body, .map-container {
     margin: 0 0 5px;
     color: #777;
 }
+
+/* Pallete */
+.pallete div {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: .7;
+}
