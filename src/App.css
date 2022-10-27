@@ -47,7 +47,7 @@ html, body, .map-container {
 }
 
 /* Pallete */
-.pallete div {
+.palette div {
   width: 18px;
   height: 18px;
   float: left;

@@ -12,25 +12,34 @@ import Box from '@mui/material/Box';
 import { Slider } from '@mui/material';
 
 function SelectPalette(props) {
-    const palleteScheme = Palette.getColors()[props.scheme]
+    const [palette, setPalette] = useState('GREEN')
+    const paletteScheme = Palette.getColors()[props.scheme]
     let menuItems = []
-    for (const palleteName in palleteScheme) {
+    for (const paletteName in paletteScheme) {
         let colorBoxes = []
         for (let i = 0; i < props.steps; i++) {
-            const color = palleteScheme[palleteName][props.steps][i];
-            colorBoxes.push(<Box sx={{backgroundColor: color}}></Box>)
+            const color = paletteScheme[paletteName][props.steps][i];
+            colorBoxes.push(<Box key={i.toString()} sx={{backgroundColor: color}}></Box>)
         }
-        const menuItem = <MenuItem key={palleteName} value={palleteName} className='pallete'>{colorBoxes}</MenuItem>
+        const menuItem = <MenuItem key={paletteName} value={paletteName}>
+            <Box className='palette'>{colorBoxes}</Box>
+        </MenuItem>
         menuItems.push(menuItem)
     }
 
+    const handlePaletteChange = (e) => {
+        console.log(e.target.value)
+        setPalette(e.target.value)
+    }
+
     return (
-        <FormControl variant="filled"  sx={{ minWidth: 120 }}>
+        <FormControl variant="filled"  sx={{ minWidth: 150 }}>
             <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
             <Select
-            labelId="select-palette-filled-label"
-            id="palette-select-filled"
-            value='GREEN'
+                labelId="select-palette-filled-label"
+                id="palette-select-filled"
+                value={palette}
+                onChange={handlePaletteChange}
             >
                 {menuItems}
             </Select>
