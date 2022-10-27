@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Palette from '../../utils/Palette'
 
 //Buttons and other toolbar components
 import Typography from '@mui/material/Typography';
@@ -10,7 +11,47 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import { Slider } from '@mui/material';
 
+function SelectPalette(props) {
+    const palleteScheme = Palette.getColors()[props.scheme]
+    let menuItems = []
+    for (const palleteName in palleteScheme) {
+        let colorBoxes = []
+        for (let i = 0; i < props.steps; i++) {
+            const color = palleteScheme[palleteName][props.steps][i];
+            colorBoxes.push(<Box sx={{backgroundColor: color}}></Box>)
+        }
+        const menuItem = <MenuItem key={palleteName} value={palleteName} className='pallete'>{colorBoxes}</MenuItem>
+        menuItems.push(menuItem)
+    }
+
+    return (
+        <FormControl variant="filled"  sx={{ minWidth: 120 }}>
+            <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
+            <Select
+            labelId="select-palette-filled-label"
+            id="palette-select-filled"
+            value='GREEN'
+            >
+                {menuItems}
+            </Select>
+        </FormControl>
+    );
+}
+
 export default function ToolbarFill() {
+
+    const [n_classes, setNClasses] = useState(5)
+    const [color_scheme, setColorScheme] = useState('sequential')
+
+    function handleNClassesChange(e) {
+        setNClasses(e.target.value)
+    }
+
+    const handleColorSchemeChange = (event) => {
+        console.log(event.target.value)
+		setColorScheme(event.target.value);
+	};
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Paper
@@ -49,6 +90,8 @@ export default function ToolbarFill() {
                         marks
                         min={5}
                         max={7}
+                        value={n_classes}
+                        onChange={handleNClassesChange}
                     />
                 </Box>
 
@@ -57,32 +100,25 @@ export default function ToolbarFill() {
                     <Select
                     labelId="select-scheme-filled-label"
                     id="scheme-select-filled"
-                    value='sequential'
+                    onChange={handleColorSchemeChange}
+                    value={color_scheme}
                     >
-                    <MenuItem value="sequential">
-                        Sequencial
-                    </MenuItem>
-                    <MenuItem value="diverging">
-                        Divergente
-                    </MenuItem>
-                    <MenuItem value="qualitative">
-                        Qualitativo
-                    </MenuItem>
-                    </Select>
-                </FormControl>
-
-                <FormControl variant="filled"  sx={{ minWidth: 120 }}>
-                    <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
-                    <Select
-                    labelId="select-palette-filled-label"
-                    id="palette-select-filled"
-                    value='sequential'
-                    >
-                        <MenuItem value="GREEN" className='pallete'>
-                           <Box sx={{backgroundColor: '#003828'}}></Box>
+                        <MenuItem value="sequential">
+                            Sequencial
+                        </MenuItem>
+                        <MenuItem value="diverging">
+                            Divergente
+                        </MenuItem>
+                        <MenuItem value="qualitative">
+                            Qualitativo
                         </MenuItem>
                     </Select>
                 </FormControl>
+
+                <SelectPalette 
+                    scheme={color_scheme}
+                    steps={n_classes}
+                />
 
             </Paper>
         </Box>
