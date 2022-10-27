@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 import { Slider } from '@mui/material';
 
 function SelectPalette(props) {
-    const [palette, setPalette] = useState('GREEN')
     const paletteScheme = Palette.getColors()[props.scheme]
     let menuItems = []
     for (const paletteName in paletteScheme) {
@@ -26,11 +25,10 @@ function SelectPalette(props) {
         </MenuItem>
         menuItems.push(menuItem)
     }
-
-    const handlePaletteChange = (e) => {
-        console.log(e.target.value)
-        setPalette(e.target.value)
-    }
+    
+    // useEffect(() => {
+    //     props.setPalette(menuItems[0].key)
+    // }, [props])
 
     return (
         <FormControl variant="filled"  sx={{ minWidth: 150 }}>
@@ -38,8 +36,8 @@ function SelectPalette(props) {
             <Select
                 labelId="select-palette-filled-label"
                 id="palette-select-filled"
-                value={palette}
-                onChange={handlePaletteChange}
+                value={props.palette}
+                onChange={props.handlePaletteChange}
             >
                 {menuItems}
             </Select>
@@ -47,19 +45,7 @@ function SelectPalette(props) {
     );
 }
 
-export default function ToolbarFill() {
-
-    const [n_classes, setNClasses] = useState(5)
-    const [color_scheme, setColorScheme] = useState('sequential')
-
-    function handleNClassesChange(e) {
-        setNClasses(e.target.value)
-    }
-
-    const handleColorSchemeChange = (event) => {
-        console.log(event.target.value)
-		setColorScheme(event.target.value);
-	};
+export default function ToolbarFill(props) {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -99,8 +85,8 @@ export default function ToolbarFill() {
                         marks
                         min={5}
                         max={7}
-                        value={n_classes}
-                        onChange={handleNClassesChange}
+                        value={props.n_classes}
+                        onChange={props.handleNClassesChange}
                     />
                 </Box>
 
@@ -109,8 +95,8 @@ export default function ToolbarFill() {
                     <Select
                     labelId="select-scheme-filled-label"
                     id="scheme-select-filled"
-                    onChange={handleColorSchemeChange}
-                    value={color_scheme}
+                    onChange={props.handleColorSchemeChange}
+                    value={props.color_scheme}
                     >
                         <MenuItem value="sequential">
                             Sequencial
@@ -125,8 +111,11 @@ export default function ToolbarFill() {
                 </FormControl>
 
                 <SelectPalette 
-                    scheme={color_scheme}
-                    steps={n_classes}
+                    scheme={props.color_scheme}
+                    steps={props.n_classes}
+                    handlePaletteChange={props.handlePaletteChange}
+                    palette={props.palette}
+				    setPalette={props.setPalette}
                 />
 
             </Paper>

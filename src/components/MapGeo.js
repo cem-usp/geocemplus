@@ -19,7 +19,7 @@ import 'ol/ol.css';
 import {Fill as MapFill} from '../utils/Fill'
 
 //Fill
-const mapFill = new MapFill([3, 10, 18, 20, 30, 40, 50], 'quantile', 'GREEN', 5)
+const mapFill = new MapFill()
 
 //Max Zoom
 const max_zoom = 20
@@ -83,7 +83,7 @@ function getLayer(map, id) {
 }
 
 function MapGeo(props) {
-	//Options
+	//Toolbar Basic Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
 	const [attribute, setAttribute] = useState(() => '')
@@ -99,6 +99,23 @@ function MapGeo(props) {
 	const handleAttributeChange = (event) => {
 		setAttribute(event.target.value);
 	};
+
+	//Toolbar Fill
+    const [n_classes, setNClasses] = useState(5)
+    const [color_scheme, setColorScheme] = useState('sequential')
+
+    const handleNClassesChange = (e) => {
+        setNClasses(e.target.value)
+    }
+
+    const handleColorSchemeChange = (e) => {
+		setColorScheme(e.target.value);
+	};
+
+	const handlePaletteChange = (e) => {
+        setPalette(e.target.value)
+    }    
+    const [palette, setPalette] = useState('')
 
 	//Prevent map element to re-render	
 	const mapElement = useRef()
@@ -124,28 +141,9 @@ function MapGeo(props) {
 
 	initialMap.addControl(new Control({element: controlEl}))
 
-	// const info = document.getElementById('ol-control');
-	// console.log(info)
-	// if(info) {
-	// 	info.innerText = 'Teste';
-	// 	info.style.opacity = 1;
-	// }
-
-	// function showInfo(event) {
-	// 	const features = map.getFeaturesAtPixel(event.pixel);
-	// 	if (features.length == 0) {
-	// 		info.innerText = '';
-	// 		info.style.opacity = 0;
-	// 		return;
-	// 	}
-	// 	const properties = features[0].getProperties();
-	// 	info.innerText = JSON.stringify(properties, null, 2);
-	// 	info.style.opacity = 1;
-	// }
-
 	const [map, setMap] = useState(initialMap)
 	const [geoJSON, setGeoJSON] = useState()
-
+	
 	//Updates thematic layer
 	useEffect(() => {
 		map.setTarget(mapElement.current)
@@ -293,7 +291,9 @@ function MapGeo(props) {
 				attr_values.push(feature.get(attribute))
 			})
 
-			mapFill.updateParameters(attr_values, null, null, null) 
+			mapFill.updateParameters(attr_values, null, color_scheme, palette, n_classes) 
+			
+			// updateParameters(arr_values, null, color_scheme, palette, n_classes)
 
 			thematic_layer.setStyle(function (feature) {
 				const value = feature.get(attribute)
@@ -310,9 +310,30 @@ function MapGeo(props) {
 
 	}, [attribute])
 
+	//Handle Fill changes
+	useEffect(() => {
+		const thematic_layer = getLayer(map, 'Thematic')
+		
+		if(thematic_layer !== null) {
+			mapFill.updateParameters(null, null, color_scheme, palette, n_classes) 
+			
+			thematic_layer.setStyle(function (feature) {
+				const value = feature.get(attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : '#808080';
+				const style = new Style({
+					fill: new Fill({
+						color: color,
+					})
+				})
+				return style;
+			})
+		}
+	},[n_classes, color_scheme, palette])
+
 	return (
 		<div>
 			<ToolbarMain 
+				// ToolbarBasic
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
@@ -320,6 +341,15 @@ function MapGeo(props) {
 				attributes={props.attributes}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
+				// ToolbarFill
+				n_classes={n_classes}
+				handleNClassesChange={handleNClassesChange}
+				color_scheme={color_scheme}
+				handleColorSchemeChange={handleColorSchemeChange}
+				palette={palette}
+				handlePaletteChange={handlePaletteChange}
+				setPalette={setPalette}
+
 			/>
 			<div ref={mapElement} className="map-container">
 			</div>

@@ -3,32 +3,16 @@ import Palette from './Palette'
 
 export class Fill {
 
-    constructor (arr_values, method, palette, n_classes) {
-        //sort array of attribute values
-        this.arr_values = arr_values.sort(function(a, b){return b-a});
-        this.method = method
-        this.palette = palette
-        this.n_classes = n_classes
+    updateParameters(arr_values, method, scheme, palette, n_classes) {
+        if(arr_values !== null) this.arr_values = arr_values.sort(function(a, b){return b-a})
 
-        this.setQuantiles()
-    }
+        if(method !== null) this.method = method
 
-    updateParameters(arr_values, method, palette, n_classes) {
-        if(arr_values !== null) {
-            this.arr_values = arr_values
-        }
+        if(scheme !== null) this.scheme = scheme
 
-        if(method !== null) {
-            this.method = method
-        }
+        if(palette !== null) this.palette = palette
 
-        if(palette !== null) {
-            this.palette = palette
-        }
-
-        if(n_classes !== null) {
-            this.n_classes = n_classes
-        }
+        if(n_classes !== null) this.n_classes = n_classes
 
         this.setQuantiles()
     }
@@ -50,7 +34,7 @@ export class Fill {
     }
 
     getColor(value) {
-        return Palette.getColors()[this.palette][this.n_classes][this.getQuantileRank(value)]
+        return Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getQuantileRank(value)]
     }
 }
 
