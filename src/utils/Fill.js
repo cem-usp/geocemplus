@@ -1,4 +1,5 @@
 import * as ss from 'simple-statistics'
+
 import Palette from './Palette'
 
 export class Fill {
@@ -13,28 +14,50 @@ export class Fill {
         if(palette !== null) this.palette = palette
 
         if(n_classes !== null) this.n_classes = n_classes
+        
+        this.setRanges()
+    }
 
-        this.setQuantiles()
+    //function to set ranges according to method
+    setRanges() {
+        switch(this.method) {
+            case 'quantile':
+                this.setQuantilesBreaks()
+                break
+            case 'jenks':
+                this.setJenksBreaks()
+                break
+            default:
+                this.setQuantilesBreaks()
+
+        }
+    }
+
+    //function to generate natural breaks (Jenks)
+    setJenksBreaks() {
+        const steps = ss.jenks(this.arr_values, this.n_classes)
+
+        this.steps = steps        
     }
     
     //function to quantilize
-    setQuantiles() {
-        let quantiles = []
+    setQuantilesBreaks() {
+        let steps = []
         const inc = 1 / this.n_classes
         for (let i = 0; i < this.n_classes; i++) {
-            quantiles.push(ss.quantile(this.arr_values, (inc * i)))
+            steps.push(ss.quantile(this.arr_values, (inc * i)))
         }
             
-        this.quantiles = quantiles
+        this.steps = steps
     }
 
-    getQuantileRank(value) {
-        return (this.quantiles[this.quantiles.length - 1] < value) ? (this.n_classes -1) : 
-            this.quantiles.findIndex((quantile) => quantile >= value)
+    getRank(value) {
+        return (this.steps[this.steps.length - 1] < value) ? (this.n_classes - 1) : 
+            this.steps.findIndex((step) => step >= value)
     }
 
     getColor(value) {
-        return Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getQuantileRank(value)]
+        return Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)]
     }
 }
 

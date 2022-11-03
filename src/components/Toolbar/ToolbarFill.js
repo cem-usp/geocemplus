@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Palette from '../../utils/Palette'
 
 //Buttons and other toolbar components
@@ -26,9 +26,9 @@ function SelectPalette(props) {
         menuItems.push(menuItem)
     }
     
-    // useEffect(() => {
-    //     props.setPalette(menuItems[0].key)
-    // }, [props])
+    useEffect(() => {
+        props.setPalette(menuItems[0].key)
+    }, [props.scheme])
 
     return (
         <FormControl variant="filled"  sx={{ minWidth: 150 }}>
@@ -68,10 +68,14 @@ export default function ToolbarFill(props) {
                     <Select
                     labelId="select-method-filled-label"
                     id="method-select-filled"
-                    value='quantile'
+                    onChange={props.handleMethodChange}
+                    value={props.method}
                     >
                     <MenuItem value="quantile">
                         Quantil
+                    </MenuItem>
+                    <MenuItem value="jenks">
+                        Quebras Naturais (Jenks)
                     </MenuItem>
                     </Select>
                 </FormControl>

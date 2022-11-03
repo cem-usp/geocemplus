@@ -25,6 +25,8 @@ export default function Toolbar(props) {
 				handlePaletteChange={props.handlePaletteChange}
 				palette={props.palette}
 				setPalette={props.setPalette}
+				method={props.method}
+				handleMethodChange={props.handleMethodChange}
             />
         </div>
     )

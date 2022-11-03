@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { OSM, Vector as VectorSource } from 'ol/source';
+import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
-import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer';
+import {Tile as TileLayer} from 'ol/layer';
 import Projection from 'ol/proj/Projection';
-import { Collection, Map, View } from 'ol';
+import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import { Fill, Stroke, Style } from 'ol/style';
+import { Fill, Style } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
@@ -35,13 +35,13 @@ const replacer = function (key, value) {
 	let geometry = value.geometry;
 	if (rawType === 1) {
 	  type = 'MultiPoint';
-	  if (geometry.length == 1) {
+	  if (geometry.length === 1) {
 		type = 'Point';
 		geometry = geometry[0];
 	  }
 	} else if (rawType === 2) {
 	  type = 'MultiLineString';
-	  if (geometry.length == 1) {
+	  if (geometry.length === 1) {
 		type = 'LineString';
 		geometry = geometry[0];
 	  }
@@ -75,7 +75,7 @@ layer_osm.setZIndex(0)
 function getLayer(map, id) {
 	let found_layer = null
 	map.getLayers(map, id).forEach((layer) => {
-		if(layer.get('id') == id){
+		if(layer.get('id') === id){
 			found_layer = layer
 		}
 	})
@@ -116,6 +116,11 @@ function MapGeo(props) {
         setPalette(e.target.value)
     }    
     const [palette, setPalette] = useState('')
+
+	const handleMethodChange = (e) => {
+        setMethod(e.target.value)
+    }
+    const [method, setMethod] = useState('quantile')
 
 	//Prevent map element to re-render	
 	const mapElement = useRef()
@@ -206,7 +211,7 @@ function MapGeo(props) {
 
 					//Remove previous thematic layer, if any
 					map.getLayers().forEach((layer) => {
-						if(layer !== undefined && layer.get('id') == 'Thematic')
+						if(layer !== undefined && layer.get('id') === 'Thematic')
 							map.removeLayer(layer)
 					})
 					//Adds thematic layer
@@ -224,7 +229,6 @@ function MapGeo(props) {
 					const centerWebMercator = center(convertedJson).geometry.coordinates
 
 					//Set the center of the view
-					const featuresC = new Collection(features)
 					const tExtent = bbox(convertedJson)
 					map.setView(new View({
 						center: centerWebMercator,
@@ -315,7 +319,7 @@ function MapGeo(props) {
 		const thematic_layer = getLayer(map, 'Thematic')
 		
 		if(thematic_layer !== null) {
-			mapFill.updateParameters(null, null, color_scheme, palette, n_classes) 
+			mapFill.updateParameters(null, method, color_scheme, palette, n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
 				const value = feature.get(attribute)
@@ -328,7 +332,7 @@ function MapGeo(props) {
 				return style;
 			})
 		}
-	},[n_classes, color_scheme, palette])
+	},[method, n_classes, color_scheme, palette])
 
 	return (
 		<div>
@@ -349,6 +353,8 @@ function MapGeo(props) {
 				palette={palette}
 				handlePaletteChange={handlePaletteChange}
 				setPalette={setPalette}
+				method={method}
+				handleMethodChange={handleMethodChange}
 
 			/>
 			<div ref={mapElement} className="map-container">
