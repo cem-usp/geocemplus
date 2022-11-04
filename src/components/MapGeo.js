@@ -18,6 +18,10 @@ import 'ol/ol.css';
 
 import {Fill as MapFill} from '../utils/Fill'
 
+import Legend from '../services/Legend'
+import ReactDOM from 'react-dom/client';
+import { renderToStaticMarkup } from "react-dom/server"
+
 //Fill
 const mapFill = new MapFill()
 
@@ -136,7 +140,7 @@ function MapGeo(props) {
 
 	//Title control
 	const controlTitle = `
-							<div class="info ol-control ol-info" id="ol-control">
+							<div class="info ol-control ol-title">
 								<h4 id="ol-control-title"></h4>
 							</div>
 						 `
@@ -145,8 +149,18 @@ function MapGeo(props) {
 	controlEl.innerHTML= controlTitle;
 
 	initialMap.addControl(new Control({element: controlEl}))
-
+	
+	//Legend control
+	const output = document.createElement("div")
+	const rootOut = ReactDOM.createRoot(output)
+	const legendRef = React.createRef()
+	rootOut.render(<Legend palette={palette} ref={legendRef}/>)
+	console.log(renderToStaticMarkup(rootOut))
+	// initialMap.addControl(new Control({element: }))	
+	
+	//Map Variable
 	const [map, setMap] = useState(initialMap)
+	//GeoJSON Variable
 	const [geoJSON, setGeoJSON] = useState()
 	
 	//Updates thematic layer
@@ -157,6 +171,9 @@ function MapGeo(props) {
 
 		//Updates GeoJSON
 		if (props.geoJSON !== null && geoJSON !== props.geoJSON) {
+			//Clear fill attibute
+			setAttribute('')
+
 			setGeoJSON(props.geoJSON)
 
 			// Adds layer as Vector Tile
@@ -331,6 +348,10 @@ function MapGeo(props) {
 				})
 				return style;
 			})
+
+			//Change legend
+
+
 		}
 	},[method, n_classes, color_scheme, palette])
 

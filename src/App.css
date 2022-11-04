@@ -26,11 +26,15 @@ html, body, .map-container {
   transition: opacity 100ms ease-in;
 }
 
-.ol-info {
+.ol-title {
   top: 0.5em;
   right: 0.5em;
 }
 
+.ol-legend {
+  bottom: 2em;
+  right: 0.5em;
+}
 
 /* Info */
 .info {
