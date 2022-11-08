@@ -86,6 +86,17 @@ function getLayer(map, id) {
 	return found_layer
 }
 
+//Function get a Control by ID property
+function getControl(map, id) {
+	let found_control = null
+	map.getControls(map, id).forEach((control) => {
+		if(control.get('id') === id){
+			found_control = control
+		}
+	})
+	return found_control
+}
+
 function MapGeo(props) {
 	//Toolbar Basic Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
@@ -149,14 +160,6 @@ function MapGeo(props) {
 	controlEl.innerHTML= controlTitle;
 
 	initialMap.addControl(new Control({element: controlEl}))
-	
-	//Legend control
-	const output = document.createElement("div")
-	const rootOut = ReactDOM.createRoot(output)
-	const legendRef = React.createRef()
-	rootOut.render(<Legend palette={palette} ref={legendRef}/>)
-	console.log(renderToStaticMarkup(rootOut))
-	// initialMap.addControl(new Control({element: }))	
 	
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
@@ -225,6 +228,7 @@ function MapGeo(props) {
 
 					layer.setSource(vectorSource);
 					layer.set('id', 'Thematic') //Define the layer as a thematic one
+					layer.set('features', 'Thematic') //Store features as property
 
 					//Remove previous thematic layer, if any
 					map.getLayers().forEach((layer) => {
@@ -237,6 +241,7 @@ function MapGeo(props) {
 					//Focus the added layer
 						//Convert GeoJSON Projection
 					const features = new GeoJSON().readFeatures(json)
+					layer.set('features', features)
 					const convertedJson = JSON.parse(new GeoJSON().writeFeatures(features, {
 						dataProjection: 'EPSG:3857',
 						featureProjection: 'EPSG:4326'
@@ -306,16 +311,20 @@ function MapGeo(props) {
 		
 		if(thematic_layer !== null) {
 			const thematic_source = thematic_layer.getSource()
-			const features = thematic_source.getFeaturesInExtent(thematic_layer.get('extent'))
+			// const features = thematic_source.getFeaturesInExtent(thematic_layer.get('extent'))
+			const features = thematic_layer.get('features')
 			let attr_values = []
+			// features.map((feature) => {
+			// 	attr_values.push(feature.get(attribute))
+			// })
+
 			features.map((feature) => {
 				attr_values.push(feature.get(attribute))
+				// console.log('feature aqui', feature.get(attribute))
 			})
 
 			mapFill.updateParameters(attr_values, null, color_scheme, palette, n_classes) 
 			
-			// updateParameters(arr_values, null, color_scheme, palette, n_classes)
-
 			thematic_layer.setStyle(function (feature) {
 				const value = feature.get(attribute)
 				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : '#808080';
@@ -327,6 +336,7 @@ function MapGeo(props) {
 				return style;
 			})
 
+			updateLegend()
 		}
 
 	}, [attribute])
@@ -335,7 +345,7 @@ function MapGeo(props) {
 	useEffect(() => {
 		const thematic_layer = getLayer(map, 'Thematic')
 		
-		if(thematic_layer !== null) {
+		if(thematic_layer !== null && attribute !== '') {
 			mapFill.updateParameters(null, method, color_scheme, palette, n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
@@ -349,11 +359,25 @@ function MapGeo(props) {
 				return style;
 			})
 
-			//Change legend
-
-
+			updateLegend()
 		}
 	},[method, n_classes, color_scheme, palette])
+
+	function updateLegend() {
+		//Change legend
+			//remove Legend control
+			const legendControl = getControl(map, 'legend')
+			if(legendControl) {
+				map.removeControl(legendControl)
+			}
+			//Add Legend control
+			const output = document.createElement("div")
+			const rootOut = ReactDOM.createRoot(output)
+			rootOut.render(<Legend fill={mapFill}/>)
+			const lControl = new Control({element: output, properties: 'id'})
+			lControl.set('id', 'legend')
+			map.addControl(lControl)	
+	}
 
 	return (
 		<div>

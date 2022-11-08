@@ -5,7 +5,12 @@ import Palette from './Palette'
 export class Fill {
 
     updateParameters(arr_values, method, scheme, palette, n_classes) {
-        if(arr_values !== null) this.arr_values = arr_values.sort(function(a, b){return b-a})
+        if(arr_values !== null){ 
+            //Only numbers
+            arr_values = arr_values.filter(Number);
+            //Ordena Vetor
+            this.arr_values = arr_values.sort(function(a, b){return a-b})
+        }
 
         if(method !== null) this.method = method
 
@@ -36,7 +41,6 @@ export class Fill {
     //function to generate natural breaks (Jenks)
     setJenksBreaks() {
         const steps = ss.jenks(this.arr_values, this.n_classes)
-
         this.steps = steps        
     }
     
@@ -44,10 +48,10 @@ export class Fill {
     setQuantilesBreaks() {
         let steps = []
         const inc = 1 / this.n_classes
-        for (let i = 0; i < this.n_classes; i++) {
-            steps.push(ss.quantile(this.arr_values, (inc * i)))
+        for (let i = 1; i < this.n_classes + 1; i++) {
+            const step = ss.quantileSorted(this.arr_values, (inc * i))
+            steps.push(step)
         }
-            
         this.steps = steps
     }
 
@@ -58,6 +62,21 @@ export class Fill {
 
     getColor(value) {
         return Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)]
+    }
+
+    getColors() {
+        const nclasses = this.n_classes
+        const colors = []
+        for (let i = 0; i < this.n_classes; i++) {
+            const color = Palette.getColors()[this.scheme][this.palette][this.n_classes][i]
+            colors.push({color: color, interval: {
+                    start: (i > 0) ? this.steps[i-1] : this.arr_values[0],
+                    end: this.steps[i] 
+                }
+            })
+        }
+        
+        return colors
     }
 }
 
