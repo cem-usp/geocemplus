@@ -41,6 +41,8 @@ export class Fill {
     //function to generate natural breaks (Jenks)
     setJenksBreaks() {
         const steps = ss.jenks(this.arr_values, this.n_classes)
+        //Remove first (min) element
+        steps.shift()
         this.steps = steps        
     }
     
@@ -67,15 +69,14 @@ export class Fill {
     getColors() {
         const nclasses = this.n_classes
         const colors = []
-        for (let i = 0; i < this.n_classes; i++) {
+        for (let i = (this.n_classes - 1); i >= 0; i--) {
             const color = Palette.getColors()[this.scheme][this.palette][this.n_classes][i]
             colors.push({color: color, interval: {
-                    start: (i > 0) ? this.steps[i-1] : this.arr_values[0],
-                    end: this.steps[i] 
+                start: (i > 0) ? this.steps[i-1] : this.arr_values[0],
+                end: this.steps[i] 
                 }
             })
         }
-        
         return colors
     }
 }

@@ -311,16 +311,11 @@ function MapGeo(props) {
 		
 		if(thematic_layer !== null) {
 			const thematic_source = thematic_layer.getSource()
-			// const features = thematic_source.getFeaturesInExtent(thematic_layer.get('extent'))
 			const features = thematic_layer.get('features')
 			let attr_values = []
-			// features.map((feature) => {
-			// 	attr_values.push(feature.get(attribute))
-			// })
 
 			features.map((feature) => {
 				attr_values.push(feature.get(attribute))
-				// console.log('feature aqui', feature.get(attribute))
 			})
 
 			mapFill.updateParameters(attr_values, null, color_scheme, palette, n_classes) 
@@ -365,18 +360,18 @@ function MapGeo(props) {
 
 	function updateLegend() {
 		//Change legend
-			//remove Legend control
-			const legendControl = getControl(map, 'legend')
-			if(legendControl) {
-				map.removeControl(legendControl)
-			}
-			//Add Legend control
-			const output = document.createElement("div")
-			const rootOut = ReactDOM.createRoot(output)
-			rootOut.render(<Legend fill={mapFill}/>)
-			const lControl = new Control({element: output, properties: 'id'})
-			lControl.set('id', 'legend')
-			map.addControl(lControl)	
+		//remove Legend control
+		const legendControl = getControl(map, 'legend')
+		if(legendControl) {
+			map.removeControl(legendControl)
+		}
+		//Add Legend control
+		const output = document.createElement("div")
+		const rootOut = ReactDOM.createRoot(output)
+		rootOut.render(<Legend fill={mapFill}/>)
+		const lControl = new Control({element: output, properties: 'id'})
+		lControl.set('id', 'legend')
+		map.addControl(lControl)	
 	}
 
 	return (
