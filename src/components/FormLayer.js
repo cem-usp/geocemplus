@@ -56,7 +56,8 @@ function LayerForm() {
             .get("/layers/"+ layer)
             .then((response) => {
                 const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
-                setLayerGeoJSON(json_url)
+                const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
+                setLayerGeoJSON(https_json)
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);
