@@ -58,12 +58,17 @@ export class Fill {
     }
 
     getRank(value) {
-        return (this.steps[this.steps.length - 1] < value) ? (this.n_classes - 1) : 
+        return (this.steps[this.steps.length - 1] <= value) ? (this.n_classes - 1) : 
             this.steps.findIndex((step) => step >= value)
     }
 
     getColor(value) {
-        return Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)]
+        return (value !== null) ? Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)] : '#808080'
+    }
+
+    findStartValue(rank) {
+        const index = (rank > 0) ? this.arr_values.findIndex((value) => value > this.steps[rank - 1]) : 0
+        return this.arr_values[index]
     }
 
     getColors() {
@@ -72,7 +77,7 @@ export class Fill {
         for (let i = (this.n_classes - 1); i >= 0; i--) {
             const color = Palette.getColors()[this.scheme][this.palette][this.n_classes][i]
             colors.push({color: color, interval: {
-                start: (i > 0) ? this.steps[i-1] : this.arr_values[0],
+                start: this.findStartValue(i),
                 end: this.steps[i] 
                 }
             })

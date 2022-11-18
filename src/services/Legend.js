@@ -19,8 +19,8 @@ export default function LegendControl(props) {
                 flexWrap: 'wrap',
                 '& > :not(style)': {
                 m: 1,
-                width: '2em',
-                height: '2em',
+                width: '1.5em',
+                height: '1.5em',
                 alignItems: 'center',
                 },
             }}
@@ -28,7 +28,7 @@ export default function LegendControl(props) {
                 <Paper elevation={3} sx={{backgroundColor: step.color}}/>
             </Box>
             <Typography variant="body1">
-                {step.interval.start} - {step.interval.end}
+                {step.interval.start} {(step.interval.start) ? '-' : '' } {step.interval.end}
             </Typography>
         </ListItem>
     );
