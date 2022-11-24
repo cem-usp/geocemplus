@@ -137,6 +137,19 @@ function MapGeo(props) {
     }
     const [method, setMethod] = useState('quantile')
 
+    const [attributesTT, setAttributesTT] = useState([])
+
+	const handleAttributesTTChange = (event) => {
+		const {
+		  target: { value },
+		} = event;
+		setAttributesTT(
+		  // On autofill we get a stringified value.
+		  typeof value === 'string' ? value.split(',') : value,
+		);
+	  };
+	
+
 	//Prevent map element to re-render	
 	const mapElement = useRef()
 
@@ -358,6 +371,11 @@ function MapGeo(props) {
 		}
 	},[method, n_classes, color_scheme, palette])
 
+	//Update Attributes legend tooltip
+	useEffect(() => {
+
+	}, [attributesTT])
+
 	function updateLegend() {
 		//Change legend
 		//remove Legend control
@@ -395,6 +413,8 @@ function MapGeo(props) {
 				setPalette={setPalette}
 				method={method}
 				handleMethodChange={handleMethodChange}
+				attributesTT={attributesTT}
+				handleATTChange={handleAttributesTTChange}
 
 			/>
 			<div ref={mapElement} className="map-container">

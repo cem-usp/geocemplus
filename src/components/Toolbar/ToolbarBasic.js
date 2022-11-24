@@ -105,7 +105,7 @@ export default function ToolbarBasic(props) {
     };
   
     return (
-      <div className='mb-2'>
+      <div>
           <Paper
               elevation={0}
               sx={{
@@ -133,7 +133,7 @@ export default function ToolbarBasic(props) {
   
               <Divider orientation="vertical" variant="middle" sx={{ mx:1 }} flexItem />
               
-              <FormControl variant="filled"  sx={{ minWidth: 120 }}>
+              <FormControl variant="filled" sx={{ minWidth: 120 }}>
                 <InputLabel id="select-var-filled-label">Attributo</InputLabel>
                 <Select
                   labelId="select-var-filled-label"

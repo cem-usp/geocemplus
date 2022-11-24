@@ -5,11 +5,11 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-export default function LegendControl(props) {
-    const colors = props.fill.getColors()
+export default function LegendAtInfo(props) {
+    // const colors = props.fill.getColors()
 
     const listSteps = colors.map((step) =>
-        <ListItem key={step.interval.start+'_'+step.interval.end}>
+        <ListItem>
             <Box
             sx={{
                 display: 'flex',

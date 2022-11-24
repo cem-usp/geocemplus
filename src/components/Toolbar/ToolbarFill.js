@@ -11,6 +11,9 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import { Slider } from '@mui/material';
 
+//Select of Attributes to Tooltip
+import SelectAttributes from './SelectAttributes';
+
 function SelectPalette(props) {
     const paletteScheme = Palette.getColors()[props.scheme]
     let menuItems = []
@@ -31,7 +34,7 @@ function SelectPalette(props) {
     }, [props.scheme])
 
     return (
-        <FormControl variant="filled"  sx={{ minWidth: 150 }}>
+        <FormControl variant="filled"  sx={{ ml:1, minWidth: 150 }}>
             <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
             <Select
                 labelId="select-palette-filled-label"
@@ -46,7 +49,6 @@ function SelectPalette(props) {
 }
 
 export default function ToolbarFill(props) {
-
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Paper
@@ -55,14 +57,17 @@ export default function ToolbarFill(props) {
               display: 'flex',
               border: (theme) => `1px solid ${theme.palette.divider}`,
               flexWrap: 'wrap',
+              alignItems: 'center', 
               }}
-            >
-                <Box sx={{ display: 'flex', alignItems: 'center', mx:2 }}>
+            >   
+                {/* Label Preenchimento */}
+                <Box sx={{ display: 'flex', mx:2 }}>
                     <Typography variant="h6">
                         Preenchimento
                     </Typography>
                 </Box>
                 
+                {/* Classificação de Dados */}
                 <FormControl variant="filled"  sx={{ minWidth: 120 }}>
                     <InputLabel id="select-method-filled-label">Classificação</InputLabel>
                     <Select
@@ -80,6 +85,7 @@ export default function ToolbarFill(props) {
                     </Select>
                 </FormControl>
 
+                {/* Nº de Classes */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mx:2, width: 70 }}>
                     <Slider
                         aria-label="Número de Classes"
@@ -94,6 +100,7 @@ export default function ToolbarFill(props) {
                     />
                 </Box>
 
+                {/* Esquema de Cores */}
                 <FormControl variant="filled"  sx={{ minWidth: 120 }}>
                     <InputLabel id="select-scheme-filled-label">Esquema de Cores</InputLabel>
                     <Select
@@ -114,12 +121,21 @@ export default function ToolbarFill(props) {
                     </Select>
                 </FormControl>
 
+                {/* Paleta */}
                 <SelectPalette 
                     scheme={props.color_scheme}
                     steps={props.n_classes}
                     handlePaletteChange={props.handlePaletteChange}
                     palette={props.palette}
 				    setPalette={props.setPalette}
+
+                />
+
+                {/* Esquema de Cores */}
+                <SelectAttributes
+                    attributes={props.attributes}
+                    attributesTT={props.attributesTT}
+                    handleATTChange={props.handleATTChange}
                 />
 
             </Paper>

@@ -17,6 +17,7 @@ export default function Toolbar(props) {
                 attribute={props.attribute}
                 onAttributeChange={props.onAttributeChange}
             />
+            <div className='my-2'></div>
             <ToolbarFill
 				n_classes={props.n_classes}
 				handleNClassesChange={props.handleNClassesChange}
@@ -27,7 +28,11 @@ export default function Toolbar(props) {
 				setPalette={props.setPalette}
 				method={props.method}
 				handleMethodChange={props.handleMethodChange}
-            />
+                attributes={props.attributes}
+                attributesTT={props.attributesTT}
+				handleATTChange={props.handleATTChange}
+                />
+            <div className='my-2'></div>
         </div>
     )
 }

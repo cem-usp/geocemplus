@@ -36,6 +36,11 @@ html, body, .map-container {
   right: 0.5em;
 }
 
+.ol-legend-at-info {
+  bottom: 2em;
+  right: 0.5em;
+}
+
 /* Info */
 .info {
   padding: 6px 8px;
