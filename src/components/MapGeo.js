@@ -20,7 +20,9 @@ import {Fill as MapFill} from '../utils/Fill'
 
 import Legend from '../services/Legend'
 import ReactDOM from 'react-dom/client';
-import { renderToStaticMarkup } from "react-dom/server"
+
+
+import LegendAtInfo from '../services/LegendAtInfo'
 
 //Fill
 const mapFill = new MapFill()
@@ -391,6 +393,19 @@ function MapGeo(props) {
 		lControl.set('id', 'legend')
 		map.addControl(lControl)	
 	}
+
+	//Add Tooltip Legend control
+	console.log('rendeu')
+	const legendControl = getControl(map, 'tooltip-legend')
+	if(legendControl) {
+		map.removeControl(legendControl)
+	}
+	const output = document.createElement("div")
+	const rootOut = ReactDOM.createRoot(output)
+	rootOut.render(<LegendAtInfo />)
+	const LegendAt = new Control({element: output, properties: 'id'})
+	LegendAt.set('id', 'tooltip-legend')
+	map.addControl(LegendAt)	
 
 	return (
 		<div>

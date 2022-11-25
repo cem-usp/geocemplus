@@ -36,9 +36,10 @@ html, body, .map-container {
   right: 0.5em;
 }
 
-.ol-legend-at-info {
-  bottom: 2em;
+.ol-tooltip-legend {
+  top: 4em;
   right: 0.5em;
+  text-align: left;
 }
 
 /* Info */
