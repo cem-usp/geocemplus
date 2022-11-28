@@ -21,24 +21,19 @@ export default function LegendAtInfo(props) {
         <div className="info ol-control ol-tooltip-legend">
             <Card sx={{ minWidth: 275 }}>
                 <CardContent>
+                <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                  
+                  <ListItem key={1}>
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    Word of the Day
+                      TEC2_NOM
                     </Typography>
                     <Typography variant="h5" component="div">
-                    be{bull}nev{bull}o{bull}lent
+                      ITAQUERA
                     </Typography>
-                    <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
-                    </Typography>
-                    <Typography variant="body2">
-                    well meaning and kindly.
-                    <br />
-                    {'"a benevolent smile"'}
-                    </Typography>
+                  </ListItem>
+
+                </List>
                 </CardContent>
-                <CardActions>
-                    <Button size="small">Learn More</Button>
-                </CardActions>
             </Card>
         </div>
       );
