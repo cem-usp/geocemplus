@@ -13,6 +13,7 @@ export default function Toolbar(props) {
                 onBasicOptionsChange={props.onBasicOptionsChange}
                 titulo={props.titulo}
                 onTituloChange={props.onTituloChange}
+                attrNames={props.attrNames}
                 attributes={props.attributes}
                 attribute={props.attribute}
                 onAttributeChange={props.onAttributeChange}
@@ -31,6 +32,9 @@ export default function Toolbar(props) {
                 attributes={props.attributes}
                 attributesTT={props.attributesTT}
 				handleATTChange={props.handleATTChange}
+                attrNames={props.attrNames}
+                attributeTitle={props.attributeTitle}
+                onAttributeTitleChange={props.onAttributeTitleChange}
                 />
             <div className='my-2'></div>
         </div>

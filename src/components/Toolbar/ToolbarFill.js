@@ -34,7 +34,7 @@ function SelectPalette(props) {
     }, [props.scheme])
 
     return (
-        <FormControl variant="filled"  sx={{ ml:1, minWidth: 150 }}>
+        <FormControl variant="filled"  sx={{ ml:1, mx:2, minWidth: 150 }}>
             <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
             <Select
                 labelId="select-palette-filled-label"
@@ -131,7 +131,22 @@ export default function ToolbarFill(props) {
 
                 />
 
-                {/* Esquema de Cores */}
+                {/* Legenda Flutuante */}
+                <FormControl variant="filled" sx={{ minWidth: 150 }}>
+                    <InputLabel id="select-title-var-filled-label">Atributo Título</InputLabel>
+                    <Select
+                    labelId="select-title-var-filled-label"
+                    id="title-var-select-filled"
+                    value={props.attributeTitle}
+                    onChange={props.onAttributeTitleChange}
+                    >
+                        <MenuItem value="">
+                            <em>Nenhum</em>
+                        </MenuItem>
+                        {props.attrNames}
+                    </Select>
+                </FormControl>
+                {/* Atributos */}
                 <SelectAttributes
                     attributes={props.attributes}
                     attributesTT={props.attributesTT}

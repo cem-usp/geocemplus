@@ -21,6 +21,7 @@ import {Fill as MapFill} from '../utils/Fill'
 import Legend from '../services/Legend'
 import ReactDOM from 'react-dom/client';
 
+import MenuItem from '@mui/material/MenuItem';
 
 import LegendAtInfo from '../services/LegendAtInfo'
 
@@ -149,7 +150,13 @@ function MapGeo(props) {
 		  // On autofill we get a stringified value.
 		  typeof value === 'string' ? value.split(',') : value,
 		);
-	  };
+	};
+
+    const [attributeTitle, setAttributeTitle] = useState('')
+
+    const handleAttributeTitleChange = (e) => {
+        setAttributeTitle(e.target.value)
+    }
 	
 
 	//Prevent map element to re-render	
@@ -375,8 +382,27 @@ function MapGeo(props) {
 
 	//Update Attributes legend tooltip
 	useEffect(() => {
+		updateTooltipLegend()
+	}, [attributesTT, attributeTitle])
 
-	}, [attributesTT])
+
+	//Update Attributes legend tooltip
+	// useEffect(() => {
+	// 	const info_title = document.getElementById('attributeTitle_infomap');
+
+	// 	if(info_title)
+	// 		info_title.innerHTML = attributeTitle
+	// }, [attributeTitle, ])
+
+
+	//Update Attribute list options when layer changes
+    const [attrNames, setAtrNames] = useState(null)
+    useEffect(() => {
+      const names = (props.attributes) ? props.attributes.map((attribute) =>
+                      <MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
+                    ) : null;
+      setAtrNames(names)
+    },[props.attributes])
 
 	function updateLegend() {
 		//Change legend
@@ -395,17 +421,66 @@ function MapGeo(props) {
 	}
 
 	//Add Tooltip Legend control
-	console.log('rendeu')
-	const legendControl = getControl(map, 'tooltip-legend')
-	if(legendControl) {
-		map.removeControl(legendControl)
-	}
-	const output = document.createElement("div")
-	const rootOut = ReactDOM.createRoot(output)
-	rootOut.render(<LegendAtInfo />)
-	const LegendAt = new Control({element: output, properties: 'id'})
-	LegendAt.set('id', 'tooltip-legend')
-	map.addControl(LegendAt)	
+	function updateTooltipLegend() {
+		const legendControl = getControl(map, 'tooltip-legend')
+		if(legendControl) {
+			map.removeControl(legendControl)
+		}
+		const output = document.createElement("div")
+		const rootOut = ReactDOM.createRoot(output)
+		rootOut.render(<LegendAtInfo title={attributeTitle} attributes={attributesTT}/>)
+		const LegendAt = new Control({element: output, properties: 'id'})
+		LegendAt.set('id', 'tooltip-legend')
+		map.addControl(LegendAt)
+
+		//Update function to get the attributes
+		const displayFeatureInfo = function (pixel) {
+			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+			  return feature;
+			});
+
+			const info_title = document.getElementById('attributeTitle_infomap');
+		  
+			if (feature) {
+
+
+				if(info_title)
+					info_title.innerHTML = feature.get(attributeTitle)
+				
+				attributesTT.map((attribute) => {
+					const info = document.getElementById('infomap_' + attribute);
+					info.innerHTML = feature.get(attribute) || '&nbsp;';
+				})
+
+			} else {
+				if(info_title)
+					info_title.innerHTML = '&nbsp;'
+					
+				attributesTT.map((attribute) => {
+					const info = document.getElementById('infomap_' + attribute);
+					info.innerHTML = '&nbsp;';
+				})
+			}
+
+			// if (feature !== highlight) {
+			//   if (highlight) {
+			// 	featureOverlay.getSource().removeFeature(highlight);
+			//   }
+			//   if (feature) {
+			// 	featureOverlay.getSource().addFeature(feature);
+			//   }
+			//   highlight = feature;
+			// }
+		};
+
+		map.on('pointermove', function (evt) {
+			if (evt.dragging) {
+				return;
+			}
+			const pixel = map.getEventPixel(evt.originalEvent);
+			displayFeatureInfo(pixel);
+		});
+	}	
 
 	return (
 		<div>
@@ -416,6 +491,7 @@ function MapGeo(props) {
 				titulo={textTitulo}
 				onTituloChange={handleTituloChange}
 				attributes={props.attributes}
+				attrNames={attrNames}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
 				// ToolbarFill
@@ -430,6 +506,8 @@ function MapGeo(props) {
 				handleMethodChange={handleMethodChange}
 				attributesTT={attributesTT}
 				handleATTChange={handleAttributesTTChange}
+				attributeTitle={attributeTitle}
+				onAttributeTitleChange={handleAttributeTitleChange}
 
 			/>
 			<div ref={mapElement} className="map-container">

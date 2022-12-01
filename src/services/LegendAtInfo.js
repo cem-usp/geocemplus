@@ -1,11 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 
 const bull = (
     <Box
@@ -17,23 +16,34 @@ const bull = (
   );
 
 export default function LegendAtInfo(props) {
+
+  const listAttributes = props.attributes.map((attribute) =>
+    <ListItem key={attribute}>
+      <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
+      {attribute}
+      </Typography>
+      <Typography variant="body2" id={'infomap_' + attribute}>
+      </Typography>
+    </ListItem>
+  );
+
     return (
         <div className="info ol-control ol-tooltip-legend">
-            <Card sx={{ minWidth: 275 }}>
-                <CardContent>
-                <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                  
+            <Card>
+                  <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                    
                   <ListItem key={1}>
-                    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                      TEC2_NOM
-                    </Typography>
-                    <Typography variant="h5" component="div">
-                      ITAQUERA
-                    </Typography>
-                  </ListItem>
+                      <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
+                        {props.title}
+                      </Typography>
+                      <Typography variant="h5" component="div" id="attributeTitle_infomap">
+                        
+                      </Typography>
+                    </ListItem>
 
-                </List>
-                </CardContent>
+                    {listAttributes}
+
+                  </List>
             </Card>
         </div>
       );

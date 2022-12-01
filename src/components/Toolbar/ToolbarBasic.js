@@ -50,15 +50,6 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 export default function ToolbarBasic(props) {
 
-    //Attributes names of the layer
-    const [attrNames, setAtrNames] = useState(null)
-    useEffect(() => {
-      const names = (props.attributes) ? props.attributes.map((attribute) =>
-                      <MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
-                    ) : null;
-      setAtrNames(names)
-    },[props.attributes])
-  
     //Handle Modal
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -144,7 +135,7 @@ export default function ToolbarBasic(props) {
                   <MenuItem value="">
                     <em>Nenhum</em>
                   </MenuItem>
-                  {attrNames}
+                  {props.attrNames}
                 </Select>
               </FormControl>
               
