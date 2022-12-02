@@ -432,7 +432,7 @@ function MapGeo(props) {
 		const LegendAt = new Control({element: output, properties: 'id'})
 		LegendAt.set('id', 'tooltip-legend')
 		map.addControl(LegendAt)
-
+	
 		//Update function to get the attributes
 		const displayFeatureInfo = function (pixel) {
 			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
@@ -441,18 +441,22 @@ function MapGeo(props) {
 
 			const info_title = document.getElementById('attributeTitle_infomap');
 		  
-			if (feature) {
-
-
-				if(info_title)
+			if (feature && (attributeTitle !== '' || attributesTT.length > 0)) {
+				//Show the attrbute title
+				if(info_title && attributeTitle !== '')
 					info_title.innerHTML = feature.get(attributeTitle)
 				
+				//Show all attributes selected		
 				attributesTT.map((attribute) => {
 					const info = document.getElementById('infomap_' + attribute);
 					info.innerHTML = feature.get(attribute) || '&nbsp;';
 				})
 
+				//Show the card/legend
+				document.getElementById("infomap_card").style.display = "block";
+
 			} else {
+				
 				if(info_title)
 					info_title.innerHTML = '&nbsp;'
 					
@@ -460,6 +464,9 @@ function MapGeo(props) {
 					const info = document.getElementById('infomap_' + attribute);
 					info.innerHTML = '&nbsp;';
 				})
+
+				//Hide the card/legend
+				document.getElementById("infomap_card").style.display = "none"
 			}
 
 			// if (feature !== highlight) {

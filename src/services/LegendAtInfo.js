@@ -28,18 +28,19 @@ export default function LegendAtInfo(props) {
   );
 
     return (
-        <div className="info ol-control ol-tooltip-legend">
-            <Card>
+        <div className="info ol-control ol-tooltip-legend" >
+            <Card sx={{ display: 'none' }} id='infomap_card'>
                   <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     
-                  <ListItem key={1}>
+                    {(props.title !== '') ?
+                    <ListItem key='attribute_title'>
                       <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
                         {props.title}
                       </Typography>
-                      <Typography variant="h5" component="div" id="attributeTitle_infomap">
-                        
-                      </Typography>
+                      
+                      <Typography variant="h5" component="div" id="attributeTitle_infomap" />
                     </ListItem>
+                    : ''}
 
                     {listAttributes}
 
