@@ -24,6 +24,7 @@ import ReactDOM from 'react-dom/client';
 import MenuItem from '@mui/material/MenuItem';
 
 import LegendAtInfo from '../services/LegendAtInfo'
+import { InputGroup } from "react-bootstrap";
 
 //Fill
 const mapFill = new MapFill()
@@ -157,7 +158,6 @@ function MapGeo(props) {
     const handleAttributeTitleChange = (e) => {
         setAttributeTitle(e.target.value)
     }
-	
 
 	//Prevent map element to re-render	
 	const mapElement = useRef()
@@ -182,7 +182,7 @@ function MapGeo(props) {
 	controlEl.innerHTML= controlTitle;
 
 	initialMap.addControl(new Control({element: controlEl}))
-	
+
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
 	//GeoJSON Variable
@@ -330,8 +330,8 @@ function MapGeo(props) {
 	//Handle Attribute change
 	useEffect(() => {
 		const thematic_layer = getLayer(map, 'Thematic')
-		
-		if(thematic_layer !== null) {
+	
+		if(thematic_layer !== null && attribute !== '') {
 			const thematic_source = thematic_layer.getSource()
 			const features = thematic_layer.get('features')
 			let attr_values = []
@@ -354,6 +354,9 @@ function MapGeo(props) {
 			})
 
 			updateLegend()
+		} else if (attribute === '' && thematic_layer !== null) { //Reset thematic map
+			thematic_layer.setStyle()
+			removeLegend()
 		}
 
 	}, [attribute])
@@ -382,18 +385,8 @@ function MapGeo(props) {
 
 	//Update Attributes legend tooltip
 	useEffect(() => {
-		updateTooltipLegend()
+		updateTooltipLegend(attributesTT, attributeTitle)
 	}, [attributesTT, attributeTitle])
-
-
-	//Update Attributes legend tooltip
-	// useEffect(() => {
-	// 	const info_title = document.getElementById('attributeTitle_infomap');
-
-	// 	if(info_title)
-	// 		info_title.innerHTML = attributeTitle
-	// }, [attributeTitle, ])
-
 
 	//Update Attribute list options when layer changes
     const [attrNames, setAtrNames] = useState(null)
@@ -405,12 +398,9 @@ function MapGeo(props) {
     },[props.attributes])
 
 	function updateLegend() {
-		//Change legend
 		//remove Legend control
-		const legendControl = getControl(map, 'legend')
-		if(legendControl) {
-			map.removeControl(legendControl)
-		}
+		removeLegend()
+
 		//Add Legend control
 		const output = document.createElement("div")
 		const rootOut = ReactDOM.createRoot(output)
@@ -420,19 +410,34 @@ function MapGeo(props) {
 		map.addControl(lControl)	
 	}
 
-	//Add Tooltip Legend control
-	function updateTooltipLegend() {
-		const legendControl = getControl(map, 'tooltip-legend')
+	function removeLegend() {
+		const legendControl = getControl(map, 'legend')
 		if(legendControl) {
 			map.removeControl(legendControl)
 		}
+	}
+
+	//Add Tooltip Legend control
+	function updateTooltipLegend(attributes_tt, attribute_title) {
+
+		//Remove legenda
+		const legendControl = getControl(map, 'tooltip-legend')
+		if(legendControl) map.removeControl(legendControl)
+
+		//Remove evento
+		const tlEventKey = map.get('tlEventKey')
+		if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+
+		//Se não há atributos selecionados, para a execução
+		if(attributesTT.length === 0 && attributeTitle === '') return
+		
 		const output = document.createElement("div")
 		const rootOut = ReactDOM.createRoot(output)
 		rootOut.render(<LegendAtInfo title={attributeTitle} attributes={attributesTT}/>)
 		const LegendAt = new Control({element: output, properties: 'id'})
 		LegendAt.set('id', 'tooltip-legend')
 		map.addControl(LegendAt)
-	
+
 		//Update function to get the attributes
 		const displayFeatureInfo = function (pixel) {
 			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
@@ -441,22 +446,16 @@ function MapGeo(props) {
 
 			const info_title = document.getElementById('attributeTitle_infomap');
 		  
-			if (feature && (attributeTitle !== '' || attributesTT.length > 0)) {
-				//Show the attrbute title
+			if (feature) {
 				if(info_title && attributeTitle !== '')
 					info_title.innerHTML = feature.get(attributeTitle)
 				
-				//Show all attributes selected		
 				attributesTT.map((attribute) => {
 					const info = document.getElementById('infomap_' + attribute);
 					info.innerHTML = feature.get(attribute) || '&nbsp;';
 				})
 
-				//Show the card/legend
-				document.getElementById("infomap_card").style.display = "block";
-
 			} else {
-				
 				if(info_title)
 					info_title.innerHTML = '&nbsp;'
 					
@@ -464,9 +463,6 @@ function MapGeo(props) {
 					const info = document.getElementById('infomap_' + attribute);
 					info.innerHTML = '&nbsp;';
 				})
-
-				//Hide the card/legend
-				document.getElementById("infomap_card").style.display = "none"
 			}
 
 			// if (feature !== highlight) {
@@ -480,13 +476,17 @@ function MapGeo(props) {
 			// }
 		};
 
-		map.on('pointermove', function (evt) {
+		const teste = function (evt) {
 			if (evt.dragging) {
 				return;
 			}
 			const pixel = map.getEventPixel(evt.originalEvent);
 			displayFeatureInfo(pixel);
-		});
+		}
+
+		const new_tlEventKey = map.on('pointermove', teste);
+
+		map.set('tlEventKey', new_tlEventKey)
 	}	
 
 	return (
