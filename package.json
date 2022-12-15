@@ -17,6 +17,7 @@
     "axios": "^0.27.2",
     "bootstrap": "^5.2.0",
     "geojson-vt": "^3.2.1",
+    "html2canvas": "^1.4.1",
     "ol": "^6.15.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",

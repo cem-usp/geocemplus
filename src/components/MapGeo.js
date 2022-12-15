@@ -501,6 +501,7 @@ function MapGeo(props) {
 				attrNames={attrNames}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
+				map={map}
 				// ToolbarFill
 				n_classes={n_classes}
 				handleNClassesChange={handleNClassesChange}

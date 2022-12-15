@@ -31,6 +31,9 @@ import TableRow from '@mui/material/TableRow';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 
+//Import Export Button
+import ExportPNGButton from '../../utils/ExportPNGButton';
+
 //Button toogle style
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     '& .MuiToggleButtonGroup-grouped': {
@@ -103,6 +106,7 @@ export default function ToolbarBasic(props) {
               display: 'flex',
               border: (theme) => `1px solid ${theme.palette.divider}`,
               flexWrap: 'wrap',
+              alignItems: 'center'
               }}
           >
               <StyledToggleButtonGroup
@@ -142,7 +146,11 @@ export default function ToolbarBasic(props) {
               <IconButton onClick={handleOpen}>
                 <HelpIcon />
               </IconButton>
-  
+
+              <Divider orientation="vertical" variant="middle" sx={{ mx:1 }} flexItem />
+              
+              <ExportPNGButton map={props.map}/>
+
           </Paper>
   
           <Modal

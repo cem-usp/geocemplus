@@ -17,6 +17,7 @@ export default function Toolbar(props) {
                 attributes={props.attributes}
                 attribute={props.attribute}
                 onAttributeChange={props.onAttributeChange}
+                map={props.map}
             />
             <div className='my-2'></div>
             <ToolbarFill
