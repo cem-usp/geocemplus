@@ -23,10 +23,13 @@ function LayerForm() {
     //Action when category changes -> loads layers of the category
     const [category, setCategory] = useState('')
     useEffect(() => {
+        document.body.style.cursor = "wait"
+
         api_geocem
         .get("/layers/?category__identifier__in="+ category)
         .then((response) => {
             setLayers(response.data.objects)
+            document.body.style.cursor = "default"
         })
         .catch((err) => {
             console.error("ops! ocorreu um erro" + err);
@@ -52,6 +55,7 @@ function LayerForm() {
 
     //Action when form is submitted
     function handleSubmit(e) {
+        document.body.style.cursor = "wait"
         api_geocem
             .get("/layers/"+ layer)
             .then((response) => {
@@ -72,7 +76,14 @@ function LayerForm() {
         api_geocem
             .get("/v2/layers/" + layer_id + "/attribute_set")
             .then((response) => {
-                setAttributes(response.data.attributes)
+                //Filter selection of fill attribute
+                const accepted_types = ['xsd:int', 'xsd:long', 'xsd:double']
+                const all_atributes = response.data.attributes
+                const filtered_attributes = all_atributes.filter((attr) => {
+                    return accepted_types.indexOf(attr.attribute_type) > -1;
+                })
+
+                setAttributes(filtered_attributes)
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);

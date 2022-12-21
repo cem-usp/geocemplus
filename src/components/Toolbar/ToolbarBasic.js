@@ -123,13 +123,13 @@ export default function ToolbarBasic(props) {
                   </ToggleButton>
               </StyledToggleButtonGroup>
               
-              <TextField id="filled-basic" label="Título" variant="filled" 
-                value={props.titulo} onChange={props.onTituloChange}/>
+              <TextField id="filled-basic" label="Título do Mapa" variant="filled" 
+                value={props.titulo} onChange={props.onTituloChange} />
   
               <Divider orientation="vertical" variant="middle" sx={{ mx:1 }} flexItem />
               
-              <FormControl variant="filled" sx={{ minWidth: 120 }}>
-                <InputLabel id="select-var-filled-label">Attributo</InputLabel>
+              <FormControl variant="filled" sx={{ minWidth: 250 }}>
+                <InputLabel id="select-var-filled-label">Atributo de Preenchimento</InputLabel>
                 <Select
                   labelId="select-var-filled-label"
                   id="var-select-filled"

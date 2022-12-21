@@ -284,6 +284,8 @@ function MapGeo(props) {
 					layer.set('center', centerWebMercator)
 					layer.set('extent', tExtent)
 
+					document.body.style.cursor = "default"
+
 				})
 		}
 	}, [props.geoJSON])
