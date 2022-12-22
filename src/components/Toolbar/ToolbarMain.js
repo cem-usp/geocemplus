@@ -13,7 +13,7 @@ export default function Toolbar(props) {
                 onBasicOptionsChange={props.onBasicOptionsChange}
                 titulo={props.titulo}
                 onTituloChange={props.onTituloChange}
-                attrNames={props.attrNames}
+                attrNames={props.filterAttrNames}
                 attributes={props.attributes}
                 attribute={props.attribute}
                 onAttributeChange={props.onAttributeChange}

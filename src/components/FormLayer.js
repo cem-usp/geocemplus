@@ -76,14 +76,7 @@ function LayerForm() {
         api_geocem
             .get("/v2/layers/" + layer_id + "/attribute_set")
             .then((response) => {
-                //Filter selection of fill attribute
-                const accepted_types = ['xsd:int', 'xsd:long', 'xsd:double']
-                const all_atributes = response.data.attributes
-                const filtered_attributes = all_atributes.filter((attr) => {
-                    return accepted_types.indexOf(attr.attribute_type) > -1;
-                })
-
-                setAttributes(filtered_attributes)
+                setAttributes(response.data.attributes)
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);

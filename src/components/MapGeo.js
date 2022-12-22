@@ -24,7 +24,8 @@ import ReactDOM from 'react-dom/client';
 import MenuItem from '@mui/material/MenuItem';
 
 import LegendAtInfo from '../services/LegendAtInfo'
-import { InputGroup } from "react-bootstrap";
+
+import {filterNumberAttributes} from '../utils/UtilFunctions'
 
 //Fill
 const mapFill = new MapFill()
@@ -392,12 +393,20 @@ function MapGeo(props) {
 
 	//Update Attribute list options when layer changes
     const [attrNames, setAtrNames] = useState(null)
+    const [filterAttrNames, setFilterAttrNames] = useState(null)
     useEffect(() => {
-      const names = (props.attributes) ? props.attributes.map((attribute) =>
-                      <MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
-                    ) : null;
+		const names = (props.attributes) ? props.attributes.map((attribute) =>
+						<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
+						) : null;
+		
+		const filtered_attributes = (props.attributes) ? filterNumberAttributes(props.attributes) : null
+		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
+									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
+									) : null;
       setAtrNames(names)
+      setFilterAttrNames(filtered_names)
     },[props.attributes])
+	
 
 	function updateLegend() {
 		//remove Legend control
@@ -501,6 +510,7 @@ function MapGeo(props) {
 				onTituloChange={handleTituloChange}
 				attributes={props.attributes}
 				attrNames={attrNames}
+				filterAttrNames={filterAttrNames}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
 				map={map}
