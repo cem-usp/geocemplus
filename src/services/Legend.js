@@ -25,7 +25,7 @@ export default function LegendControl(props) {
                 <i style={{backgroundColor: step.color}}/>
             </Box>
             <Typography variant="body1">
-                {step.interval.start} {(step.interval.start) ? '-' : '' } {step.interval.end}
+                {step.interval.start.toLocaleString("pt-BR", {maximumFractionDigits: 4})} {(step.interval.start) ? '-' : '' } {step.interval.end.toLocaleString("pt-BR", {maximumFractionDigits: 4})}
             </Typography>
         </ListItem>
     );

@@ -463,7 +463,10 @@ function MapGeo(props) {
 				
 				attributesTT.map((attribute) => {
 					const info = document.getElementById('infomap_' + attribute);
-					info.innerHTML = feature.get(attribute) || '&nbsp;';
+					if(!feature.get(attribute))
+						info.innerHTML = '&nbsp;'
+					else
+					info.innerHTML = (isNaN(feature.get(attribute))) ? feature.get(attribute) : feature.get(attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
 				})
 
 			} else {
