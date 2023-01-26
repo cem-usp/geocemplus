@@ -144,14 +144,8 @@ function MapGeo(props) {
 
     const [attributesTT, setAttributesTT] = useState([])
 
-	const handleAttributesTTChange = (event) => {
-		const {
-		  target: { value },
-		} = event;
-		setAttributesTT(
-		  // On autofill we get a stringified value.
-		  typeof value === 'string' ? value.split(',') : value,
-		);
+	const handleAttributesTTChange = (e) => {
+		setAttributesTT(e.target.value);
 	};
 
     const [attributeTitle, setAttributeTitle] = useState('')
@@ -338,7 +332,7 @@ function MapGeo(props) {
 			const thematic_source = thematic_layer.getSource()
 			const features = thematic_layer.get('features')
 			let attr_values = []
-
+			
 			features.map((feature) => {
 				attr_values.push(feature.get(attribute))
 			})
@@ -347,7 +341,7 @@ function MapGeo(props) {
 			
 			thematic_layer.setStyle(function (feature) {
 				const value = feature.get(attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : '#808080';
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -373,7 +367,7 @@ function MapGeo(props) {
 			
 			thematic_layer.setStyle(function (feature) {
 				const value = feature.get(attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : '#808080';
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -396,12 +390,12 @@ function MapGeo(props) {
     const [filterAttrNames, setFilterAttrNames] = useState(null)
     useEffect(() => {
 		const names = (props.attributes) ? props.attributes.map((attribute) =>
-						<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
+						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
 						) : null;
 		
 		const filtered_attributes = (props.attributes) ? filterNumberAttributes(props.attributes) : null
 		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute}</MenuItem>
+									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
 									) : null;
       setAtrNames(names)
       setFilterAttrNames(filtered_names)
@@ -459,22 +453,22 @@ function MapGeo(props) {
 		  
 			if (feature) {
 				if(info_title && attributeTitle !== '')
-					info_title.innerHTML = feature.get(attributeTitle)
+					info_title.innerHTML = feature.get(attributeTitle.attribute)
 				
 				attributesTT.map((attribute) => {
-					const info = document.getElementById('infomap_' + attribute);
-					if(!feature.get(attribute))
+					const info = document.getElementById('infomap_' + attribute.attribute);
+					if(!feature.get(attribute.attribute))
 						info.innerHTML = '&nbsp;'
 					else
-					info.innerHTML = (isNaN(feature.get(attribute))) ? feature.get(attribute) : feature.get(attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
+						info.innerHTML = (isNaN(feature.get(attribute.attribute))) ? feature.get(attribute.attribute) : feature.get(attribute.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
 				})
 
 			} else {
 				if(info_title)
 					info_title.innerHTML = '&nbsp;'
-					
+				
 				attributesTT.map((attribute) => {
-					const info = document.getElementById('infomap_' + attribute);
+					const info = document.getElementById('infomap_' + attribute.attribute);
 					info.innerHTML = '&nbsp;';
 				})
 			}
@@ -502,7 +496,6 @@ function MapGeo(props) {
 
 		map.set('tlEventKey', new_tlEventKey)
 	}	
-
 	return (
 		<div>
 			<ToolbarMain 

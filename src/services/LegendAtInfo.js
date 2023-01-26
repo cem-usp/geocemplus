@@ -15,14 +15,13 @@ const bull = (
     </Box>
   );
 
-export default function LegendAtInfo(props) {
-
+export default function (props) {
   const listAttributes = props.attributes.map((attribute) =>
-    <ListItem key={attribute}>
+    <ListItem key={attribute.attribute}>
       <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
-      {attribute}
+      {attribute.attribute_label}
       </Typography>
-      <Typography variant="body2" id={'infomap_' + attribute}>
+      <Typography variant="body2" id={'infomap_' + attribute.attribute}>
       </Typography>
     </ListItem>
   );
@@ -35,7 +34,7 @@ export default function LegendAtInfo(props) {
                     { (props.title != undefined && props.title !== '') &&
                       <ListItem key={1}>
                         <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
-                          {props.title}
+                          {props.title.attribute_label}
                         </Typography>
                         <Typography variant="h5" component="div" id="attributeTitle_infomap">
                           

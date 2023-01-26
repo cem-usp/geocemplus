@@ -138,6 +138,7 @@ export default function ToolbarFill(props) {
                     labelId="select-title-var-filled-label"
                     id="title-var-select-filled"
                     value={props.attributeTitle}
+                    renderValue={(selected) => selected.attribute_label}
                     onChange={props.onAttributeTitleChange}
                     >
                         <MenuItem value="">

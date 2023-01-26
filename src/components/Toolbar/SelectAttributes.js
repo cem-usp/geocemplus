@@ -18,6 +18,7 @@ import Checkbox from '@mui/material/Checkbox';
 // };
 
 export default function MultipleSelectCheckmarks(props) {
+    const selected_labels = props.attributesTT.map(({attribute_label}) => attribute_label)
 
     return (
         <div>
@@ -29,12 +30,16 @@ export default function MultipleSelectCheckmarks(props) {
               multiple
               value={props.attributesTT}
               onChange={props.handleATTChange}
-              renderValue={(selected) => selected.join(', ')}
+              renderValue={(selected) => {
+                  const labels = selected.map(({attribute_label}) => attribute_label)
+                  return labels.join(', ')
+                }
+              }
             >
               {(props.attributes) ? props.attributes.map((attribute) => (
-                <MenuItem key={attribute.attribute} value={attribute.attribute}>
-                  <Checkbox checked={props.attributesTT.indexOf(attribute.attribute) > -1} />
-                  <ListItemText primary={attribute.attribute} />
+                <MenuItem key={attribute.attribute} value={attribute}>
+                  <Checkbox checked={selected_labels.indexOf(attribute.attribute_label) > -1} />
+                  <ListItemText primary={attribute.attribute_label} />
                 </MenuItem>
               )) : null}
             </Select>

@@ -63,7 +63,7 @@ export class Fill {
     }
 
     getColor(value) {
-        return (value !== null) ? Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)] : '#808080'
+        return (value !== null) ? Palette.getColors()[this.scheme][this.palette][this.n_classes][this.getRank(value)] : 'rgba(128, 128, 128, 0.7)'
     }
 
     findStartValue(rank) {
