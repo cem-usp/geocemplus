@@ -182,7 +182,7 @@ export default function ToolbarBasic(props) {
                                 key={attribute.pk}
                               >
                                 <StyledTableCell component="th" scope="row">
-                                  {attribute.attribute}
+                                  {attribute.attribute_label}
                                 </StyledTableCell>
                                 <StyledTableCell align="right">{attribute.description}</StyledTableCell>
                               </StyledTableRow>

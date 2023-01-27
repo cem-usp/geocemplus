@@ -191,8 +191,10 @@ function MapGeo(props) {
 
 		//Updates GeoJSON
 		if (props.geoJSON !== null && geoJSON !== props.geoJSON) {
-			//Clear fill attibute
+			//Clear fields of attibute
 			setAttribute('')
+			setAttributesTT([])
+			setAttributeTitle('')
 
 			setGeoJSON(props.geoJSON)
 
