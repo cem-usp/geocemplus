@@ -6,7 +6,7 @@ import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import { Fill, Style } from 'ol/style';
+import { Fill, Style, Stroke } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
@@ -283,6 +283,9 @@ function MapGeo(props) {
 
 					document.body.style.cursor = "default"
 
+					//Add Highlight Event 
+					highlightFeature()
+
 				})
 		}
 	}, [props.geoJSON])
@@ -447,6 +450,7 @@ function MapGeo(props) {
 
 		//Update function to get the attributes
 		const displayFeatureInfo = function (pixel) {
+
 			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
 			  return feature;
 			});
@@ -474,19 +478,9 @@ function MapGeo(props) {
 					info.innerHTML = '&nbsp;';
 				})
 			}
+		}
 
-			// if (feature !== highlight) {
-			//   if (highlight) {
-			// 	featureOverlay.getSource().removeFeature(highlight);
-			//   }
-			//   if (feature) {
-			// 	featureOverlay.getSource().addFeature(feature);
-			//   }
-			//   highlight = feature;
-			// }
-		};
-
-		const teste = function (evt) {
+		const handlePointerMoveLegend = function (evt) {
 			if (evt.dragging) {
 				return;
 			}
@@ -494,10 +488,73 @@ function MapGeo(props) {
 			displayFeatureInfo(pixel);
 		}
 
-		const new_tlEventKey = map.on('pointermove', teste);
+		const new_tlEventKey = map.on('pointermove', handlePointerMoveLegend);
 
 		map.set('tlEventKey', new_tlEventKey)
-	}	
+
+	}
+
+	function highlightFeature() {
+
+		//Feature to highlight
+		let highlight;
+
+		//Remove evento
+		const tlEventKey = map.get('tlEventKeyHighlight')
+		if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+
+		//Get Thematic Layer
+		const thematic_layer = getLayer(map, 'Thematic')
+
+		//Highlight Style
+		const highlightFeature = new Style({
+			stroke: new Stroke({
+				color: 'white',
+				width: 4,
+			}),
+			// fill: new Fill({
+			// 	color: 'rgba(200,20,20,0.4)',
+			// }),
+		});
+
+		//Overlay Feature
+		const featureOverlay = new VectorTileLayer({
+			source: thematic_layer.getSource(),
+			map: map,
+			renderMode: 'vector',
+			style: function (feature) {
+				if (feature.get('fid') === highlight) {
+				  	return highlightFeature;
+				}
+			},
+		  });
+
+		const displayFeatureInfo = function (pixel) {
+
+			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+				// console.log(feature)
+				// console.log(feature.get('fid'))
+				return feature.get('fid');
+			});		
+
+			highlight = feature
+			featureOverlay.changed()
+		}
+
+		const handlePointerMoveHighlight = function (evt) {
+			if (evt.dragging) {
+				return;
+			}
+			const pixel = map.getEventPixel(evt.originalEvent);
+			displayFeatureInfo(pixel);
+		}
+
+		const new_tlEventKey = map.on('pointermove', handlePointerMoveHighlight);
+
+		map.set('tlEventKeyHighlight', new_tlEventKey)
+
+	};
+
 	return (
 		<div>
 			<ToolbarMain 
