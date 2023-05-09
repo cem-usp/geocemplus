@@ -12,7 +12,10 @@ function LayerForm() {
         api_geocem
         .get("/categories/?type=layer")
         .then((response) => {
-            setCategories(response.data.objects)
+            const cats = response.data.objects.filter((cat) => {
+                return cat.count > 0;
+            })
+            setCategories(cats)
         })
         .catch((err) => {
             console.error("ops! ocorreu um erro" + err);
@@ -60,7 +63,7 @@ function LayerForm() {
             .get("/layers/"+ layer)
             .then((response) => {
                 const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
-                const https_json = (json_url.startsWith("http://")) ? "http://" + json_url.substring(7) : json_url
+                const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
                 setLayerGeoJSON(https_json)
             })
             .catch((err) => {
