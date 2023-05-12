@@ -6,7 +6,7 @@ import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import { Fill, Style, Stroke } from 'ol/style';
+import { Fill, Style, Stroke, Icon } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
@@ -26,6 +26,10 @@ import MenuItem from '@mui/material/MenuItem';
 import LegendAtInfo from '../services/LegendAtInfo'
 
 import {filterNumberAttributes} from '../utils/UtilFunctions'
+
+import Feature from 'ol/Feature.js';
+import Point from 'ol/geom/Point.js';
+
 
 //Fill
 const mapFill = new MapFill()
@@ -79,6 +83,23 @@ const layer_osm = new TileLayer({
 })
 layer_osm.set('id', 'OSM')
 layer_osm.setZIndex(0)
+
+//Icon/Marker
+const iconFeature = new Feature({
+	geometry: new Point([0, 0]),
+	name: 'Null Island',
+	population: 4000,
+	rainfall: 500,
+});
+
+const iconStyle = new Style({
+	image: new Icon({
+		anchor: [0.5, 46],
+		anchorXUnits: 'fraction',
+		anchorYUnits: 'pixels',
+		src: 'icon.png',
+	}),
+});
 
 //Function get a Layer by ID property
 function getLayer(map, id) {
@@ -294,12 +315,27 @@ function MapGeo(props) {
 	useEffect(() => {
 		const map_layer_osm = getLayer(map, 'OSM')
 		const map_layer_thematic = getLayer(map, 'Thematic')
+		const map_layer_icon = getLayer(map, 'icon')
 
 		//Base Map option
 		if(basicOptions.includes('map') && map_layer_osm === null) {
 			map.addLayer(layer_osm)
 		} else if(!basicOptions.includes('map')) {
 			map.removeLayer(map_layer_osm)
+		}
+
+		//Icon Layer
+		console.log(map_layer_icon)
+		if(map_layer_icon === null) {
+			console.log('teste')
+			const iconLayer = new VectorTileLayer({
+				style: function (feature) {
+			  		return feature.get('style');
+				},
+				source: new VectorTileSource({features: [iconFeature]}),
+			})
+			iconLayer.set('id', 'icon')
+			map.addLayer(iconLayer)
 		}
 
 		if (map_layer_thematic !== null) {
