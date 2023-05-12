@@ -3,6 +3,7 @@ import {api_geocem, axios} from "../services/api";
 import Form from 'react-bootstrap/Form';
 import {Button, Row, Col, Card} from 'react-bootstrap/';
 import Map from './MapGeo'
+import MapillaryViewer from './Mapillary'
 
 function LayerForm() {
 
@@ -86,7 +87,8 @@ function LayerForm() {
             });
     }
 
-    return (<div className="pb-5">
+    return (
+            <div className="pb-5">
                 <Card>
                     <Card.Header>Formulário da Camada</Card.Header>
                     <Card.Body>
@@ -104,6 +106,12 @@ function LayerForm() {
                     <Card.Header>Visualizar</Card.Header>
                     <Card.Body>
                         <Map geoJSON={layerGeoJSON} attributes={attributes}/>
+                    </Card.Body>
+                </Card>
+                <Card>
+                    <Card.Header>Mapillary</Card.Header>
+                    <Card.Body>
+                        <MapillaryViewer />
                     </Card.Body>
                 </Card>
             </div>
