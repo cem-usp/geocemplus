@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
-import {Tile as TileLayer} from 'ol/layer';
+import {Tile as TileLayer, Vector as VectorLayer}  from 'ol/layer';
 import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorSource from 'ol/source/Vector';
 import { Fill, Style, Stroke, Icon } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
@@ -30,6 +31,10 @@ import {filterNumberAttributes} from '../utils/UtilFunctions'
 import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
 
+import { defaults as defaultInteractions } from 'ol/interaction';
+import Drag from './ol-utils/Drag'
+
+import MapiLayer from '../services/mapillary/MapiLayer'
 
 //Fill
 const mapFill = new MapFill()
@@ -79,17 +84,15 @@ const replacer = function (key, value) {
 //Base map layer (Open Street Map)
 const layer_osm = new TileLayer({
 	source: new OSM(),
-	maxZoom: max_zoom
+	maxZoom: max_zoom,
+	zIndex: 0
 })
 layer_osm.set('id', 'OSM')
-layer_osm.setZIndex(0)
 
 //Icon/Marker
 const iconFeature = new Feature({
 	geometry: new Point([0, 0]),
-	name: 'Null Island',
-	population: 4000,
-	rainfall: 500,
+	id: 'icon'
 });
 
 const iconStyle = new Style({
@@ -100,6 +103,7 @@ const iconStyle = new Style({
 		src: 'icon.png',
 	}),
 });
+iconFeature.setStyle(iconStyle)
 
 //Function get a Layer by ID property
 function getLayer(map, id) {
@@ -180,12 +184,15 @@ function MapGeo(props) {
 
 	//Initialize map
 	const initialMap = new Map({
+		// interactions: defaultInteractions().extend([new Drag()]),
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
 			maxZoom: max_zoom,
 		}),
+		layers: [MapiLayer()]
 	})
+	
 
 	//Title control
 	const controlTitle = `
@@ -220,7 +227,7 @@ function MapGeo(props) {
 			setGeoJSON(props.geoJSON)
 
 			// Adds layer as Vector Tile
-			layer = new VectorTileLayer({properties: 'id', zIndex: 10})
+			layer = new VectorTileLayer({properties: 'id', zIndex: 1})
 
 			fetch(props.geoJSON)
 				.then(function (response) {
@@ -325,14 +332,13 @@ function MapGeo(props) {
 		}
 
 		//Icon Layer
-		console.log(map_layer_icon)
 		if(map_layer_icon === null) {
-			console.log('teste')
-			const iconLayer = new VectorTileLayer({
+			const iconLayer = new VectorLayer({
 				style: function (feature) {
 			  		return feature.get('style');
 				},
-				source: new VectorTileSource({features: [iconFeature]}),
+				source: new VectorSource({features: [iconFeature]}),
+				zIndex: 2
 			})
 			iconLayer.set('id', 'icon')
 			map.addLayer(iconLayer)
@@ -548,9 +554,6 @@ function MapGeo(props) {
 				color: 'white',
 				width: 4,
 			}),
-			// fill: new Fill({
-			// 	color: 'rgba(200,20,20,0.4)',
-			// }),
 		});
 
 		//Overlay Feature
@@ -563,13 +566,12 @@ function MapGeo(props) {
 				  	return highlightFeature;
 				}
 			},
+			zIndex: 1
 		  });
 
 		const displayFeatureInfo = function (pixel) {
 
 			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-				// console.log(feature)
-				// console.log(feature.get('fid'))
 				return feature.get('fid');
 			});		
 
