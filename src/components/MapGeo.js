@@ -31,10 +31,9 @@ import {filterNumberAttributes} from '../utils/UtilFunctions'
 import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
 
-import { defaults as defaultInteractions } from 'ol/interaction';
-import Drag from './ol-utils/Drag'
-
 import MapiLayer from '../services/mapillary/MapiLayer'
+
+import {getLayer} from './ol-utils/Utils'
 
 //Fill
 const mapFill = new MapFill()
@@ -104,17 +103,6 @@ const iconStyle = new Style({
 	}),
 });
 iconFeature.setStyle(iconStyle)
-
-//Function get a Layer by ID property
-function getLayer(map, id) {
-	let found_layer = null
-	map.getLayers(map, id).forEach((layer) => {
-		if(layer.get('id') === id){
-			found_layer = layer
-		}
-	})
-	return found_layer
-}
 
 //Function get a Control by ID property
 function getControl(map, id) {
@@ -190,7 +178,6 @@ function MapGeo(props) {
 			zoom: 2,
 			maxZoom: max_zoom,
 		}),
-		layers: [MapiLayer()]
 	})
 	
 
@@ -323,12 +310,20 @@ function MapGeo(props) {
 		const map_layer_osm = getLayer(map, 'OSM')
 		const map_layer_thematic = getLayer(map, 'Thematic')
 		const map_layer_icon = getLayer(map, 'icon')
+		const map_layer_mapillary = getLayer(map, 'mapillary')
 
 		//Base Map option
 		if(basicOptions.includes('map') && map_layer_osm === null) {
 			map.addLayer(layer_osm)
 		} else if(!basicOptions.includes('map')) {
 			map.removeLayer(map_layer_osm)
+		}
+
+		//Mapillary option
+		if(basicOptions.includes('mapillary') && map_layer_mapillary === null) {
+			map.addLayer(MapiLayer(map, props.mapi_viewer))
+		} else if(!basicOptions.includes('mapillary')) {
+			map.removeLayer(map_layer_mapillary)
 		}
 
 		//Icon Layer

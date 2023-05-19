@@ -1,34 +1,80 @@
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import MVT from 'ol/format/MVT';
+import { Style, Stroke } from 'ol/style';
 
-// Calculation of tile urls for zoom levels 1, 3, 5, 7, 9, 11, 13, 15.
-const t_u_func = function tileUrlFunction(tileCoord) {
-
-  const zCoord = (tileCoord[0] >= 14) ? 14 : tileCoord[0]
-
-  return (
-    'https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=MLY|9006973349373388|91a175c294e87cd0e18a346877811833'
-  )
-    .replace('{z}', String(zCoord))
-    .replace('{x}', String(tileCoord[1]))
-    .replace('{y}', String(tileCoord[2]))
-    .replace(
-      '{a-d}',
-      'abcd'.substr(((tileCoord[1] << tileCoord[0]) + tileCoord[2]) % 4, 1)
-    );
-}
-
-export default function getMapillaryVT() {
-    const vector_tile = new VectorTileLayer({
+export default function getMapillaryVT(map, mapi_viewer) {
+    const mapillary_layer = new VectorTileLayer({
         source: new VectorTileSource({
           format: new MVT(),
-          tileUrlFunction: t_u_func,
+          url: 'https://tiles.mapillary.com/maps/vtp/mly1_public/2/{z}/{x}/{y}?access_token=MLY|9006973349373388|91a175c294e87cd0e18a346877811833',
+          maxZoom: 14
         }),
-        zIndex: 10,
+        zIndex: 4,
         declutter: true,
-        minZoom: 6
+        properties: {'id': 'mapillary'}
     })
 
-    return vector_tile
+    showSLIPreview(mapillary_layer, map, mapi_viewer)
+    
+    return mapillary_layer
 }
+
+
+function showSLIPreview(mapillary_layer, map, mapi_viewer) {
+
+  //Feature to highlight
+  let highlight;
+
+  //Remove evento
+  const tlEventKey = map.get('tlEventKeyHighlightMapillary')
+  if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+
+  //Highlight Style
+  const highlightFeature = new Style({
+    stroke: new Stroke({
+      color: 'white',
+      width: 4,
+    }),
+  });
+
+  //Overlay Feature
+  const featureOverlay = new VectorTileLayer({
+    source: mapillary_layer.getSource(),
+    map: map,
+    renderMode: 'vector',
+    style: function (feature) {
+      if (feature.getId() === highlight) {
+          return highlightFeature;
+      }
+    },
+    zIndex: 5
+  });
+
+  const displayFeatureInfo = function (pixel) {
+
+    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+      if(feature.getType() == 'Point' && feature.get('id') !== null) {
+			  mapi_viewer.moveTo(feature.get('id'))
+      }
+
+      return feature.getId();
+    });		
+
+    highlight = feature
+    //featureOverlay.changed()
+  }
+
+  const handlePointerMoveHighlight = function (evt) {
+    if (evt.dragging) {
+      return;
+    }
+    const pixel = map.getEventPixel(evt.originalEvent);
+    displayFeatureInfo(pixel);
+  }
+
+  const new_tlEventKey = map.on('click', handlePointerMoveHighlight);
+
+  map.set('tlEventKeyHighlightMapillary', new_tlEventKey)
+
+};
