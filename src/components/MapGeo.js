@@ -6,7 +6,6 @@ import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import VectorSource from 'ol/source/Vector';
 import { Fill, Style, Stroke, Icon } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
@@ -27,9 +26,6 @@ import MenuItem from '@mui/material/MenuItem';
 import LegendAtInfo from '../services/LegendAtInfo'
 
 import {filterNumberAttributes} from '../utils/UtilFunctions'
-
-import Feature from 'ol/Feature.js';
-import Point from 'ol/geom/Point.js';
 
 import MapiLayer from '../services/mapillary/MapiLayer'
 
@@ -87,22 +83,6 @@ const layer_osm = new TileLayer({
 	zIndex: 0
 })
 layer_osm.set('id', 'OSM')
-
-//Icon/Marker
-const iconFeature = new Feature({
-	geometry: new Point([0, 0]),
-	id: 'icon'
-});
-
-const iconStyle = new Style({
-	image: new Icon({
-		anchor: [0.5, 46],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'pixels',
-		src: 'icon.png',
-	}),
-});
-iconFeature.setStyle(iconStyle)
 
 //Function get a Control by ID property
 function getControl(map, id) {
@@ -324,19 +304,6 @@ function MapGeo(props) {
 			map.addLayer(MapiLayer(map, props.mapi_viewer))
 		} else if(!basicOptions.includes('mapillary')) {
 			map.removeLayer(map_layer_mapillary)
-		}
-
-		//Icon Layer
-		if(map_layer_icon === null) {
-			const iconLayer = new VectorLayer({
-				style: function (feature) {
-			  		return feature.get('style');
-				},
-				source: new VectorSource({features: [iconFeature]}),
-				zIndex: 2
-			})
-			iconLayer.set('id', 'icon')
-			map.addLayer(iconLayer)
 		}
 
 		if (map_layer_thematic !== null) {
