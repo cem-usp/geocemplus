@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
-import {Tile as TileLayer} from 'ol/layer';
+import {Tile as TileLayer, Vector as VectorLayer}  from 'ol/layer';
 import Projection from 'ol/proj/Projection';
 import { Map, View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import { Fill, Style, Stroke } from 'ol/style';
+import { Fill, Style, Stroke, Icon } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
@@ -26,6 +26,10 @@ import MenuItem from '@mui/material/MenuItem';
 import LegendAtInfo from '../services/LegendAtInfo'
 
 import {filterNumberAttributes} from '../utils/UtilFunctions'
+
+import MapiLayer from '../services/mapillary/MapiLayer'
+
+import {getLayer} from './ol-utils/Utils'
 
 //Fill
 const mapFill = new MapFill()
@@ -75,21 +79,10 @@ const replacer = function (key, value) {
 //Base map layer (Open Street Map)
 const layer_osm = new TileLayer({
 	source: new OSM(),
-	maxZoom: max_zoom
+	maxZoom: max_zoom,
+	zIndex: 0
 })
 layer_osm.set('id', 'OSM')
-layer_osm.setZIndex(0)
-
-//Function get a Layer by ID property
-function getLayer(map, id) {
-	let found_layer = null
-	map.getLayers(map, id).forEach((layer) => {
-		if(layer.get('id') === id){
-			found_layer = layer
-		}
-	})
-	return found_layer
-}
 
 //Function get a Control by ID property
 function getControl(map, id) {
@@ -159,12 +152,14 @@ function MapGeo(props) {
 
 	//Initialize map
 	const initialMap = new Map({
+		// interactions: defaultInteractions().extend([new Drag()]),
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
 			maxZoom: max_zoom,
 		}),
 	})
+	
 
 	//Title control
 	const controlTitle = `
@@ -199,7 +194,7 @@ function MapGeo(props) {
 			setGeoJSON(props.geoJSON)
 
 			// Adds layer as Vector Tile
-			layer = new VectorTileLayer({properties: 'id', zIndex: 10})
+			layer = new VectorTileLayer({properties: 'id', zIndex: 1})
 
 			fetch(props.geoJSON)
 				.then(function (response) {
@@ -294,12 +289,21 @@ function MapGeo(props) {
 	useEffect(() => {
 		const map_layer_osm = getLayer(map, 'OSM')
 		const map_layer_thematic = getLayer(map, 'Thematic')
+		const map_layer_icon = getLayer(map, 'icon')
+		const map_layer_mapillary = getLayer(map, 'mapillary')
 
 		//Base Map option
 		if(basicOptions.includes('map') && map_layer_osm === null) {
 			map.addLayer(layer_osm)
 		} else if(!basicOptions.includes('map')) {
 			map.removeLayer(map_layer_osm)
+		}
+
+		//Mapillary option
+		if(basicOptions.includes('mapillary') && map_layer_mapillary === null) {
+			map.addLayer(MapiLayer(map, props.mapi_viewer))
+		} else if(!basicOptions.includes('mapillary')) {
+			map.removeLayer(map_layer_mapillary)
 		}
 
 		if (map_layer_thematic !== null) {
@@ -512,9 +516,6 @@ function MapGeo(props) {
 				color: 'white',
 				width: 4,
 			}),
-			// fill: new Fill({
-			// 	color: 'rgba(200,20,20,0.4)',
-			// }),
 		});
 
 		//Overlay Feature
@@ -527,13 +528,12 @@ function MapGeo(props) {
 				  	return highlightFeature;
 				}
 			},
+			zIndex: 1
 		  });
 
 		const displayFeatureInfo = function (pixel) {
 
 			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-				// console.log(feature)
-				// console.log(feature.get('fid'))
 				return feature.get('fid');
 			});		
 

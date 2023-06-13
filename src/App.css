@@ -64,3 +64,8 @@ html, body, .map-container {
   margin-right: 8px;
   opacity: .7;
 }
+
+/* Mapillary */
+.mapillary-canvas {
+  position: relative !important; 
+}

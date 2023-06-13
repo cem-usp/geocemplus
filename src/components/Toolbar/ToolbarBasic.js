@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 //Button Icons
 import { styled } from '@mui/material/styles';
 import MapIcon from '@mui/icons-material/Map';
+import StreetviewIcon from '@mui/icons-material/Streetview';
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap';
 import HelpIcon from '@mui/icons-material/Help';
 
@@ -117,6 +118,9 @@ export default function ToolbarBasic(props) {
               >
                   <ToggleButton value="map" aria-label="map">
                       <MapIcon />
+                  </ToggleButton>
+                  <ToggleButton value="mapillary" aria-label="mapillary">
+                      <StreetviewIcon />
                   </ToggleButton>
                   <ToggleButton value="bounds" aria-label="bounds">
                       <ZoomInMapIcon />

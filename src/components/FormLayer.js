@@ -3,8 +3,12 @@ import {api_geocem, axios} from "../services/api";
 import Form from 'react-bootstrap/Form';
 import {Button, Row, Col, Card} from 'react-bootstrap/';
 import Map from './MapGeo'
+import MapillaryViewer from './Mapillary'
 
 function LayerForm() {
+
+    //Image ID of Mapillary Viewer
+    const [mapillary_viewer, setMViewer] = useState(() => []);
 
     //Loads categories
     const [categories, setCategories] = useState([])
@@ -86,7 +90,8 @@ function LayerForm() {
             });
     }
 
-    return (<div className="pb-5">
+    return (
+            <div className="pb-5">
                 <Card>
                     <Card.Header>Formulário da Camada</Card.Header>
                     <Card.Body>
@@ -103,7 +108,13 @@ function LayerForm() {
                 <Card>
                     <Card.Header>Visualizar</Card.Header>
                     <Card.Body>
-                        <Map geoJSON={layerGeoJSON} attributes={attributes}/>
+                        <Map geoJSON={layerGeoJSON} attributes={attributes} mapi_viewer={mapillary_viewer}/>
+                    </Card.Body>
+                </Card>
+                <Card>
+                    <Card.Header>Mapillary</Card.Header>
+                    <Card.Body>
+                        <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
                     </Card.Body>
                 </Card>
             </div>
@@ -157,6 +168,5 @@ function SelectLayer(props) {
          </Form.Group>
      );
 }
-
 
 export default LayerForm
