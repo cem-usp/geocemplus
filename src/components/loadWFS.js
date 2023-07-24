@@ -25,7 +25,8 @@ const geoservices = [
     },
     {
         name: 'GeoSampa',
-        wfs_url: 'http://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs'
+        wfs_url: 'http://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs',
+        catolog_layers_uri: '/?service=wfs&version=2.0.0&request=GetCapabilities'
     }
 ]
 
@@ -52,33 +53,37 @@ export default function LayerList(props) {
     const [open, setOpen] = useState([]);
     const [openCat, setOpenCat] = useState([]);
 
-    const [layers_lists, setLists] = useState('')
-    
     const [geocem_cats, setGeoCEMCats] = useState([])
     const [geocem_cats_list, setGeoCEMCatsList] = useState('')
+
+    const [selectedLayer, setSelectedLayer] = React.useState(0);
+
+    const handleLayerClick = (event, index) => {
+        console.log('layer selecionado',index)
+        setSelectedLayer(index);
+    };
 
     function handleClick(id) {
         let newopen = []
         newopen[id] = !open[id]
-        console.log(newopen)
         setOpen(newopen)
     }
 
     function handleClickCat(id) {
         let newopen = []
         newopen[id] = !openCat[id]
-        console.log(newopen)
         setOpenCat(newopen)
     }
 
 
     useEffect(() => {
         loadGeoCEMCategories()
+        // loadGeoSampaLayers()
     }, [])
 
     useEffect(() => {
         createCatList()
-    }, [geocem_cats, openCat])
+    }, [geocem_cats, openCat, selectedLayer])
 
     function loadGeoCEMCategories() {
         const request = axios.create({
@@ -112,11 +117,32 @@ export default function LayerList(props) {
             })
     }
 
+    function loadGeoSampaLayers() {       
+        const request = axios.create({
+            baseURL: geoservices[1].wfs_url,
+          });
+
+            request.get(geoservices[1].wfs_url, {
+            params: {
+                service: 'wfs',
+                version: '2.0.0',
+                request: 'GetCapabilities'
+            }
+        })
+        .then((response) => {
+            console.log(response)
+        })
+        
+    }
+
     function createCatList() {
        const geocem_list = geocem_cats.map((category) =>
        { 
             const layers = category.layers.map(layer => 
-                <ListItemButton sx={{ pl: 8 }}>
+                <ListItemButton sx={{ pl: 8 }}
+                    selected={selectedLayer === layer.id}
+                    onClick={(event) => handleLayerClick(event, layer.id)}
+                >
                     <ListItemIcon>
                         <LayersIcon />
                     </ListItemIcon>
@@ -144,31 +170,8 @@ export default function LayerList(props) {
         });
 
         setGeoCEMCatsList(geocem_list)
-    }
-
-    const geoservices_list =       
-        
-            <div key={'gs_'+geoservices[0].name}>
-
-                <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name)}>
-                    <ListItemIcon>
-                        <PublicIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={geoservices[0].name} />
-                    {open['gs_'+geoservices[0].name] ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-
-                <Collapse in={open['gs_'+geoservices[0].name]} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        {geocem_cats_list}
-                    </List>
-                </Collapse>
-
-            </div>
-
-        
+    }       
     
-
     return (
         <List
             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
@@ -181,7 +184,36 @@ export default function LayerList(props) {
             }
         >
 
-            {geoservices_list}
+            {/* Lista de Camadas do GeoCEM */}
+            <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name)}>
+                <ListItemIcon>
+                    <PublicIcon />
+                </ListItemIcon>
+                <ListItemText primary={geoservices[0].name} />
+                {open['gs_'+geoservices[0].name] ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+
+            <Collapse in={open['gs_'+geoservices[0].name]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    {geocem_cats_list}
+                </List>
+            </Collapse>
+
+            {/* Lista de Camadas do GeoSampa */}
+            {/* SUSPENSO DEVIDO À CORS */}
+            {/* <ListItemButton onClick={() => handleClick('gs_'+geoservices[1].name)}>
+                <ListItemIcon>
+                    <PublicIcon />
+                </ListItemIcon>
+                <ListItemText primary={geoservices[1].name} />
+                {open['gs_'+geoservices[1].name] ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+
+            <Collapse in={open['gs_'+geoservices[1].name]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                    {}
+                </List>
+            </Collapse> */}
 
         </List>
       )
