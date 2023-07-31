@@ -50,7 +50,7 @@ function SelectPalette(props) {
 
 export default function ToolbarFill(props) {
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1, mt: 15, position: 'fixed' }}>
             <Paper
               elevation={0}
               sx={{

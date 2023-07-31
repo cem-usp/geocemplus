@@ -12,7 +12,7 @@ import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
 
-import ToolbarMain from './Toolbar/ToolbarMain.js'
+import ToolbarFill from './Toolbar/ToolbarFill'
 
 import 'ol/ol.css';
 
@@ -556,9 +556,9 @@ function MapGeo(props) {
 	};
 
 	return (
-		<div>
-			<ToolbarMain 
-				// ToolbarBasic
+		<div name='map_geral'>
+			<div ref={mapElement} className="map-container position-fixed" name='map_cart'/>
+			{/* <ToolbarBasic 
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
@@ -569,7 +569,8 @@ function MapGeo(props) {
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
 				map={map}
-				// ToolbarFill
+			/> */}
+			<ToolbarFill 
 				n_classes={n_classes}
 				handleNClassesChange={handleNClassesChange}
 				color_scheme={color_scheme}
@@ -583,10 +584,7 @@ function MapGeo(props) {
 				handleATTChange={handleAttributesTTChange}
 				attributeTitle={attributeTitle}
 				onAttributeTitleChange={handleAttributeTitleChange}
-
 			/>
-			<div ref={mapElement} className="map-container">
-			</div>
 		</div>
 	);
 }

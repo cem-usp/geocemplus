@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@mui/system';
 
 //Toolbars
 import ToolbarBasic from './ToolbarBasic'
@@ -7,7 +8,7 @@ import ToolbarFill from './ToolbarFill'
 export default function Toolbar(props) {
 
     return (
-        <div>
+        <Box sx={{ mt: 10, position:'fixed' }}>
             <ToolbarBasic 
                 basicOptions={props.basicOptions}
                 onBasicOptionsChange={props.onBasicOptionsChange}
@@ -38,6 +39,6 @@ export default function Toolbar(props) {
                 onAttributeTitleChange={props.onAttributeTitleChange}
                 />
             <div className='my-2'></div>
-        </div>
+        </Box>
     )
 }

@@ -165,7 +165,7 @@ export default function LayerList(props) {
     
     return (
         <List
-            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', zIndex:  10}}
             component="nav"
             aria-labelledby="nested-list-subheader"
             subheader={
@@ -173,6 +173,7 @@ export default function LayerList(props) {
                 Bases de dados Cartográficas
                 </ListSubheader>
             }
+            className="position-fixed"
         >
 
             {/* Lista de Camadas do GeoCEM */}
