@@ -40,14 +40,6 @@ const wfs_requests = {
     }
 }
 
-function requestWFS(wsf_server, request) {
-    const api_geocem = axios.create({
-        baseURL: wsf_server,
-        params: {...wfs_requests.base, ...wfs_requests.request},
-    });
-}
-
-
 export default function LayerList(props) {
     
     const [open, setOpen] = useState([]);
@@ -59,7 +51,6 @@ export default function LayerList(props) {
     const [selectedLayer, setSelectedLayer] = React.useState(0);
 
     const handleLayerClick = (event, index) => {
-        console.log('layer selecionado',index)
         setSelectedLayer(index);
     };
 
