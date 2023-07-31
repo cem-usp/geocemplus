@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import {Button, Row, Col, Card} from 'react-bootstrap/';
 import Map from './MapGeo'
 import MapillaryViewer from './Mapillary'
+import LayerList from './loadWFS' 
 
 function LayerForm() {
 
@@ -92,6 +93,12 @@ function LayerForm() {
 
     return (
             <div className="pb-5">
+                <Card>
+                    <Card.Header>Listar Camadas</Card.Header>
+                    <Card.Body>
+                        <LayerList />
+                    </Card.Body>
+                </Card>
                 <Card>
                     <Card.Header>Formulário da Camada</Card.Header>
                     <Card.Body>
