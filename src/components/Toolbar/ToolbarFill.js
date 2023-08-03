@@ -50,7 +50,7 @@ function SelectPalette(props) {
 
 export default function ToolbarFill(props) {
     return (
-        <Box sx={{ flexGrow: 1, mt: 15, position: 'fixed' }}>
+        <Box sx={{ flexGrow: 1, mt: 25, position: 'fixed' }}>
             <Paper
               elevation={0}
               sx={{
@@ -131,7 +131,7 @@ export default function ToolbarFill(props) {
 
                 />
 
-                {/* Legenda Flutuante */}
+                {/* Legenda Flutuante - Atributo Título */}
                 <FormControl variant="filled" sx={{ minWidth: 150 }}>
                     <InputLabel id="select-title-var-filled-label">Atributo Título</InputLabel>
                     <Select
@@ -144,10 +144,11 @@ export default function ToolbarFill(props) {
                         <MenuItem value="">
                             <em>Nenhum</em>
                         </MenuItem>
-                        {props.attrNames}
+                        {props.attrList}
                     </Select>
                 </FormControl>
-                {/* Atributos */}
+
+                {/* Legenda Flutuante - Atributos */}
                 <SelectAttributes
                     attributes={props.attributes}
                     attributesTT={props.attributesTT}

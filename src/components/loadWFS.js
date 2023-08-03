@@ -40,6 +40,8 @@ const wfs_requests = {
     }
 }
 
+
+
 export default function LayerList(props) {
     
     const [open, setOpen] = useState([]);
@@ -50,31 +52,77 @@ export default function LayerList(props) {
 
     const [selectedLayer, setSelectedLayer] = React.useState(0);
 
+    //Handle click on layer
     const handleLayerClick = (event, index) => {
         setSelectedLayer(index);
     };
 
+    //Handle click on geoservice
     function handleClick(id) {
         let newopen = []
         newopen[id] = !open[id]
         setOpen(newopen)
     }
 
+    //Handle click on layer
     function handleClickCat(id) {
         let newopen = []
         newopen[id] = !openCat[id]
         setOpenCat(newopen)
     }
 
-
+    //Load GeoCEM Categories
     useEffect(() => {
         loadGeoCEMCategories()
         // loadGeoSampaLayers()
     }, [])
 
+    //Recreate category list after a change
     useEffect(() => {
         createCatList()
     }, [geocem_cats, openCat, selectedLayer])
+
+    //Load layer
+    useEffect(() => {
+        if(selectedLayer !== 0) {
+            const [geoservice, layer_id] = selectedLayer.split('_')
+
+            if(geoservice === 'geocem') {
+                const request = axios.create({
+                    baseURL: geoservices[0].baseurl
+                });  
+        
+                request
+                .get("/layers/"+ layer_id)
+                .then((response) => {
+                    const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
+                    const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
+                    props.changeLayerURL(https_json)
+                    setGeoCEMLayerAttributes(layer_id)
+                })
+                .catch((err) => {
+                    console.error("ops! ocorreu um erro" + err);
+                });
+            }
+
+        }
+    }, [selectedLayer])
+
+    function setGeoCEMLayerAttributes(layer_id) {
+        
+        const request = axios.create({
+            baseURL: geoservices[0].baseurl
+        });  
+    
+        request
+            .get("/v2/layers/" + layer_id + "/attribute_set")
+            .then((response) => {
+                props.changeAttributes(response.data.attributes)
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
+    }
 
     function loadGeoCEMCategories() {
         const request = axios.create({
@@ -108,6 +156,7 @@ export default function LayerList(props) {
             })
     }
 
+    //Implementação Suspensa
     function loadGeoSampaLayers() {       
         const request = axios.create({
             baseURL: geoservices[1].wfs_url,
@@ -131,8 +180,9 @@ export default function LayerList(props) {
        { 
             const layers = category.layers.map(layer => 
                 <ListItemButton sx={{ pl: 8 }}
-                    selected={selectedLayer === layer.id}
-                    onClick={(event) => handleLayerClick(event, layer.id)}
+                    selected={selectedLayer === 'geocem_'+layer.id}
+                    onClick={(event) => handleLayerClick(event, 'geocem_'+layer.id)}
+                    key={'geocem_'+layer.id}
                 >
                     <ListItemIcon>
                         <LayersIcon />
@@ -141,7 +191,7 @@ export default function LayerList(props) {
                 </ListItemButton>)
 
             return (
-                <div>
+                <div key={category.id}>
                     <ListItemButton sx={{ pl: 4 }}  onClick={() => handleClickCat('cat_'+category.id)}>
                         <ListItemIcon>
                             <AddIcon />

@@ -13,6 +13,7 @@ import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
 
 import ToolbarFill from './Toolbar/ToolbarFill'
+import ToolbarBasic from './Toolbar/ToolbarBasic'
 
 import 'ol/ol.css';
 
@@ -99,7 +100,7 @@ function MapGeo(props) {
 	//Toolbar Basic Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
-	const [attribute, setAttribute] = useState(() => '')
+	const [attribute, setAttribute] = useState(null)
 
 	const handleBasicOptionsChange = (event, newOptions) => {
 		setBasicOptions(newOptions);
@@ -144,6 +145,7 @@ function MapGeo(props) {
     const [attributeTitle, setAttributeTitle] = useState('')
 
     const handleAttributeTitleChange = (e) => {
+		console.log('title', e.target.value)
         setAttributeTitle(e.target.value)
     }
 
@@ -185,18 +187,18 @@ function MapGeo(props) {
 		var layer = null
 
 		//Updates GeoJSON
-		if (props.geoJSON !== null && geoJSON !== props.geoJSON) {
+		if (props.layer_url !== null && geoJSON !== props.layer_url) {
 			//Clear fields of attibute
-			setAttribute('')
+			setAttribute(null)
 			setAttributesTT([])
 			setAttributeTitle('')
 
-			setGeoJSON(props.geoJSON)
+			setGeoJSON(props.layer_url)
 
 			// Adds layer as Vector Tile
 			layer = new VectorTileLayer({properties: 'id', zIndex: 1})
 
-			fetch(props.geoJSON)
+			fetch(props.layer_url)
 				.then(function (response) {
 					return response.json();
 				})
@@ -283,7 +285,7 @@ function MapGeo(props) {
 
 				})
 		}
-	}, [props.geoJSON])
+	}, [props.layer_url])
 
 	//Handle Basic Options change
 	useEffect(() => {
@@ -337,20 +339,19 @@ function MapGeo(props) {
 	useEffect(() => {
 		const thematic_layer = getLayer(map, 'Thematic')
 	
-		if(thematic_layer !== null && attribute !== '') {
+		if(thematic_layer !== null && attribute !== null) {
 			const thematic_source = thematic_layer.getSource()
 			const features = thematic_layer.get('features')
 			let attr_values = []
-			
 			features.map((feature) => {
-				attr_values.push(feature.get(attribute))
+				attr_values.push(feature.get(attribute.attribute))
 			})
 
 			mapFill.updateParameters(attr_values, null, color_scheme, palette, n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
-				const value = feature.get(attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : 'rgba(128, 128, 128, 0.7)';
+				const value = feature.get(attribute.attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -360,7 +361,7 @@ function MapGeo(props) {
 			})
 
 			updateLegend()
-		} else if (attribute === '' && thematic_layer !== null) { //Reset thematic map
+		} else if (attribute === null && thematic_layer !== null) { //Reset thematic map
 			thematic_layer.setStyle()
 			removeLegend()
 		}
@@ -372,11 +373,12 @@ function MapGeo(props) {
 		const thematic_layer = getLayer(map, 'Thematic')
 		
 		if(thematic_layer !== null && attribute !== '') {
+
 			mapFill.updateParameters(null, method, color_scheme, palette, n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
-				const value = feature.get(attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute)) : 'rgba(128, 128, 128, 0.7)';
+				const value = feature.get(attribute.attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -395,10 +397,10 @@ function MapGeo(props) {
 	}, [attributesTT, attributeTitle])
 
 	//Update Attribute list options when layer changes
-    const [attrNames, setAtrNames] = useState(null)
+    const [attrList, setAttrList] = useState(null)
     const [filterAttrNames, setFilterAttrNames] = useState(null)
     useEffect(() => {
-		const names = (props.attributes) ? props.attributes.map((attribute) =>
+		const list = (props.attributes) ? props.attributes.map((attribute) =>
 						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
 						) : null;
 		
@@ -406,8 +408,9 @@ function MapGeo(props) {
 		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
 									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
 									) : null;
-      setAtrNames(names)
-      setFilterAttrNames(filtered_names)
+		
+		setAttrList(list)
+      	setFilterAttrNames(filtered_names)
     },[props.attributes])
 	
 
@@ -558,18 +561,18 @@ function MapGeo(props) {
 	return (
 		<div name='map_geral'>
 			<div ref={mapElement} className="map-container position-fixed" name='map_cart'/>
-			{/* <ToolbarBasic 
+			<ToolbarBasic 
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
 				onTituloChange={handleTituloChange}
 				attributes={props.attributes}
-				attrNames={attrNames}
+				attrList={attrList}
 				filterAttrNames={filterAttrNames}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
 				map={map}
-			/> */}
+			/>
 			<ToolbarFill 
 				n_classes={n_classes}
 				handleNClassesChange={handleNClassesChange}
@@ -584,7 +587,9 @@ function MapGeo(props) {
 				handleATTChange={handleAttributesTTChange}
 				attributeTitle={attributeTitle}
 				onAttributeTitleChange={handleAttributeTitleChange}
-			/>
+				attrList={attrList}
+				attributes={props.attributes}
+				/>
 		</div>
 	);
 }

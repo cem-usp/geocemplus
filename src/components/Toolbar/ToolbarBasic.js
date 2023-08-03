@@ -98,9 +98,9 @@ export default function ToolbarBasic(props) {
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
     };
-  
+    
     return (
-      <div>
+      <Box sx={{ mt: 15, position: 'fixed' }}>
           <Paper
               elevation={0}
               sx={{
@@ -138,12 +138,13 @@ export default function ToolbarBasic(props) {
                   labelId="select-var-filled-label"
                   id="var-select-filled"
                   value={props.attribute}
+                  renderValue={(selected) => selected.attribute_label}
                   onChange={props.onAttributeChange}
                 >
                   <MenuItem value="">
                     <em>Nenhum</em>
                   </MenuItem>
-                  {props.attrNames}
+                  {props.attrList}
                 </Select>
               </FormControl>
               
@@ -207,7 +208,7 @@ export default function ToolbarBasic(props) {
               </Typography>
             </Box>
           </Modal>
-      </div>
+      </Box>
       
     );
 }
