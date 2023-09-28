@@ -3,7 +3,6 @@ import './App.css';
 
 import React, { useEffect, useState, useRef } from "react";
 import MainPane from "./components/MainPane";
-import { Container } from 'react-bootstrap';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ptBR } from '@mui/material/locale';
 

@@ -561,7 +561,10 @@ function MapGeo(props) {
 	return (
 		<div name='map_geral'>
 			<div ref={mapElement} className="map-container position-fixed" name='map_cart'/>
+
+
 			<ToolbarBasic 
+				mt="188px"
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
@@ -574,6 +577,7 @@ function MapGeo(props) {
 				map={map}
 			/>
 			<ToolbarFill 
+				mt="254.8px"
 				n_classes={n_classes}
 				handleNClassesChange={handleNClassesChange}
 				color_scheme={color_scheme}

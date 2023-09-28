@@ -1,4 +1,5 @@
 import Map from './MapGeo'
+import Header from "./Header";
 import LayerList from './loadWFS' 
 import { useState } from 'react';
 
@@ -8,6 +9,7 @@ function MainPane() {
 
     return (
         <div>
+            <Header />
             <LayerList 
                 layer_url={layer_url} changeLayerURL={setLayerURL}
                 changeAttributes={setAttributes}

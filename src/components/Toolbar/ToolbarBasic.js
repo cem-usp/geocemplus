@@ -100,7 +100,7 @@ export default function ToolbarBasic(props) {
     };
     
     return (
-      <Box sx={{ mt: 15, position: 'fixed' }}>
+      <Box sx={{ mt: props.mt, position: 'fixed' }}>
           <Paper
               elevation={0}
               sx={{

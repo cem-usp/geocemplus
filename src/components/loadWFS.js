@@ -215,12 +215,13 @@ export default function LayerList(props) {
     
     return (
         <List
-            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', zIndex:  10}}
+            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', zIndex:  10,
+                    mt: '74px', ml: '10px'}}
             component="nav"
             aria-labelledby="nested-list-subheader"
             subheader={
                 <ListSubheader component="div" id="nested-list-subheader">
-                Bases de dados Cartográficas
+                Camadas
                 </ListSubheader>
             }
             className="position-fixed"
