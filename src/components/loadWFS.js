@@ -13,6 +13,9 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import Collapse from '@mui/material/Collapse';
 
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+
 import React, { useEffect, useState } from 'react';
 
 const geoservices = [
@@ -40,11 +43,22 @@ const wfs_requests = {
     }
 }
 
-
+// returns a new object with the values at each key mapped using mapFn(value)
+//Credits to user Amberlamps on stackoverflow
+const objectMap = (obj, fn) =>
+  Object.fromEntries(
+    Object.entries(obj).map(
+      ([k, v], i) => [k, fn(v, k, i)]
+    )
+  )
 
 export default function LayerList(props) {
     
-    const [open, setOpen] = useState([]);
+    const initialMenu = {
+        'menu_camadas': {id: 'menu_camadas', nivel: 0, open: false},
+        'gs_GeoCEM': {id: 'gs_GeoCEM', nivel: 1, open: false}
+    }
+    const [open, setOpen] = useState(initialMenu);
     const [openCat, setOpenCat] = useState([]);
 
     const [geocem_cats, setGeoCEMCats] = useState([])
@@ -56,12 +70,17 @@ export default function LayerList(props) {
     const handleLayerClick = (event, index) => {
         setSelectedLayer(index);
     };
-
+    
     //Handle click on geoservice
-    function handleClick(id) {
-        let newopen = []
-        newopen[id] = !open[id]
-        setOpen(newopen)
+    function handleClick(id, nivel = 0) {
+        const newOpen = objectMap(open, menu => {
+            if(menu.id === id)
+                menu.open = !menu.open
+            else if(menu.id !== id && menu.nivel === nivel)
+                menu.open = false
+            return menu
+        })
+        setOpen(newOpen)
     }
 
     //Handle click on layer
@@ -211,53 +230,67 @@ export default function LayerList(props) {
         });
 
         setGeoCEMCatsList(geocem_list)
-    }       
+    }
     
     return (
-        <List
-            sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', zIndex:  10,
-                    mt: '74px', ml: '10px'}}
-            component="nav"
-            aria-labelledby="nested-list-subheader"
-            subheader={
-                <ListSubheader component="div" id="nested-list-subheader">
-                Camadas
-                </ListSubheader>
-            }
-            className="position-fixed"
-        >
+        <Box sx={{ display: 'flex', width: '100%', maxWidth: 360, zIndex:  10,
+                     mt: '74px', ml: '10px'}}
+             className="position-fixed">
 
-            {/* Lista de Camadas do GeoCEM */}
-            <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name)}>
-                <ListItemIcon>
-                    <PublicIcon />
-                </ListItemIcon>
-                <ListItemText primary={geoservices[0].name} />
-                {open['gs_'+geoservices[0].name] ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
+            <Paper elevation={0} sx={{  }} >
+                <List
+                    sx={{}}
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                >
+                    {/* Menu de Camadas */}
+                    <ListItemButton onClick={() => handleClick('menu_camadas', 0)} 
+                    sx = {{bgcolor: '#042E6F', color: 'white'}}>
+                        <ListItemIcon>
+                            <PublicIcon sx={{ color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary='Camadas' />
+                        {open['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={open['menu_camadas'].open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
 
-            <Collapse in={open['gs_'+geoservices[0].name]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    {geocem_cats_list}
+                            {/* Lista de Camadas do GeoCEM */}
+                            <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name, 1)} 
+                            sx = {{}}>
+                                <ListItemIcon>
+                                    <PublicIcon sx={{ color: 'white' }} />
+                                </ListItemIcon>
+                                <ListItemText primary={geoservices[0].name} />
+                                {open['gs_'+geoservices[0].name].open ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open['gs_'+geoservices[0].name].open} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    {geocem_cats_list}
+                                </List>
+                            </Collapse>
+
+                        </List>
+                    </Collapse>
+
+                    {/* Lista de Camadas do GeoSampa */}
+                    {/* SUSPENSO DEVIDO À CORS */}
+                    {/* <ListItemButton onClick={() => handleClick('gs_'+geoservices[1].name)}>
+                        <ListItemIcon>
+                            <PublicIcon />
+                        </ListItemIcon>
+                        <ListItemText primary={geoservices[1].name} />
+                        {open['gs_'+geoservices[1].name] ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+
+                    <Collapse in={open['gs_'+geoservices[1].name]} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            {}
+                        </List>
+                    </Collapse> */}
+
                 </List>
-            </Collapse>
-
-            {/* Lista de Camadas do GeoSampa */}
-            {/* SUSPENSO DEVIDO À CORS */}
-            {/* <ListItemButton onClick={() => handleClick('gs_'+geoservices[1].name)}>
-                <ListItemIcon>
-                    <PublicIcon />
-                </ListItemIcon>
-                <ListItemText primary={geoservices[1].name} />
-                {open['gs_'+geoservices[1].name] ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-
-            <Collapse in={open['gs_'+geoservices[1].name]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    {}
-                </List>
-            </Collapse> */}
-
-        </List>
+            </Paper>
+        </Box>
       )
 }
