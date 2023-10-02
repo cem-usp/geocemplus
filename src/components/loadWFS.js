@@ -237,7 +237,7 @@ export default function LayerList(props) {
                      mt: '74px', ml: '10px'}}
              className="position-fixed">
 
-            <Paper elevation={0} sx={{  }} >
+            <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '85vh', overflow: 'auto' }} >
                 <List
                     sx={{}}
                     component="nav"
@@ -245,27 +245,23 @@ export default function LayerList(props) {
                 >
                     {/* Menu de Camadas */}
                     <ListItemButton onClick={() => handleClick('menu_camadas', 0)} 
-                    sx = {{bgcolor: '#042E6F', color: 'white'}}>
-                        <ListItemIcon>
-                            <PublicIcon sx={{ color: 'white' }} />
-                        </ListItemIcon>
+                    sx = {{ bgcolor: '#042E6F', color: 'white' }}>
                         <ListItemText primary='Camadas' />
                         {open['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                     <Collapse in={open['menu_camadas'].open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
+                        <List component="div" disablePadding sx = {{ bgcolor: 'white' }}>
 
                             {/* Lista de Camadas do GeoCEM */}
-                            <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name, 1)} 
-                            sx = {{}}>
+                            <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name, 1)}>
                                 <ListItemIcon>
-                                    <PublicIcon sx={{ color: 'white' }} />
+                                    <PublicIcon sx={{ color: '#042E6F' }} />
                                 </ListItemIcon>
                                 <ListItemText primary={geoservices[0].name} />
                                 {open['gs_'+geoservices[0].name].open ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                             <Collapse in={open['gs_'+geoservices[0].name].open} timeout="auto" unmountOnExit>
-                                <List component="div" disablePadding>
+                                <List component="div" sx = {{ bgcolor: 'white' }} disablePadding>
                                     {geocem_cats_list}
                                 </List>
                             </Collapse>
