@@ -1,6 +1,7 @@
 import Map from './MapGeo'
 import Header from "./Header";
 import LayerList from './loadWFS' 
+import Fillbar from './Fillbar' 
 import { useState } from 'react';
 
 function MainPane() {
@@ -14,6 +15,7 @@ function MainPane() {
                 layer_url={layer_url} changeLayerURL={setLayerURL}
                 changeAttributes={setAttributes}
             />
+            <Fillbar attributes={attributes}/>
             <Map layer_url={layer_url} attributes={attributes}/>
         </div>
     
