@@ -4,9 +4,17 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import MenuItem from '@mui/material/MenuItem';
+
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
 
 export default function Fillbar(props) {
     const [attrList, setAttrList] = useState(null)
@@ -25,24 +33,23 @@ export default function Fillbar(props) {
       	setFilterAttrNames(filtered_names)
     },[props.attributes])
 
+    const [open, setOpen] = React.useState(false);
+    const handleClickOpen = () => {
+        setOpen(!open);
+      };
+	// const [attribute, setAttribute] = useState("")
+    // console.log(attribute)
+
     return (
-        <Box sx={{ display: 'flex', width: '100%', maxWidth: 360, zIndex:  10,
-                         mt: '200px', ml: '10px'}}
+        <Box sx={{ display: 'flex', width: '100%', zIndex:  10,
+                         mt: '30vh', ml: '10px'}}
                  className="position-fixed">
                 <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '85vh', overflow: 'auto' }} >
-                    <InputLabel sx={{color: 'white'}} id="select-var-filled-label">Atributo de Preenchimento</InputLabel>
-                    <Select
-                        labelId="select-var-filled-label"
-                        id="var-select-filled"
-                        value={props.attribute}
-                        renderValue={(selected) => selected.attribute_label}
-                        onChange={props.onAttributeChange}
+                    <List
+                        sx={{width: '18vw', bgcolor: 'white'}}
+                        component="nav"
                     >
-                        <MenuItem value="">
-                            <em>Nenhum</em>
-                        </MenuItem>
-                        {attrList}
-                    </Select>
+                        </List>
                 </Paper>
         </Box>
     )

@@ -1,11 +1,10 @@
 import {axios} from "../services/api";
 
-import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import PublicIcon from '@mui/icons-material/Public';
 import ListItemText from '@mui/material/ListItemText';
+import PublicIcon from '@mui/icons-material/Public';
 import LayersIcon from '@mui/icons-material/Layers';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -234,12 +233,12 @@ export default function LayerList(props) {
     
     return (
         <Box sx={{ display: 'flex', width: '100%', maxWidth: 360, zIndex:  10,
-                     mt: '74px', ml: '10px'}}
+                     mt: '15vh', ml: '10px'}}
              className="position-fixed">
 
             <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '85vh', overflow: 'auto' }} >
                 <List
-                    sx={{}}
+                    sx={{width: '18vw'}}
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                 >
