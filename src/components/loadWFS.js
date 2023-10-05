@@ -249,7 +249,7 @@ export default function LayerList(props) {
                         {open['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                     <Collapse in={open['menu_camadas'].open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding sx = {{ bgcolor: 'white' }}>
+                        <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
 
                             {/* Lista de Camadas do GeoCEM */}
                             <ListItemButton onClick={() => handleClick('gs_'+geoservices[0].name, 1)}>
