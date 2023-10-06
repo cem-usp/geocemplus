@@ -9,7 +9,6 @@ import MenuItem from '@mui/material/MenuItem';
 
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import ExpandLess from '@mui/icons-material/ExpandLess';
@@ -20,6 +19,10 @@ import Container from '@mui/material/Container';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Slider from '@mui/material/Slider';
+
+import SelectPalette from './subcomponents/SelectPalette' 
+
+import { styled } from '@mui/material/styles';
 
 export default function Fillbar(props) {
     const [attrList, setAttrList] = useState(null)
@@ -43,15 +46,20 @@ export default function Fillbar(props) {
         setOpen(!open);
       };
 
-	const [fill_attribute, setFAttribute] = useState('')
+    // Customized Button Group for Menu
+    const MenuToogleBtn = styled(ToggleButton)({
+        '&.MuiToggleButton-root': {
+            fontSize: '0.6125rem'
+        }
+    })
 
     return (
-        <Box sx={{ display: 'flex', width: '100%', zIndex:  10,
-                         mt: '30vh', ml: '10px'}}
+        <Box sx={{ display: 'flex', zIndex:  10,
+                         mt: '27vh', ml: '10px'}}
                  className="position-fixed">
-                <Paper elevation={0} sx={{ bgcolor: '#042E6F', color: 'white', maxHeight: '85vh', overflow: 'auto' }} >
+                <Paper elevation={0} sx={{ bgcolor: '#042E6F', color: 'white' }} >
                     <List
-                        sx={{width: '18vw'}}
+                        sx={{width: '20vw'}}
                         component="nav"
                     >
                         {/* Menu de Preenchimento */}
@@ -60,15 +68,15 @@ export default function Fillbar(props) {
                             {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
                         <Collapse in={open} timeout="auto" unmountOnExit>
-                            <Box sx={{ bgcolor: 'white' }}>
+                            <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Atributo de Preenchimento
                                 </InputLabel>
                                 <Select
                                     sx={{ mb: 1 }}
                                     displayEmpty
-                                    value={fill_attribute}
-                                    onChange={props.onAttributeChange}
+                                    value={props.fill_attribute}
+                                    onChange={props.changeFAttribute}
                                     renderValue={(selected) => {
                                         if(selected === '') {
                                             return <em>Selecione um atributo</em>
@@ -90,11 +98,11 @@ export default function Fillbar(props) {
                                 <Container maxWidth="sm">
                                     <ToggleButtonGroup sx={{mb: 2}}
                                         exclusive
-                                        onChange={props.handleMethodChange}
+                                        onChange={props.changeMethod}
                                         value={props.method}
                                     >
-                                        <ToggleButton size='small' value="quantile">Quantil</ToggleButton>
-                                        <ToggleButton size='small' value="jenks">Quebras Naturais (Jenks)</ToggleButton>
+                                        <MenuToogleBtn size='small' value="quantile">Quantil</MenuToogleBtn>
+                                        <MenuToogleBtn size='small' value="jenks">Quebras Naturais (Jenks)</MenuToogleBtn>
                                     </ToggleButtonGroup>
                                 </Container>
 
@@ -112,7 +120,7 @@ export default function Fillbar(props) {
                                         min={5}
                                         max={7}
                                         value={props.n_classes}
-                                        onChange={props.handleNClassesChange}
+                                        onChange={props.changeNClasses}
                                     />
                                 </Container>
 
@@ -124,14 +132,30 @@ export default function Fillbar(props) {
                                     <ToggleButtonGroup sx={{mb: 2}} 
                                         size='small'
                                         exclusive
-                                        onChange={props.handleColorSchemeChange}
+                                        onChange={props.changeCScheme}
                                         value={props.color_scheme}
                                     >
-                                        <ToggleButton value="sequential">Sequencial</ToggleButton>
-                                        <ToggleButton value="diverging">Divergente</ToggleButton>
-                                        <ToggleButton value="qualitative">Qualitativo</ToggleButton>
+                                        <MenuToogleBtn value="sequential">Sequencial</MenuToogleBtn>
+                                        <MenuToogleBtn value="diverging">Divergente</MenuToogleBtn>
+                                        <MenuToogleBtn value="qualitative">Qualitativo</MenuToogleBtn>
                                     </ToggleButtonGroup>
                                 </Container>
+
+                                {/* Paleta de Cores */}
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
+                                    Paleta de cores
+                                </InputLabel>
+                                <Container maxWidth="sm" sx={{pb: 3}}>
+                                    <SelectPalette 
+                                        scheme={props.color_scheme}
+                                        setPalette={props.setPalette}
+                                        steps={props.n_classes}
+                                        handlePaletteChange={props.changePallete}
+                                        palette={props.palette}
+
+                                    />
+                                </Container>
+
                             </Box>
                         </Collapse>
                      </List>

@@ -232,7 +232,7 @@ export default function LayerList(props) {
     }
     
     return (
-        <Box sx={{ display: 'flex', width: '100%', maxWidth: 360, zIndex:  10,
+        <Box sx={{ display: 'flex', maxWidth: 360, zIndex:  10,
                      mt: '15vh', ml: '10px'}}
              className="position-fixed">
 
