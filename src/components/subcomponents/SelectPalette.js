@@ -8,19 +8,21 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
 export default function SelectPalette(props) {
     const paletteScheme = Palette.getColors()[props.scheme]
     let menuItems = []
-    console.log(paletteScheme)
     for (const paletteName in paletteScheme) {
         let colorBoxes = []
         for (let i = 0; i < props.steps; i++) {
             const color = paletteScheme[paletteName][props.steps][i];
             colorBoxes.push(<Box key={i.toString()} sx={{backgroundColor: color}}></Box>)
         }
-        const menuItem = <MenuItem key={paletteName} value={paletteName}>
+        const menuItem = <ToggleButton key={paletteName} value={paletteName}>
             <Box className='palette'>{colorBoxes}</Box>
-        </MenuItem>
+        </ToggleButton>
         menuItems.push(menuItem)
     }
     
@@ -29,16 +31,13 @@ export default function SelectPalette(props) {
     }, [props.scheme])
 
     return (
-        <FormControl variant="filled"  sx={{ ml:1, mx:2, minWidth: 150 }}>
-            <InputLabel id="select-palette-filled-label">Paleta de Cores</InputLabel>
-            <Select
-                labelId="select-palette-filled-label"
-                id="palette-select-filled"
+            <ToggleButtonGroup
+                orientation='vertical'
+                exclusive
                 value={props.palette}
                 onChange={props.handlePaletteChange}
             >
                 {menuItems}
-            </Select>
-        </FormControl>
+            </ToggleButtonGroup>
     );
 }

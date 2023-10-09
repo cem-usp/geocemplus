@@ -18,18 +18,18 @@ import Checkbox from '@mui/material/Checkbox';
 // };
 
 export default function MultipleSelectCheckmarks(props) {
-    const selected_labels = props.attributesTT.map(({attribute_label}) => attribute_label)
+    const selected_labels = props.attributesLF.map(({attribute_label}) => attribute_label)
 
     return (
-        <div>
-          <FormControl variant="filled" sx={{ ml: 1, width: 200 }}>
+        <div >
+          <FormControl variant="filled" sx={{ ml: 1, width: 200, pb: 3 }}>
             <InputLabel id="demo-multiple-checkbox-label">Legenda Flutuante</InputLabel>
             <Select
               labelId="demo-multiple-checkbox-label"
               id="demo-multiple-checkbox"
               multiple
-              value={props.attributesTT}
-              onChange={props.handleATTChange}
+              value={props.attributesLF}
+              onChange={props.handleALFChange}
               renderValue={(selected) => {
                   const labels = selected.map(({attribute_label}) => attribute_label)
                   return labels.join(', ')

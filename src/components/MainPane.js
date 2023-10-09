@@ -2,7 +2,9 @@ import Map from './MapGeo'
 import Header from "./Header";
 import LayerList from './loadWFS' 
 import Fillbar from './Fillbar' 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import MenuItem from '@mui/material/MenuItem';
+import {filterNumberAttributes} from '../utils/UtilFunctions'
 
 function MainPane() {
 	const [layer_url, setLayerURL] = useState(null);
@@ -26,9 +28,38 @@ function MainPane() {
 		setColorScheme(e.target.value);
 	};
     const [palette, setPalette] = useState('')
-	const handlePaletteChange = (e) => {
-        setPalette(e.target.value)
+	const handlePaletteChange = (e,v) => {
+        setPalette(v)
     }    
+
+    const [attributeTitle, setAttributeTitle] = useState('')
+    const handleAttributeTitleChange = (e) => {
+		console.log('title', e.target.value)
+        setAttributeTitle(e.target.value)
+    }
+    //Update Attribute list options when layer changes
+    const [attrList, setAttrList] = useState(null)
+    const [filterAttrNames, setFilterAttrNames] = useState(null)
+    useEffect(() => {
+		const list = (attributes) ? attributes.map((attribute) =>
+						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
+						) : null;
+		
+		const filtered_attributes = (attributes) ? filterNumberAttributes(attributes) : null
+		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
+									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
+									) : null;
+		
+		setAttrList(list)
+      	setFilterAttrNames(filtered_names)
+    },[attributes])
+    
+    const [attributesLF, setAttributesLF] = useState([])
+
+	const handleAttributesLFChange = (e) => {
+		setAttributesLF(e.target.value);
+	};
+
 
     return (
         <div>
@@ -50,6 +81,11 @@ function MainPane() {
                 palette={palette}
                 setPalette={setPalette}
                 changePallete={handlePaletteChange}
+				attributeTitle={attributeTitle}
+				onAttributeTitleChange={handleAttributeTitleChange}
+				attrList={attrList}
+				attributesLF={attributesLF}
+				handleALFChange={handleAttributesLFChange}
             />
             <Map layer_url={layer_url} attributes={attributes}/>
         </div>

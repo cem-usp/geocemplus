@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import { Slider } from '@mui/material';
 
 //Select of Attributes to Tooltip
-import SelectAttributes from './SelectAttributes';
+import SelectAttributes from '../subcomponents/SelectAttributes';
 
 function SelectPalette(props) {
     const paletteScheme = Palette.getColors()[props.scheme]
@@ -151,8 +151,8 @@ export default function ToolbarFill(props) {
                 {/* Legenda Flutuante - Atributos */}
                 <SelectAttributes
                     attributes={props.attributes}
-                    attributesTT={props.attributesTT}
-                    handleATTChange={props.handleATTChange}
+                    attributesLF={props.attributesTT}
+                    handleALFChange={props.handleATTChange}
                 />
 
             </Paper>

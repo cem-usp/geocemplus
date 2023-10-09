@@ -20,7 +20,11 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Slider from '@mui/material/Slider';
 
+import FormControl from '@mui/material/FormControl';
 import SelectPalette from './subcomponents/SelectPalette' 
+
+//Select of Attributes to Tooltip
+import SelectAttributes from './subcomponents/SelectAttributes';
 
 import { styled } from '@mui/material/styles';
 
@@ -152,10 +156,34 @@ export default function Fillbar(props) {
                                         steps={props.n_classes}
                                         handlePaletteChange={props.changePallete}
                                         palette={props.palette}
-
                                     />
                                 </Container>
 
+                                {/* Legenda flutuante */}
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
+                                    Legenda Flutuante
+                                </InputLabel>
+                                {/* Atributo título */}
+                                <FormControl variant="filled" maxWidth="sm" sx={{pb: 3}}>
+                                    <InputLabel id="select-title-var-filled-label">Atributo Título</InputLabel>
+                                    <Select
+                                    labelId="select-title-var-filled-label"
+                                    id="title-var-select-filled"
+                                        sx={{ minWidth: 200, mb: 1 }}
+                                        displayEmpty
+                                        value={props.attributeTitle}
+                                        onChange={props.onAttributeTitleChange}
+                                        renderValue={(selected) => selected.attribute_label}
+                                    >
+                                        {props.attrList}
+                                    </Select>
+                                </FormControl>
+                                {/* Atributos da legenda */}
+                                <SelectAttributes
+                                    attributes={props.attributes}
+                                    attributesLF={props.attributesLF}
+                                    handleALFChange={props.handleALFChange}
+                                />
                             </Box>
                         </Collapse>
                      </List>
