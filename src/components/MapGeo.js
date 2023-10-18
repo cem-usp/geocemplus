@@ -339,19 +339,19 @@ function MapGeo(props) {
 	useEffect(() => {
 		const thematic_layer = getLayer(map, 'Thematic')
 	
-		if(thematic_layer !== null && attribute !== null) {
+		if(thematic_layer !== null && props.fill_attribute !== null) {
 			const thematic_source = thematic_layer.getSource()
 			const features = thematic_layer.get('features')
 			let attr_values = []
 			features.map((feature) => {
-				attr_values.push(feature.get(attribute.attribute))
+				attr_values.push(feature.get(props.fill_attribute.attribute))
 			})
 
-			mapFill.updateParameters(attr_values, null, color_scheme, palette, n_classes) 
+			mapFill.updateParameters(attr_values, null, props.color_scheme, props.palette, props.n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
-				const value = feature.get(attribute.attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
+				const value = feature.get(props.fill_attribute.attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(props.fill_attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -361,24 +361,24 @@ function MapGeo(props) {
 			})
 
 			updateLegend()
-		} else if (attribute === null && thematic_layer !== null) { //Reset thematic map
+		} else if (props.fill_attribute === null && thematic_layer !== null) { //Reset thematic map
 			thematic_layer.setStyle()
 			removeLegend()
 		}
 
-	}, [attribute])
+	}, [props.fill_attribute])
 
 	//Handle Fill changes
 	useEffect(() => {
 		const thematic_layer = getLayer(map, 'Thematic')
 		
-		if(thematic_layer !== null && attribute !== '') {
+		if(thematic_layer !== null && props.fill_attribute !== '') {
 
-			mapFill.updateParameters(null, method, color_scheme, palette, n_classes) 
+			mapFill.updateParameters(null, props.method, props.color_scheme, props.palette, props.n_classes) 
 			
 			thematic_layer.setStyle(function (feature) {
-				const value = feature.get(attribute.attribute)
-				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
+				const value = feature.get(props.fill_attribute.attribute)
+				const color = (!isNaN(value)) ? mapFill.getColor(feature.get(props.fill_attribute.attribute)) : 'rgba(128, 128, 128, 0.7)';
 				const style = new Style({
 					fill: new Fill({
 						color: color,
@@ -389,7 +389,7 @@ function MapGeo(props) {
 
 			updateLegend()
 		}
-	},[method, n_classes, color_scheme, palette])
+	},[props.method, props.n_classes, props.color_scheme, props.palette])
 
 	//Update Attributes legend tooltip
 	useEffect(() => {

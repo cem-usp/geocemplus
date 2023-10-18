@@ -87,7 +87,16 @@ function MainPane() {
 				attributesLF={attributesLF}
 				handleALFChange={handleAttributesLFChange}
             />
-            <Map layer_url={layer_url} attributes={attributes}/>
+            <Map 
+                layer_url={layer_url} 
+                attributes={attributes}
+                fill_attribute={fill_attribute}
+                method={method}
+                n_classes={n_classes}
+                color_scheme={color_scheme}
+                palette={palette}
+
+            />
         </div>
     
     );
