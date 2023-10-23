@@ -1,10 +1,13 @@
-import Map from './MapGeo'
+import Box from '@mui/material/Box';
+import MapGeo from './MapGeo'
 import Header from "./Header";
 import LayerList from './loadWFS' 
 import Fillbar from './Fillbar' 
+import BottomBar from './BottomBar' 
 import { useState, useEffect } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
+import { Map, View } from 'ol';
 
 function MainPane() {
 	const [layer_url, setLayerURL] = useState(null);
@@ -34,7 +37,6 @@ function MainPane() {
 
     const [attributeTitle, setAttributeTitle] = useState('')
     const handleAttributeTitleChange = (e) => {
-		console.log('title', e.target.value)
         setAttributeTitle(e.target.value)
     }
     //Update Attribute list options when layer changes
@@ -60,9 +62,27 @@ function MainPane() {
 		setAttributesLF(e.target.value);
 	};
 
+    //OL Map
+    //Max Zoom
+    const max_zoom = 20
+	//Initialize map
+	const initialMap = new Map({
+		// interactions: defaultInteractions().extend([new Drag()]),
+		view: new View({
+			center: [0, 0],
+			zoom: 2,
+			maxZoom: max_zoom,
+		}),
+	})
+
+    // Adiciona o título do mapa
+	// initialMap.addControl(new Control({element: controlEl}))
+
+	//Map Variable
+	const [map, setMap] = useState(initialMap)
 
     return (
-        <div>
+        <Box sx={{width: '100%', height: '100%' }}>
             <Header />
             <LayerList 
                 layer_url={layer_url} changeLayerURL={setLayerURL}
@@ -87,7 +107,12 @@ function MainPane() {
 				attributesLF={attributesLF}
 				handleALFChange={handleAttributesLFChange}
             />
-            <Map 
+            <BottomBar
+                map={map}
+            />
+            <MapGeo 
+                map={map}
+                max_zoom={max_zoom}
                 layer_url={layer_url} 
                 attributes={attributes}
                 fill_attribute={fill_attribute}
@@ -99,7 +124,7 @@ function MainPane() {
 				attributesLF={attributesLF}
 
             />
-        </div>
+        </Box>
     
     );
 }

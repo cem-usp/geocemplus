@@ -35,9 +35,6 @@ import {getLayer} from './ol-utils/Utils'
 //Fill
 const mapFill = new MapFill()
 
-//Max Zoom
-const max_zoom = 20
-
 // Converts geojson-vt data to GeoJSON
 const replacer = function (key, value) {
 	if (!value || !value.geometry) {
@@ -77,26 +74,27 @@ const replacer = function (key, value) {
 	};
 };
 
-//Base map layer (Open Street Map)
-const layer_osm = new TileLayer({
-	source: new OSM(),
-	maxZoom: max_zoom,
-	zIndex: 0
-})
-layer_osm.set('id', 'OSM')
-
-//Function get a Control by ID property
-function getControl(map, id) {
-	let found_control = null
-	map.getControls(map, id).forEach((control) => {
-		if(control.get('id') === id){
-			found_control = control
-		}
-	})
-	return found_control
-}
-
 function MapGeo(props) {
+
+	//Base map layer (Open Street Map)
+	const layer_osm = new TileLayer({
+		source: new OSM(),
+		maxZoom: props.max_zoom,
+		zIndex: 0
+	})
+	layer_osm.set('id', 'OSM')
+
+	//Function get a Control by ID property
+	function getControl(map, id) {
+		let found_control = null
+		map.getControls(map, id).forEach((control) => {
+			if(control.get('id') === id){
+				found_control = control
+			}
+		})
+		return found_control
+	}
+
 	//Toolbar Basic Options
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
@@ -152,17 +150,6 @@ function MapGeo(props) {
 	//Prevent map element to re-render	
 	const mapElement = useRef()
 
-	//Initialize map
-	const initialMap = new Map({
-		// interactions: defaultInteractions().extend([new Drag()]),
-		view: new View({
-			center: [0, 0],
-			zoom: 2,
-			maxZoom: max_zoom,
-		}),
-	})
-	
-
 	//Title control
 	const controlTitle = `
 							<div class="info ol-control ol-title">
@@ -173,16 +160,12 @@ function MapGeo(props) {
 	let controlEl= document.createElement('div');
 	controlEl.innerHTML= controlTitle;
 
-	initialMap.addControl(new Control({element: controlEl}))
-
-	//Map Variable
-	const [map, setMap] = useState(initialMap)
 	//GeoJSON Variable
 	const [geoJSON, setGeoJSON] = useState()
 	
 	//Updates thematic layer
 	useEffect(() => {
-		map.setTarget(mapElement.current)
+		props.map.setTarget(mapElement.current)
 
 		var layer = null
 
@@ -236,7 +219,7 @@ function MapGeo(props) {
 							}, replacer);
 							const features = format.readFeatures(geojson, {
 								extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-								featureProjection: map.getView().getProjection(),
+								featureProjection: props.map.getView().getProjection(),
 							});
 							tile.setFeatures(features);
 						},
@@ -247,12 +230,12 @@ function MapGeo(props) {
 					layer.set('features', 'Thematic') //Store features as property
 
 					//Remove previous thematic layer, if any
-					map.getLayers().forEach((layer) => {
+					props.map.getLayers().forEach((layer) => {
 						if(layer !== undefined && layer.get('id') === 'Thematic')
-							map.removeLayer(layer)
+						props.map.removeLayer(layer)
 					})
 					//Adds thematic layer
-					map.addLayer(layer)
+					props.map.addLayer(layer)
 					
 					//Focus the added layer
 						//Convert GeoJSON Projection
@@ -268,13 +251,13 @@ function MapGeo(props) {
 
 					//Set the center of the view
 					const tExtent = bbox(convertedJson)
-					map.setView(new View({
+					props.map.setView(new View({
 						center: centerWebMercator,
 						extent: (basicOptions.includes('bounds')) ? tExtent : undefined,
 						zoom: 6,
-						maxZoom: max_zoom
+						maxZoom: props.max_zoom
 					}))
-					map.getView().fit(tExtent)
+					props.map.getView().fit(tExtent)
 					layer.set('center', centerWebMercator)
 					layer.set('extent', tExtent)
 
@@ -289,55 +272,55 @@ function MapGeo(props) {
 
 	//Handle Basic Options change
 	useEffect(() => {
-		const map_layer_osm = getLayer(map, 'OSM')
-		const map_layer_thematic = getLayer(map, 'Thematic')
-		const map_layer_icon = getLayer(map, 'icon')
-		const map_layer_mapillary = getLayer(map, 'mapillary')
+		const map_layer_osm = getLayer(props.map, 'OSM')
+		const map_layer_thematic = getLayer(props.map, 'Thematic')
+		const map_layer_icon = getLayer(props.map, 'icon')
+		const map_layer_mapillary = getLayer(props.map, 'mapillary')
 
 		//Base Map option
 		if(basicOptions.includes('map') && map_layer_osm === null) {
-			map.addLayer(layer_osm)
+			props.map.addLayer(layer_osm)
 		} else if(!basicOptions.includes('map')) {
-			map.removeLayer(map_layer_osm)
+			props.map.removeLayer(map_layer_osm)
 		}
 
 		//Mapillary option
 		if(basicOptions.includes('mapillary') && map_layer_mapillary === null) {
-			map.addLayer(MapiLayer(map, props.mapi_viewer))
+			props.map.addLayer(MapiLayer(props.map, props.mapi_viewer))
 		} else if(!basicOptions.includes('mapillary')) {
-			map.removeLayer(map_layer_mapillary)
+			props.map.removeLayer(map_layer_mapillary)
 		}
 
 		if (map_layer_thematic !== null) {
 			//Bounds option
 			if(basicOptions.includes('bounds')) {
-				map.setView(new View({
+				props.map.setView(new View({
 					center: map_layer_thematic.get('center'),
 					extent: map_layer_thematic.get('extent'),
 					zoom: 6,
-					maxZoom: max_zoom
+					maxZoom: props.max_zoom
 				}))
 			} else{
-				map.setView(new View({
+				props.map.setView(new View({
 					center: map_layer_thematic.get('center'),
 					zoom: 6,
-					maxZoom: max_zoom
+					maxZoom: props.max_zoom
 				}))
-				map.getView().fit(map_layer_thematic.get('extent'))
+				props.map.getView().fit(map_layer_thematic.get('extent'))
 			}
 
 		}
 	}, [basicOptions])
 
 	//Handle title change
-	useEffect(() => {
-		const infoEl = document.getElementById('ol-control-title')
-		infoEl.innerHTML = textTitulo
-	}, [textTitulo])
+	// useEffect(() => {
+	// 	const infoEl = document.getElementById('ol-control-title')
+	// 	infoEl.innerHTML = textTitulo
+	// }, [textTitulo])
 
 	//Handle Attribute change
 	useEffect(() => {
-		const thematic_layer = getLayer(map, 'Thematic')
+		const thematic_layer = getLayer(props.map, 'Thematic')
 	
 		if(thematic_layer !== null && props.fill_attribute !== null) {
 			const thematic_source = thematic_layer.getSource()
@@ -370,7 +353,7 @@ function MapGeo(props) {
 
 	//Handle Fill changes
 	useEffect(() => {
-		const thematic_layer = getLayer(map, 'Thematic')
+		const thematic_layer = getLayer(props.map, 'Thematic')
 		
 		if(thematic_layer !== null && props.fill_attribute !== '') {
 
@@ -424,13 +407,13 @@ function MapGeo(props) {
 		rootOut.render(<Legend fill={mapFill}/>)
 		const lControl = new Control({element: output, properties: 'id'})
 		lControl.set('id', 'legend')
-		map.addControl(lControl)	
+		props.map.addControl(lControl)	
 	}
 
 	function removeLegend() {
-		const legendControl = getControl(map, 'legend')
+		const legendControl = getControl(props.map, 'legend')
 		if(legendControl) {
-			map.removeControl(legendControl)
+			props.map.removeControl(legendControl)
 		}
 	}
 
@@ -438,12 +421,12 @@ function MapGeo(props) {
 	function updateTooltipLegend(attributes_tt, attribute_title) {
 
 		//Remove legenda
-		const legendControl = getControl(map, 'tooltip-legend')
-		if(legendControl) map.removeControl(legendControl)
+		const legendControl = getControl(props.map, 'tooltip-legend')
+		if(legendControl) props.map.removeControl(legendControl)
 
 		//Remove evento
-		const tlEventKey = map.get('tlEventKey')
-		if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+		const tlEventKey = props.map.get('tlEventKey')
+		if(tlEventKey) props.map.un(tlEventKey.type, tlEventKey.listener)
 
 		//Se não há atributos selecionados, para a execução
 		if(props.attributesLF.length === 0 && props.attributeTitle === '') return
@@ -453,12 +436,12 @@ function MapGeo(props) {
 		rootOut.render(<LegendAtInfo title={props.attributeTitle} attributes={props.attributesLF}/>)
 		const LegendAt = new Control({element: output, properties: 'id'})
 		LegendAt.set('id', 'tooltip-legend')
-		map.addControl(LegendAt)
+		props.map.addControl(LegendAt)
 
 		//Update function to get the attributes
 		const displayFeatureInfo = function (pixel) {
 
-			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
 			  return feature;
 			});
 
@@ -491,13 +474,13 @@ function MapGeo(props) {
 			if (evt.dragging) {
 				return;
 			}
-			const pixel = map.getEventPixel(evt.originalEvent);
+			const pixel = props.map.getEventPixel(evt.originalEvent);
 			displayFeatureInfo(pixel);
 		}
 
-		const new_tlEventKey = map.on('pointermove', handlePointerMoveLegend);
+		const new_tlEventKey = props.map.on('pointermove', handlePointerMoveLegend);
 
-		map.set('tlEventKey', new_tlEventKey)
+		props.map.set('tlEventKey', new_tlEventKey)
 
 	}
 
@@ -507,11 +490,11 @@ function MapGeo(props) {
 		let highlight;
 
 		//Remove evento
-		const tlEventKey = map.get('tlEventKeyHighlight')
-		if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+		const tlEventKey = props.map.get('tlEventKeyHighlight')
+		if(tlEventKey) props.map.un(tlEventKey.type, tlEventKey.listener)
 
 		//Get Thematic Layer
-		const thematic_layer = getLayer(map, 'Thematic')
+		const thematic_layer = getLayer(props.map, 'Thematic')
 
 		//Highlight Style
 		const highlightFeature = new Style({
@@ -524,7 +507,7 @@ function MapGeo(props) {
 		//Overlay Feature
 		const featureOverlay = new VectorTileLayer({
 			source: thematic_layer.getSource(),
-			map: map,
+			map: props.map,
 			renderMode: 'vector',
 			style: function (feature) {
 				if (feature.get('fid') === highlight) {
@@ -536,7 +519,7 @@ function MapGeo(props) {
 
 		const displayFeatureInfo = function (pixel) {
 
-			const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
 				return feature.get('fid');
 			});		
 
@@ -548,20 +531,20 @@ function MapGeo(props) {
 			if (evt.dragging) {
 				return;
 			}
-			const pixel = map.getEventPixel(evt.originalEvent);
+			const pixel = props.map.getEventPixel(evt.originalEvent);
 			displayFeatureInfo(pixel);
 		}
 
-		const new_tlEventKey = map.on('pointermove', handlePointerMoveHighlight);
+		const new_tlEventKey = props.map.on('pointermove', handlePointerMoveHighlight);
 
-		map.set('tlEventKeyHighlight', new_tlEventKey)
+		props.map.set('tlEventKeyHighlight', new_tlEventKey)
 
 	};
 
 	return (
 		<div name='map_geral'>
 			<div ref={mapElement} className="map-container position-fixed" name='map_cart'/>
-
+{/* 
 
 			<ToolbarBasic 
 				mt="388px"
@@ -574,7 +557,7 @@ function MapGeo(props) {
 				filterAttrNames={filterAttrNames}
 				attribute={attribute}
 				onAttributeChange={handleAttributeChange}
-				map={map}
+				map={props.map}
 			/>
 			<ToolbarFill 
 				mt="484.8px"
@@ -593,7 +576,7 @@ function MapGeo(props) {
 				onAttributeTitleChange={handleAttributeTitleChange}
 				attrList={attrList}
 				attributes={props.attributes}
-				/>
+				/> */}
 		</div>
 	);
 }
