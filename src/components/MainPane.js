@@ -95,6 +95,8 @@ function MainPane() {
                 n_classes={n_classes}
                 color_scheme={color_scheme}
                 palette={palette}
+				attributeTitle={attributeTitle}
+				attributesLF={attributesLF}
 
             />
         </div>

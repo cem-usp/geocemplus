@@ -393,8 +393,8 @@ function MapGeo(props) {
 
 	//Update Attributes legend tooltip
 	useEffect(() => {
-		updateTooltipLegend(attributesTT, attributeTitle)
-	}, [attributesTT, attributeTitle])
+		updateTooltipLegend(props.attributesLF, props.attributeTitle)
+	}, [props.attributesLF, props.attributeTitle])
 
 	//Update Attribute list options when layer changes
     const [attrList, setAttrList] = useState(null)
@@ -446,11 +446,11 @@ function MapGeo(props) {
 		if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
 
 		//Se não há atributos selecionados, para a execução
-		if(attributesTT.length === 0 && attributeTitle === '') return
+		if(props.attributesLF.length === 0 && props.attributeTitle === '') return
 		
 		const output = document.createElement("div")
 		const rootOut = ReactDOM.createRoot(output)
-		rootOut.render(<LegendAtInfo title={attributeTitle} attributes={attributesTT}/>)
+		rootOut.render(<LegendAtInfo title={props.attributeTitle} attributes={props.attributesLF}/>)
 		const LegendAt = new Control({element: output, properties: 'id'})
 		LegendAt.set('id', 'tooltip-legend')
 		map.addControl(LegendAt)
@@ -465,10 +465,10 @@ function MapGeo(props) {
 			const info_title = document.getElementById('attributeTitle_infomap');
 		  
 			if (feature) {
-				if(info_title && attributeTitle !== '')
-					info_title.innerHTML = feature.get(attributeTitle.attribute)
+				if(info_title && props.attributeTitle !== '')
+					info_title.innerHTML = feature.get(props.attributeTitle.attribute)
 				
-				attributesTT.map((attribute) => {
+					props.attributesLF.map((attribute) => {
 					const info = document.getElementById('infomap_' + attribute.attribute);
 					if(!feature.get(attribute.attribute))
 						info.innerHTML = '&nbsp;'
@@ -480,7 +480,7 @@ function MapGeo(props) {
 				if(info_title)
 					info_title.innerHTML = '&nbsp;'
 				
-				attributesTT.map((attribute) => {
+					props.attributesLF.map((attribute) => {
 					const info = document.getElementById('infomap_' + attribute.attribute);
 					info.innerHTML = '&nbsp;';
 				})
@@ -564,7 +564,7 @@ function MapGeo(props) {
 
 
 			<ToolbarBasic 
-				mt="188px"
+				mt="388px"
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
 				titulo={textTitulo}
@@ -577,7 +577,7 @@ function MapGeo(props) {
 				map={map}
 			/>
 			<ToolbarFill 
-				mt="254.8px"
+				mt="484.8px"
 				n_classes={n_classes}
 				handleNClassesChange={handleNClassesChange}
 				color_scheme={color_scheme}

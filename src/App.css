@@ -42,6 +42,16 @@ html, body, .map-container {
   text-align: left;
 }
 
+.ol-control button {
+  display: inline !important;
+}
+
+.ol-zoom {
+  bottom: 0 !important;
+  top: unset !important;
+  left: unset !important;
+}
+
 /* Info */
 .info {
   padding: 6px 8px;
