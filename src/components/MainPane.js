@@ -62,12 +62,18 @@ function MainPane() {
 		setAttributesLF(e.target.value);
 	};
 
+	const [basicOptions, setBasicOptions] = useState(() => ['map']);
+    const handleBasicOptionsChange = (event, newOptions) => {
+		setBasicOptions(newOptions);
+	};
+
     //OL Map
     //Max Zoom
     const max_zoom = 20
 	//Initialize map
 	const initialMap = new Map({
 		// interactions: defaultInteractions().extend([new Drag()]),
+        controls: [],
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
@@ -109,6 +115,8 @@ function MainPane() {
             />
             <BottomBar
                 map={map}
+				basicOptions={basicOptions}
+				onBasicOptionsChange={handleBasicOptionsChange}
             />
             <MapGeo 
                 map={map}
@@ -122,7 +130,7 @@ function MainPane() {
                 palette={palette}
 				attributeTitle={attributeTitle}
 				attributesLF={attributesLF}
-
+				basicOptions={basicOptions}
             />
         </Box>
     

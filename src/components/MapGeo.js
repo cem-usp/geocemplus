@@ -96,13 +96,13 @@ function MapGeo(props) {
 	}
 
 	//Toolbar Basic Options
-	const [basicOptions, setBasicOptions] = useState(() => ['map']);
+	//const [basicOptions, setBasicOptions] = useState(() => ['map']);
 	const [textTitulo, setTextTitulo] = useState(() => '')
 	const [attribute, setAttribute] = useState(null)
 
-	const handleBasicOptionsChange = (event, newOptions) => {
-		setBasicOptions(newOptions);
-	};
+	// const handleBasicOptionsChange = (event, newOptions) => {
+	// 	setBasicOptions(newOptions);
+	// };
 
 	const handleTituloChange = (event) => {
 		setTextTitulo(event.target.value);
@@ -253,7 +253,7 @@ function MapGeo(props) {
 					const tExtent = bbox(convertedJson)
 					props.map.setView(new View({
 						center: centerWebMercator,
-						extent: (basicOptions.includes('bounds')) ? tExtent : undefined,
+						extent: (props.basicOptions.includes('bounds')) ? tExtent : undefined,
 						zoom: 6,
 						maxZoom: props.max_zoom
 					}))
@@ -278,22 +278,22 @@ function MapGeo(props) {
 		const map_layer_mapillary = getLayer(props.map, 'mapillary')
 
 		//Base Map option
-		if(basicOptions.includes('map') && map_layer_osm === null) {
+		if(props.basicOptions.includes('map') && map_layer_osm === null) {
 			props.map.addLayer(layer_osm)
-		} else if(!basicOptions.includes('map')) {
+		} else if(!props.basicOptions.includes('map')) {
 			props.map.removeLayer(map_layer_osm)
 		}
 
 		//Mapillary option
-		if(basicOptions.includes('mapillary') && map_layer_mapillary === null) {
+		if(props.basicOptions.includes('mapillary') && map_layer_mapillary === null) {
 			props.map.addLayer(MapiLayer(props.map, props.mapi_viewer))
-		} else if(!basicOptions.includes('mapillary')) {
+		} else if(!props.basicOptions.includes('mapillary')) {
 			props.map.removeLayer(map_layer_mapillary)
 		}
 
 		if (map_layer_thematic !== null) {
 			//Bounds option
-			if(basicOptions.includes('bounds')) {
+			if(props.basicOptions.includes('bounds')) {
 				props.map.setView(new View({
 					center: map_layer_thematic.get('center'),
 					extent: map_layer_thematic.get('extent'),
@@ -310,7 +310,7 @@ function MapGeo(props) {
 			}
 
 		}
-	}, [basicOptions])
+	}, [props.basicOptions])
 
 	//Handle title change
 	// useEffect(() => {
