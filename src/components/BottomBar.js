@@ -1,5 +1,6 @@
 import React from "react";
 
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -8,6 +9,21 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
         Fullscreen as FullscreenIcon, Download as DownloadIcon,
         Share as ShareIcon, Streetview as StreetviewIcon} from '@mui/icons-material';
+
+
+//Button toogle style
+const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
+        //   backgroundColor: "white",
+          color: 'black',
+          '&:hover': {
+              backgroundColor: 'rgb(17, 82, 147)',
+                color: 'white',
+        },
+          '&.Mui-selected': {
+              backgroundColor: '#042E6F',
+              color: 'white',
+            }
+}));
 
 export default function BootomBar(props) {
 
@@ -36,15 +52,15 @@ export default function BootomBar(props) {
                   aria-label="basic options"
                 >
 
-                    <ToggleButton value="bounds" variant="contained" aria-label="bounds" sx={{backgroundColor: "#042E6F"}}>
+                    <StyledToggleButton value="bounds" aria-label="bounds">
                         <FullscreenIcon />
-                    </ToggleButton>
-                    <ToggleButton value="map" variant="contained" aria-label="map" sx={{backgroundColor: "#042E6F"}}>
+                    </StyledToggleButton>
+                    <StyledToggleButton value="map" aria-label="map">
                         <MapIcon />
-                    </ToggleButton>
-                    <ToggleButton value="mapillary" variant="contained" aria-label="mapillary" sx={{backgroundColor: "#042E6F"}}>
+                    </StyledToggleButton>
+                    <StyledToggleButton value="mapillary" aria-label="mapillary">
                         <StreetviewIcon />
-                    </ToggleButton>
+                    </StyledToggleButton>
 
                 </ToggleButtonGroup>
 

@@ -88,7 +88,7 @@ function MainPane() {
 	const [map, setMap] = useState(initialMap)
 
     return (
-        <Box sx={{width: '100%', height: '100%' }}>
+        <Box>
             <Header />
             <LayerList 
                 layer_url={layer_url} changeLayerURL={setLayerURL}
