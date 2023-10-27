@@ -1,5 +1,6 @@
 import React from "react";
 
+import ExportPNGButton from '../utils/ExportPNGButton';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -63,10 +64,9 @@ export default function BootomBar(props) {
                     </StyledToggleButton>
 
                 </ToggleButtonGroup>
-
-                <Button value="" variant="contained" aria-label="" sx={{backgroundColor: "#042E6F"}}>
-                    <DownloadIcon />
-                </Button>
+                
+                <ExportPNGButton map={props.map}/>
+                
                 <Button value="" variant="contained" aria-label="" sx={{backgroundColor: "#042E6F"}}>
                     <ShareIcon />
                 </Button>

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Button from '@mui/material/Button';
-import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
+import {Download as DownloadIcon} from '@mui/icons-material';
 import html2canvas from 'html2canvas';
 
 export default function ExportPNGButton(props) {
@@ -53,10 +53,10 @@ export default function ExportPNGButton(props) {
 
     return (
         <div>
-            <Button variant="outlined" endIcon={<PhotoSizeSelectActualOutlinedIcon />} sx={{height: '100%'}}
+            <Button variant="contained" sx={{backgroundColor: "#042E6F", height: '100%'}}
                 ref={button}
                 onClick={handleClick} >
-                Exportar
+                <DownloadIcon />
             </Button>
             <a id="image-download" download="map.png"></a>
         </div>
