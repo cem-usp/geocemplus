@@ -28,6 +28,20 @@ import SelectAttributes from './subcomponents/SelectAttributes';
 
 import { styled } from '@mui/material/styles';
 
+//Modal
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, {tableCellClasses} from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import HelpIcon from '@mui/icons-material/Help';
+import IconButton from '@mui/material/IconButton';
+
 export default function Fillbar(props) {
     const [attrList, setAttrList] = useState(null)
     const [filterAttrNames, setFilterAttrNames] = useState(null)
@@ -56,6 +70,51 @@ export default function Fillbar(props) {
             fontSize: '0.6125rem'
         }
     })
+
+    //Handle Attributes Modal
+    const [openAM, setOpenAM] = React.useState(false);
+    const handleOpenAM = () => setOpenAM(true);
+    const handleCloseAM = () => setOpenAM(false);
+    const rowsPerPage = 5
+  
+    const modalStyle = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: 400,
+      bgcolor: 'background.paper',
+      border: '2px solid #000',
+      boxShadow: 24,
+      p: 4,
+    };
+
+    //Table style
+    const StyledTableCell = styled(TableCell)(({ theme }) => ({
+        [`&.${tableCellClasses.head}`]: {
+          backgroundColor: theme.palette.common.black,
+          color: theme.palette.common.white,
+        },
+        [`&.${tableCellClasses.body}`]: {
+          fontSize: 14,
+        },
+      }));
+    
+      const StyledTableRow = styled(TableRow)(({ theme }) => ({
+        '&:nth-of-type(odd)': {
+          backgroundColor: theme.palette.action.hover,
+        },
+        // hide last border
+        '&:last-child td, &:last-child th': {
+          border: 0,
+        },
+      }));
+  
+      //Handle table pagination
+      const [page, setPage] = React.useState(0);
+      const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+      };
 
     return (
         <Box sx={{ display: 'flex', zIndex:  10,
@@ -94,6 +153,62 @@ export default function Fillbar(props) {
                                     </MenuItem>
                                     {attrList}
                                 </Select>
+                                
+                                {/* Abre o modal de Atributos */}
+                                <IconButton onClick={handleOpenAM}>
+                                    <HelpIcon />
+                                </IconButton>
+
+                                <Modal
+                                open={openAM}
+                                onClose={handleCloseAM}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                                >
+                                    <Box sx={modalStyle}>
+                                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                                        Atributos da Camada
+                                    </Typography>
+                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                        {!props.attributes ? '' : 
+                                            <TableContainer component={Paper}>
+                                            <Table size="small" aria-label="a dense table">
+                                                <TableHead>
+                                                <TableRow>
+                                                    <StyledTableCell>Nome do Atributo</StyledTableCell>
+                                                    <StyledTableCell>Descrição do Atributo</StyledTableCell>
+                                                </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                {(rowsPerPage > 0
+                                                    ? props.attributes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                    : props.attributes
+                                                    ).map((attribute) => (
+                                                    <StyledTableRow
+                                                        key={attribute.pk}
+                                                    >
+                                                        <StyledTableCell component="th" scope="row">
+                                                        {attribute.attribute_label}
+                                                        </StyledTableCell>
+                                                        <StyledTableCell align="right">{attribute.description}</StyledTableCell>
+                                                    </StyledTableRow>
+                                                ))}
+                                                </TableBody>
+                                                <TableFooter>
+                                                    <TablePagination 
+                                                    count={props.attributes.length}
+                                                    onPageChange={handleChangePage}
+                                                    page={page}
+                                                    rowsPerPage={5}
+                                                    rowsPerPageOptions={[5]}
+                                                    />
+                                                </TableFooter>
+                                            </Table>
+                                            </TableContainer>
+                                        }
+                                    </Typography>
+                                    </Box>
+                                </Modal>
 
                                 {/* Método de Classificação */}
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>

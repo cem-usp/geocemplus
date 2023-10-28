@@ -232,13 +232,13 @@ export default function LayerList(props) {
     }
     
     return (
-        <Box sx={{ display: 'flex', maxWidth: 360, zIndex:  20,
+        <Box sx={{ display: 'flex',  zIndex:  20,
                      mt: '15vh', ml: '10px'}}
              className="position-fixed">
 
             <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '85vh', overflow: 'auto' }} >
                 <List
-                    sx={{width: '18vw'}}
+                    sx={{width: '20vw'}}
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                 >
