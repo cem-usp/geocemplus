@@ -15,7 +15,11 @@ import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import HelpIcon from '@mui/icons-material/Help';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import ModalAttributes from './subcomponents/ModalAttributes';
 
 const geoservices = [
     {
@@ -63,13 +67,22 @@ export default function LayerList(props) {
     const [geocem_cats, setGeoCEMCats] = useState([])
     const [geocem_cats_list, setGeoCEMCatsList] = useState('')
 
-    const [selectedLayer, setSelectedLayer] = React.useState(0);
+    const [selectedLayer, setSelectedLayer] = useState(0);
 
     //Handle click on layer
     const handleLayerClick = (event, index) => {
         setSelectedLayer(index);
     };
-    
+
+    //Handle Attributes Modal
+    const attributesModal = ''
+    const [openAM, setOpenAM] = useState(false);
+    const handleOpenAM = () => setOpenAM(true);
+    const handleCloseAM = () => {
+        console.log('fecha')
+        setOpenAM(false)
+    };
+
     //Handle click on geoservice
     function handleClick(id, nivel = 0) {
         const newOpen = objectMap(open, menu => {
@@ -197,16 +210,33 @@ export default function LayerList(props) {
        const geocem_list = geocem_cats.map((category) =>
        { 
             const layers = category.layers.map(layer => 
-                <ListItemButton sx={{ pl: 8 }}
-                    selected={selectedLayer === 'geocem_'+layer.id}
-                    onClick={(event) => handleLayerClick(event, 'geocem_'+layer.id)}
-                    key={'geocem_'+layer.id}
-                >
-                    <ListItemIcon>
-                        <LayersIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={layer.title} />
-                </ListItemButton>)
+                <Grid container>
+                    <Grid item xs={10}>
+                        <ListItemButton sx={{ pl: 8 }}
+                            selected={selectedLayer === 'geocem_'+layer.id}
+                            onClick={(event) => handleLayerClick(event, 'geocem_'+layer.id)}
+                            key={'geocem_'+layer.id}
+                        >
+                            <ListItemIcon>
+                                <LayersIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={layer.title} />
+                        </ListItemButton>
+                    </Grid>
+                    <Grid item xs={2} sx={{ alignSelf: 'center' }}>
+                        {/* Abre o modal de Atributos */}
+                        <IconButton onClick={handleOpenAM}>
+                            <HelpIcon />
+                        </IconButton>
+                        <ModalAttributes
+                        open={openAM}
+                        close={handleCloseAM}
+                        attributes={attributesModal}
+                        >
+                        </ModalAttributes>
+                    </Grid>
+                </Grid>
+                )
 
             return (
                 <div key={category.id}>
