@@ -11,6 +11,7 @@ import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
+import {ScaleLine, defaults as defaultControls} from 'ol/control.js';
 
 import ToolbarFill from './Toolbar/ToolbarFill'
 import ToolbarBasic from './Toolbar/ToolbarBasic'
@@ -94,6 +95,13 @@ function MapGeo(props) {
 		})
 		return found_control
 	}
+
+	// Scale Control
+	const scaleControl = new ScaleLine({
+		units: 'metric',
+	  });
+	
+	props.map.addControl(scaleControl)
 
 	//Toolbar Basic Options
 	//const [basicOptions, setBasicOptions] = useState(() => ['map']);

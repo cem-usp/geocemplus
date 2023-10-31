@@ -10,6 +10,7 @@ export default function ExportPNGButton(props) {
     function handleClick() {
       const legend = map.getViewport().querySelectorAll('.ol-legend')[0]
       const title = map.getViewport().querySelectorAll('.ol-title')[0]
+      const scaleLine = map.getViewport().querySelectorAll('.ol-scale-line')[0]
         map.once('rendercomplete', async function () {
             const mapCanvas = document.createElement('canvas');
             const size = map.getSize();
@@ -41,6 +42,11 @@ export default function ExportPNGButton(props) {
               const titleY = 0
               mapContext.drawImage(titleCanvas, titleX, titleY);
             }
+
+            const scaleCanvas = await html2canvas(scaleLine)
+            const scaleX = scaleCanvas.width
+            const scaleY = (mapContext.canvas.height - scaleCanvas.height)
+            mapContext.drawImage(scaleCanvas, scaleX, scaleY);
             
             const link = document.getElementById('image-download');
             link.href = mapCanvas.toDataURL();
