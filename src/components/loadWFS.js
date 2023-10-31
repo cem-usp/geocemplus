@@ -75,11 +75,16 @@ export default function LayerList(props) {
     };
 
     //Handle Attributes Modal
-    const attributesModal = ''
-    const [openAM, setOpenAM] = useState(false);
-    const handleOpenAM = () => setOpenAM(true);
+    const [attributesModal, setAttributesModal] = useState(null)
+    const [openAM, setOpenAM] = useState(false)
+    const handleOpenAM = (layer_id) => {
+        const req_attributes = getGeoCEMLayerAttributes(layer_id)
+        req_attributes.then((attributes_response) => {
+            setAttributesModal(attributes_response)
+            setOpenAM(true)
+        })
+    };
     const handleCloseAM = () => {
-        console.log('fecha')
         setOpenAM(false)
     };
 
@@ -138,6 +143,22 @@ export default function LayerList(props) {
 
         }
     }, [selectedLayer])
+
+    function getGeoCEMLayerAttributes(layer_id) {
+        const request = axios.create({
+            baseURL: geoservices[0].baseurl
+        });  
+    
+        return request
+            .get("/v2/layers/" + layer_id + "/attribute_set")
+            .then((response) => {
+                return response.data.attributes
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
+
+    }
 
     function setGeoCEMLayerAttributes(layer_id) {
         
@@ -225,15 +246,9 @@ export default function LayerList(props) {
                     </Grid>
                     <Grid item xs={2} sx={{ alignSelf: 'center' }}>
                         {/* Abre o modal de Atributos */}
-                        <IconButton onClick={handleOpenAM}>
+                        <IconButton onClick={() => handleOpenAM(layer.id)}>
                             <HelpIcon />
                         </IconButton>
-                        <ModalAttributes
-                        open={openAM}
-                        close={handleCloseAM}
-                        attributes={attributesModal}
-                        >
-                        </ModalAttributes>
                     </Grid>
                 </Grid>
                 )
@@ -316,6 +331,11 @@ export default function LayerList(props) {
 
                 </List>
             </Paper>
+            <ModalAttributes
+            open={openAM}
+            close={handleCloseAM}
+            attributes={attributesModal}
+            />
         </Box>
       )
 }
