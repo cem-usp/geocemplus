@@ -10,8 +10,13 @@ import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
 
 function MainPane() {
+    const [openBars, setOpenBars] = useState('flex');
 	const [layer_url, setLayerURL] = useState(null);
     const [attributes, setAttributes] = useState(null)
+
+    const handleOpenBars = () => {
+        setOpenBars(!openBars)
+    }
     
     // Fill parameters state
 	const [fill_attribute, setFAttribute] = useState('')
@@ -89,10 +94,13 @@ function MainPane() {
 
     return (
         <Box>
-            <Header />
+            <Header
+                handleOpenBars={handleOpenBars}
+             />
             <LayerList 
                 layer_url={layer_url} changeLayerURL={setLayerURL}
                 changeAttributes={setAttributes}
+                openBars={openBars}
             />
             <Fillbar 
                 attributes={attributes}
@@ -112,6 +120,7 @@ function MainPane() {
 				attrList={attrList}
 				attributesLF={attributesLF}
 				handleALFChange={handleAttributesLFChange}
+                openBars={openBars}
             />
             <BottomBar
                 map={map}

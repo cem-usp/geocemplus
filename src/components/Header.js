@@ -7,7 +7,7 @@ import LanguageIcon from '@mui/icons-material/Language';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
-export default function Header() {
+export default function Header(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" color="transparent" sx={{bgcolor: 'rgba(255, 255, 255, 0.7)'}}>
@@ -18,6 +18,7 @@ export default function Header() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={props.handleOpenBars}
           >
             <MenuIcon />
           </IconButton>

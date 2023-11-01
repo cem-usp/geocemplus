@@ -277,7 +277,7 @@ export default function LayerList(props) {
     }
     
     return (
-        <Box sx={{ display: 'flex',  zIndex:  20,
+        <Box sx={{ display: (props.openBars ? 'flex' : 'none'),  zIndex:  20,
                      mt: '15vh', ml: '10px'}}
              className="position-fixed">
 

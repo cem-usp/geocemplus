@@ -68,7 +68,7 @@ export default function Fillbar(props) {
     const handleCloseAM = () => setOpenAM(false);
 
     return (
-        <Box sx={{ display: 'flex', zIndex:  10,
+        <Box sx={{ display: (props.openBars ? 'flex' : 'none'), zIndex:  10,
                          mt: '27vh', ml: '10px'}}
                  className="position-fixed">
                 <Paper elevation={0} sx={{ bgcolor: '#042E6F', color: 'white' }} >
