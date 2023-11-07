@@ -20,6 +20,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import ModalAttributes from './subcomponents/ModalAttributes';
+import {NavList} from './subcomponents/NavBarComponents';
 
 const geoservices = [
     {
@@ -282,14 +283,10 @@ export default function LayerList(props) {
              className="position-fixed">
 
             <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '85vh', overflow: 'auto' }} >
-                <List
-                    sx={{width: '20vw'}}
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                >
+                <NavList>
                     {/* Menu de Camadas */}
                     <ListItemButton onClick={() => handleClick('menu_camadas', 0)} 
-                    sx = {{ bgcolor: '#042E6F', color: 'white' }}>
+                    sx = {{ bgcolor: '#042E6F', color: 'white'}}>
                         <ListItemText primary='Camadas' />
                         {open['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
@@ -329,7 +326,7 @@ export default function LayerList(props) {
                         </List>
                     </Collapse> */}
 
-                </List>
+                </NavList>
             </Paper>
             <ModalAttributes
             open={openAM}

@@ -9,7 +9,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
         Fullscreen as FullscreenIcon, Download as DownloadIcon,
-        Share as ShareIcon, Streetview as StreetviewIcon} from '@mui/icons-material';
+        Share as ShareIcon, Streetview as StreetviewIcon, ExpandLess as ExpandLessIcon} from '@mui/icons-material';
 
 
 //Button toogle style
@@ -31,8 +31,11 @@ export default function BootomBar(props) {
     return(
         <Box sx={{ display: 'flex', zIndex:  10, bottom: 10, left: '40%'}}
                  className="position-fixed">
-            <ButtonGroup aria-label="text button group">
-                <Button value="zoom_in" variant="contained" aria-label="zoom_in" sx={{backgroundColor: "#042E6F"}}
+            <ButtonGroup aria-label="text button group" orientation="vertical">
+                <ToggleButton>
+                    <ExpandLessIcon />
+                </ToggleButton>
+                <Button value="zoom_in" variant="contained" aria-label="zoom_in" sx={{backgroundColor: "#042E6F", width: '60px'}}
                     onClick={() => {
                         const map_view = props.map.getView()
                         const curr_zoom = map_view.getZoom()
@@ -40,7 +43,7 @@ export default function BootomBar(props) {
                     }}>
                     <AddIcon />
                 </Button>
-                <Button value="zoom_out" variant="contained" aria-label="zoom_out" sx={{backgroundColor: "#042E6F"}}onClick={() => {
+                <Button value="zoom_out" variant="contained" aria-label="zoom_out" sx={{backgroundColor: "#042E6F", width: '60px'}}onClick={() => {
                         const map_view = props.map.getView()
                         const curr_zoom = map_view.getZoom()
                         map_view.setZoom(curr_zoom-0.5)
@@ -51,6 +54,7 @@ export default function BootomBar(props) {
                   value={props.basicOptions}
                   onChange={props.onBasicOptionsChange}
                   aria-label="basic options"
+                  orientation="vertical"
                 >
 
                     <StyledToggleButton value="bounds" aria-label="bounds">
@@ -67,7 +71,7 @@ export default function BootomBar(props) {
                 
                 <ExportPNGButton map={props.map}/>
                 
-                <Button value="" variant="contained" aria-label="" sx={{backgroundColor: "#042E6F"}}>
+                <Button value="" variant="contained" aria-label="" sx={{backgroundColor: "#042E6F", width: '60px'}}>
                     <ShareIcon />
                 </Button>
                 </ButtonGroup>

@@ -7,7 +7,7 @@ import Select from '@mui/material/Select';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import MenuItem from '@mui/material/MenuItem';
 
-import List from '@mui/material/List';
+import {NavList} from './subcomponents/NavBarComponents';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 
@@ -72,8 +72,7 @@ export default function Fillbar(props) {
                          mt: '27vh', ml: '10px'}}
                  className="position-fixed">
                 <Paper elevation={0} sx={{ bgcolor: '#042E6F', color: 'white' }} >
-                    <List
-                        sx={{width: '20vw'}}
+                    <NavList
                         component="nav"
                     >
                         {/* Menu de Preenchimento */}
@@ -208,7 +207,7 @@ export default function Fillbar(props) {
                                 />
                             </Box>
                         </Collapse>
-                     </List>
+                     </NavList>
                 </Paper>
         </Box>
     )

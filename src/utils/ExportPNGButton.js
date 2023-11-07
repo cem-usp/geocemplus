@@ -59,7 +59,7 @@ export default function ExportPNGButton(props) {
 
     return (
         <div>
-            <Button variant="contained" sx={{backgroundColor: "#042E6F", height: '100%'}}
+            <Button variant="contained" sx={{backgroundColor: "#042E6F", height: '100%', width: '60px'}}
                 ref={button}
                 onClick={handleClick} >
                 <DownloadIcon />

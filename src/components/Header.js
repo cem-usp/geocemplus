@@ -6,6 +6,23 @@ import Typography from '@mui/material/Typography';
 import LanguageIcon from '@mui/icons-material/Language';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { styled } from '@mui/material/styles';
+
+const LinkBox = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gap: 1,
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  [theme.breakpoints.down('md')]: {
+    display: 'none',
+  },
+}))
+
+const LogoCEMBox = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  [theme.breakpoints.down('sm')]: {
+    display: 'none',
+  },
+}))
 
 export default function Header(props) {
   return (
@@ -26,24 +43,18 @@ export default function Header(props) {
             <img src='/logo_mapi.png' height="50px"/>
             MAPi
           </Typography>
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 1,
-              gridTemplateColumns: 'repeat(2, 1fr)',
-            }}
-          >
+          <LinkBox>
             <div>Fale Conosco</div>
             <div>Sistemas Interativos</div>
             <div>Copyright</div>
             <div><LanguageIcon />Português (Brasil)</div>
-          </Box>
+          </LinkBox>
           <Box sx={{mx: 2}}>
             <img src='/logo_geocem.png'/>
           </Box>
-          <Box sx={{mr: 2}}>
+          <LogoCEMBox sx={{mr: 2}}>
             <img src='/logo_cem.png'/>
-          </Box>
+          </LogoCEMBox>
         </Toolbar>
       </AppBar>
     </Box>
