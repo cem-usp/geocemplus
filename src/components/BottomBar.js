@@ -14,7 +14,7 @@ import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
 
 //Button toogle style
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
-        //   backgroundColor: "white",
+          backgroundColor: "white",
           color: 'black',
           '&:hover': {
               backgroundColor: 'rgb(17, 82, 147)',
@@ -31,7 +31,7 @@ export default function BootomBar(props) {
     return(
         <Box sx={{ display: 'flex', zIndex:  10, bottom: 10, left: '40%'}}
                  className="position-fixed">
-            <ButtonGroup aria-label="text button group" orientation="vertical">
+            <ButtonGroup aria-label="text button group" orientation="horizontal">
                 <ToggleButton>
                     <ExpandLessIcon />
                 </ToggleButton>
@@ -54,7 +54,7 @@ export default function BootomBar(props) {
                   value={props.basicOptions}
                   onChange={props.onBasicOptionsChange}
                   aria-label="basic options"
-                  orientation="vertical"
+                  orientation="horizontal"
                 >
 
                     <StyledToggleButton value="bounds" aria-label="bounds">
