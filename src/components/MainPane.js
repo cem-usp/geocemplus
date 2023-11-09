@@ -8,6 +8,8 @@ import { useState, useEffect } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
+import Button from '@mui/material/Button';
+import {Fullscreen as FullscreenIcon} from '@mui/icons-material';
 
 function MainPane() {
     const [openBars, setOpenBars] = useState('flex');
@@ -92,6 +94,14 @@ function MainPane() {
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
 
+    const btnFullScreen = () => {
+        return (
+            <Button value="full_screen" aria-label="full_screen" variant="contained" sx={{backgroundColor: "#042E6F", width: '60px'}}>
+                <FullscreenIcon />
+            </Button>
+        )
+    }
+
     return (
         <Box>
             <Header
@@ -126,7 +136,9 @@ function MainPane() {
                 map={map}
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
-            />
+            >
+                <btnFullScreen />
+            </BottomBar>
             <MapGeo 
                 map={map}
                 max_zoom={max_zoom}

@@ -79,3 +79,13 @@ html, body, .map-container {
 .mapillary-canvas {
   position: relative !important; 
 }
+
+.ol-scale-line {
+  background: white !important;
+}
+
+.ol-scale-line-inner {
+  border: 1px solid black !important;
+  border-top: none !important;
+  color: black !important;
+}

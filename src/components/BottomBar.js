@@ -8,6 +8,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
+        PushPin as PushPinIcon,
         Fullscreen as FullscreenIcon, Download as DownloadIcon,
         Share as ShareIcon, Streetview as StreetviewIcon, ExpandLess as ExpandLessIcon} from '@mui/icons-material';
 
@@ -26,15 +27,11 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
             }
 }));
 
-export default function BootomBar(props) {
-
+export default function BootomBar( props) {
     return(
         <Box sx={{ display: 'flex', zIndex:  10, bottom: 10, left: '40%'}}
                  className="position-fixed">
             <ButtonGroup aria-label="text button group" orientation="horizontal">
-                <ToggleButton>
-                    <ExpandLessIcon />
-                </ToggleButton>
                 <Button value="zoom_in" variant="contained" aria-label="zoom_in" sx={{backgroundColor: "#042E6F", width: '60px'}}
                     onClick={() => {
                         const map_view = props.map.getView()
@@ -50,15 +47,17 @@ export default function BootomBar(props) {
                     }}>
                     <RemoveIcon />
                 </Button>
+                
+                { props.children }
+
                 <ToggleButtonGroup
                   value={props.basicOptions}
                   onChange={props.onBasicOptionsChange}
                   aria-label="basic options"
                   orientation="horizontal"
                 >
-
                     <StyledToggleButton value="bounds" aria-label="bounds">
-                        <FullscreenIcon />
+                        <PushPinIcon />
                     </StyledToggleButton>
                     <StyledToggleButton value="map" aria-label="map">
                         <MapIcon />
