@@ -27,7 +27,19 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
             }
 }));
 
-export default function BootomBar( props) {
+export default function BootomBar(props) {
+
+    function getFSControl() {
+        let fs_control = null
+        props.map.getControls().forEach((control) => {
+            if(control.constructor.name == 'FullScreen')
+                fs_control = control
+        })
+        return fs_control
+    }
+
+    const fs_control = getFSControl()
+
     return(
         <Box sx={{ display: 'flex', zIndex:  10, bottom: 10, left: '40%'}}
                  className="position-fixed">
@@ -48,7 +60,12 @@ export default function BootomBar( props) {
                     <RemoveIcon />
                 </Button>
                 
-                { props.children }
+                <Button value="full_screen" aria-label="full_screen" variant="contained" 
+                    onClick={() => fs_control.element.querySelector('button').click()}
+                    sx={{backgroundColor: "#042E6F", width: '60px'}} 
+                >
+                    <FullscreenIcon />
+                </Button>
 
                 <ToggleButtonGroup
                   value={props.basicOptions}

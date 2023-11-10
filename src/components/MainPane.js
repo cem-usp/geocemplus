@@ -4,12 +4,13 @@ import Header from "./Header";
 import LayerList from './loadWFS' 
 import Fillbar from './Fillbar' 
 import BottomBar from './BottomBar' 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
 import Button from '@mui/material/Button';
 import {Fullscreen as FullscreenIcon} from '@mui/icons-material';
+import {FullScreen, defaults as defaultControls} from 'ol/control.js';
 
 function MainPane() {
     const [openBars, setOpenBars] = useState('flex');
@@ -78,9 +79,11 @@ function MainPane() {
     //Max Zoom
     const max_zoom = 20
 	//Initialize map
+    const [fs_control, setFsControl] = useState(new FullScreen())
+    
 	const initialMap = new Map({
 		// interactions: defaultInteractions().extend([new Drag()]),
-        controls: [],
+        controls: [fs_control],
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
@@ -94,21 +97,13 @@ function MainPane() {
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
 
-    const btnFullScreen = () => {
-        return (
-            <Button value="full_screen" aria-label="full_screen" variant="contained" sx={{backgroundColor: "#042E6F", width: '60px'}}>
-                <FullscreenIcon />
-            </Button>
-        )
-    }
-
     return (
         <Box>
             <Header
                 handleOpenBars={handleOpenBars}
              />
             <LayerList 
-                layer_url={layer_url} changeLayerURL={setLayerURL}
+                changeLayerURL={setLayerURL}
                 changeAttributes={setAttributes}
                 openBars={openBars}
             />
@@ -136,9 +131,8 @@ function MainPane() {
                 map={map}
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
-            >
-                <btnFullScreen />
-            </BottomBar>
+                fs_control={fs_control}
+            />
             <MapGeo 
                 map={map}
                 max_zoom={max_zoom}
@@ -152,6 +146,7 @@ function MainPane() {
 				attributeTitle={attributeTitle}
 				attributesLF={attributesLF}
 				basicOptions={basicOptions}
+                fs_control={fs_control}
             />
         </Box>
     

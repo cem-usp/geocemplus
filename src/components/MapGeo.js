@@ -11,7 +11,7 @@ import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
-import {ScaleLine, defaults as defaultControls} from 'ol/control.js';
+import {ScaleLine} from 'ol/control.js';
 
 import ToolbarFill from './Toolbar/ToolbarFill'
 import ToolbarBasic from './Toolbar/ToolbarBasic'
@@ -102,6 +102,9 @@ function MapGeo(props) {
 	  });
 	
 	props.map.addControl(scaleControl)
+
+	// Full Screen Control	
+	props.map.addControl(props.fs_control)
 
 	//Toolbar Basic Options
 	//const [basicOptions, setBasicOptions] = useState(() => ['map']);
@@ -420,9 +423,7 @@ function MapGeo(props) {
 
 	function removeLegend() {
 		const legendControl = getControl(props.map, 'legend')
-		if(legendControl) {
-			props.map.removeControl(legendControl)
-		}
+		if(legendControl) props.map.removeControl(legendControl)
 	}
 
 	//Add Tooltip Legend control

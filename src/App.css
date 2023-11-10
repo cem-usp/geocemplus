@@ -42,9 +42,9 @@ html, body, .map-container {
   text-align: left;
 }
 
-.ol-control button {
+/* .ol-control button {
   display: inline !important;
-}
+} */
 
 .ol-zoom {
   bottom: 0 !important;
@@ -88,4 +88,8 @@ html, body, .map-container {
   border: 1px solid black !important;
   border-top: none !important;
   color: black !important;
+}
+
+.ol-full-screen-false{
+  display: none !important;
 }
