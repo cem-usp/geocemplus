@@ -59,10 +59,10 @@ export default function ExportPNGButton(props) {
 
     return (
         <div>
-            <Button variant="contained" sx={{backgroundColor: "#042E6F", height: '100%', width: '60px'}}
+            <Button variant="contained" sx={{backgroundColor: "#042E6F", width: '5px'}}
                 ref={button}
                 onClick={handleClick} >
-                <DownloadIcon />
+                <DownloadIcon sx={{fontSize: '1rem'}} />
             </Button>
             <a id="image-download" download="map.png"></a>
         </div>

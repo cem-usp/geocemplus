@@ -132,6 +132,7 @@ function MainPane() {
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
+                openBars={openBars}
             />
             <MapGeo 
                 map={map}
