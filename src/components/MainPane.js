@@ -71,8 +71,14 @@ function MainPane() {
 	};
 
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
-    const handleBasicOptionsChange = (event, newOptions) => {
-		setBasicOptions(newOptions);
+    const handleBasicOptionsChange = (event, option) => {
+        let arr = [...basicOptions]
+        const teste = basicOptions.indexOf(option)
+
+        if(teste > -1) arr.splice(teste, 1)
+        else arr = arr.concat(option)
+
+        setBasicOptions(arr)
 	};
 
     //OL Map
