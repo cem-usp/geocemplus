@@ -4,6 +4,9 @@ import ListItem from '@mui/material/ListItem';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Collapse from '@mui/material/Collapse';
+import Slide from '@mui/material/Slide';
 
 export default function LegendControl(props) {
     const colors = props.fill.getColors()
@@ -30,12 +33,28 @@ export default function LegendControl(props) {
         </ListItem>
     );
 
+    const [open, setOpen] = React.useState(false);
+    const containerRef = React.useRef(null);
+  
+    const handleChange = () => {
+        containerRef.current.classList.toggle('enter')
+        setOpen((open) => !open);
+    };
 
     return (
-        <div className="info ol-control ol-legend">
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                { listSteps }
-            </List>
-        </div>
+        <Grid container className="ol-legend" ref={containerRef}>
+            <Grid item xs={1} className="ol-legend-header">
+                <Paper elevation={4} >
+                    <Typography variant="button" display="block" gutterBottom onClick={handleChange}>
+                        Legendas
+                    </Typography>
+                </Paper>
+            </Grid>
+            <Grid item xs={11} >
+                <List sx={{ bgcolor: 'background.paper' }}>
+                    { listSteps }
+                </List>
+            </Grid>
+        </Grid>
       );
 }

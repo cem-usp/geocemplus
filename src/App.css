@@ -32,8 +32,26 @@ html, body, .map-container {
 }
 
 .ol-legend {
-  bottom: 2em;
-  right: 0.5em;
+  bottom: 10px;
+  right: 10px;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  position: absolute;
+  max-width: 250px !important;
+}
+
+.ol-legend.enter {
+  right: -228px;
+}
+
+.ol-legend-header {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  height: 100px;
+  bottom: 50px;
+  align-self: flex-end;
+  right: 1;
 }
 
 .ol-tooltip-legend {
@@ -57,7 +75,6 @@ html, body, .map-container {
   padding: 6px 8px;
   font: 14px/16px Arial, Helvetica, sans-serif;
   background: white;
-  background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   border-radius: 5px;
 }
