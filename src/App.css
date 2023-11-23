@@ -110,3 +110,16 @@ html, body, .map-container {
 .ol-full-screen-false{
   display: none !important;
 }
+
+.ol-scale-line {
+  left: 35px !important;;
+}
+
+.ol-north-arrow {
+  width: 24px;
+  height: 24px;
+  bottom: 8px;
+  left: 8px;
+  z-index: 20;
+  background-color: transparent;
+}

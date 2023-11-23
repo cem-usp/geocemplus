@@ -13,10 +13,10 @@ import {Fullscreen as FullscreenIcon} from '@mui/icons-material';
 import {FullScreen, defaults as defaultControls} from 'ol/control.js';
 
 function MainPane() {
-    const [openBars, setOpenBars] = useState('flex');
-	const [layer_url, setLayerURL] = useState(null);
+    const [layer_url, setLayerURL] = useState(null);
     const [attributes, setAttributes] = useState(null)
-
+    
+    const [openBars, setOpenBars] = useState('flex');
     const handleOpenBars = () => {
         setOpenBars(!openBars)
     }

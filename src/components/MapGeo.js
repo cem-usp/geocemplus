@@ -33,6 +33,9 @@ import MapiLayer from '../services/mapillary/MapiLayer'
 
 import {getLayer} from './ol-utils/Utils'
 
+import NavigationIcon from '@mui/icons-material/Navigation';
+import Box from '@mui/material/Box';
+
 //Fill
 const mapFill = new MapFill()
 
@@ -102,6 +105,17 @@ function MapGeo(props) {
 	  });
 	
 	props.map.addControl(scaleControl)
+
+	//Add North Arrow control
+	const outputNA = document.createElement("div")
+	const rootOutNA = ReactDOM.createRoot(outputNA)
+	rootOutNA.render(
+		<Box className='ol-north-arrow position-fixed'>
+			<NavigationIcon />
+		</Box>)
+	const naControl = new Control({element: outputNA, properties: 'id'})
+	naControl.set('id', 'north_arrow')
+	props.map.addControl(naControl)	
 
 	// Full Screen Control	
 	props.map.addControl(props.fs_control)
