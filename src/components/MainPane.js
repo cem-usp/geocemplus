@@ -11,6 +11,7 @@ import { Map, View } from 'ol';
 import Button from '@mui/material/Button';
 import {Fullscreen as FullscreenIcon} from '@mui/icons-material';
 import {FullScreen, defaults as defaultControls} from 'ol/control.js';
+import { Grid } from '@mui/material';
 
 function MainPane() {
     const [layer_url, setLayerURL] = useState(null);
@@ -108,31 +109,38 @@ function MainPane() {
             <Header
                 handleOpenBars={handleOpenBars}
              />
-            <LayerList 
-                changeLayerURL={setLayerURL}
-                changeAttributes={setAttributes}
-                openBars={openBars}
-            />
-            <Fillbar 
-                attributes={attributes}
-                fill_attribute={fill_attribute}
-                changeFAttribute={handleFAttributeChange}
-                method={method}
-                changeMethod={handleMethodChange}
-                n_classes={n_classes}
-                changeNClasses={handleNClassesChange}
-                color_scheme={color_scheme}
-                changeCScheme={handleColorSchemeChange}
-                palette={palette}
-                setPalette={setPalette}
-                changePallete={handlePaletteChange}
-				attributeTitle={attributeTitle}
-				onAttributeTitleChange={handleAttributeTitleChange}
-				attrList={attrList}
-				attributesLF={attributesLF}
-				handleALFChange={handleAttributesLFChange}
-                openBars={openBars}
-            />
+            <Grid container className="position-fixed" sx={{ zIndex:  10, zIndex:  10,
+                         mt: '15vh', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
+                <Grid item xs={12}>
+                    <LayerList 
+                        changeLayerURL={setLayerURL}
+                        changeAttributes={setAttributes}
+                        openBars={openBars}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <Fillbar 
+                        attributes={attributes}
+                        fill_attribute={fill_attribute}
+                        changeFAttribute={handleFAttributeChange}
+                        method={method}
+                        changeMethod={handleMethodChange}
+                        n_classes={n_classes}
+                        changeNClasses={handleNClassesChange}
+                        color_scheme={color_scheme}
+                        changeCScheme={handleColorSchemeChange}
+                        palette={palette}
+                        setPalette={setPalette}
+                        changePallete={handlePaletteChange}
+                        attributeTitle={attributeTitle}
+                        onAttributeTitleChange={handleAttributeTitleChange}
+                        attrList={attrList}
+                        attributesLF={attributesLF}
+                        handleALFChange={handleAttributesLFChange}
+                        openBars={openBars}
+                    />
+                </Grid>
+            </Grid>
             <BottomBar
                 map={map}
 				basicOptions={basicOptions}
