@@ -50,11 +50,6 @@ export default function Fillbar(props) {
       	setFilterAttrNames(filtered_names)
     },[props.attributes])
 
-    const [open, setOpen] = React.useState(false);
-    const handleClickOpen = () => {
-        setOpen(!open);
-      };
-
     // Customized Button Group for Menu
     const MenuToogleBtn = styled(ToggleButton)({
         '&.MuiToggleButton-root': {
@@ -75,11 +70,11 @@ export default function Fillbar(props) {
                         component="nav"
                     >
                         {/* Menu de Preenchimento */}
-                        <ListItemButton onClick={() => handleClickOpen()}>
+                        <ListItemButton onClick={props.handleClickOpenFM}>
                             <ListItemText primary='Preenchimento' />
-                            {open ? <ExpandLess /> : <ExpandMore />}
+                            {props.openFM ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Collapse in={props.openFM} timeout="auto" unmountOnExit>
                             <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Atributo de Preenchimento

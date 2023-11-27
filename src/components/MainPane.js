@@ -104,6 +104,44 @@ function MainPane() {
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
 
+    //Handle Open Layers Bar Menu
+    const initialLayersMenu = {
+        'menu_camadas': {id: 'menu_camadas', nivel: 0, open: false},
+        'gs_GeoCEM': {id: 'gs_GeoCEM', nivel: 1, open: false}
+    }
+    const [openLM, setOpenLM] = useState(initialLayersMenu);
+    //Handle click on menu
+    function handleClickLayerMenu(id, nivel = 0) {
+        const newOpen = objectMap(openLM, menu => {
+            if(menu.id === id)
+            menu.open = !menu.open
+            else if(menu.id !== id && menu.nivel === nivel)
+            menu.open = false
+            return menu
+        })
+        if(openFM === true) setOpenFM(false)
+        setOpenLM(newOpen)
+    }
+    // returns a new object with the values at each key mapped using mapFn(value)
+    //Credits to user Amberlamps on stackoverflow
+    const objectMap = (obj, fn) =>
+    Object.fromEntries(
+        Object.entries(obj).map(
+            ([k, v], i) => [k, fn(v, k, i)]
+        )
+    )
+
+    //Handle Open Fill Bar Menu
+    const [openFM, setOpenFM] = useState(false);
+    const handleClickOpenFM = () => {
+        if(openLM['menu_camadas'].open === true) setOpenLM(objectMap(openLM, menu => {
+            if(menu.id === 'menu_camadas')
+            menu.open = false
+            return menu
+        }))
+        setOpenFM(!openFM);
+      };
+
     return (
         <Box>
             <Header
@@ -116,6 +154,8 @@ function MainPane() {
                         changeLayerURL={setLayerURL}
                         changeAttributes={setAttributes}
                         openBars={openBars}
+                        openLM={openLM}
+                        handleOpenLM={handleClickLayerMenu}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -138,6 +178,8 @@ function MainPane() {
                         attributesLF={attributesLF}
                         handleALFChange={handleAttributesLFChange}
                         openBars={openBars}
+                        handleClickOpenFM={handleClickOpenFM}
+                        openFM={openFM}
                     />
                 </Grid>
             </Grid>
