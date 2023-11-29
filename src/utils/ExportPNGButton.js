@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import Button from '@mui/material/Button';
-import PhotoSizeSelectActualOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActualOutlined';
+import {Download as DownloadIcon} from '@mui/icons-material';
 import html2canvas from 'html2canvas';
 
 export default function ExportPNGButton(props) {
@@ -10,6 +10,8 @@ export default function ExportPNGButton(props) {
     function handleClick() {
       const legend = map.getViewport().querySelectorAll('.ol-legend')[0]
       const title = map.getViewport().querySelectorAll('.ol-title')[0]
+      const scaleLine = map.getViewport().querySelectorAll('.ol-scale-line')[0]
+      const northArrow = map.getViewport().querySelectorAll('.ol-north-arrow')[0]
         map.once('rendercomplete', async function () {
             const mapCanvas = document.createElement('canvas');
             const size = map.getSize();
@@ -27,6 +29,7 @@ export default function ExportPNGButton(props) {
             mapContext.globalAlpha = 1;
             mapContext.setTransform(1, 0, 0, 1, 0, 0);
             
+            //Legenda fixa
             if (legend !== undefined) {
               const legendCanvas = await html2canvas(legend)
               const legendX = (mapContext.canvas.width - legendCanvas.width)
@@ -34,13 +37,25 @@ export default function ExportPNGButton(props) {
               mapContext.drawImage(legendCanvas, legendX, legendY);
             }
 
+            //Título
             if (title !== undefined) {
-              console.log(title)
               const titleCanvas = await html2canvas(title)
               const titleX = (mapContext.canvas.width - titleCanvas.width)
               const titleY = 0
               mapContext.drawImage(titleCanvas, titleX, titleY);
             }
+
+            //Linha de escala
+            const scaleCanvas = await html2canvas(scaleLine)
+            const scaleX = scaleCanvas.width
+            const scaleY = (mapContext.canvas.height - scaleCanvas.height)
+            mapContext.drawImage(scaleCanvas, scaleX, scaleY);
+
+            //Seta do norte
+            const nArrowCanvas = await html2canvas(northArrow)
+            const nArrowX = nArrowCanvas.width
+            const nArrowY = (mapContext.canvas.height - nArrowCanvas.height)
+            mapContext.drawImage(nArrowCanvas, nArrowX, nArrowY);
             
             const link = document.getElementById('image-download');
             link.href = mapCanvas.toDataURL();
@@ -53,10 +68,10 @@ export default function ExportPNGButton(props) {
 
     return (
         <div>
-            <Button variant="outlined" endIcon={<PhotoSizeSelectActualOutlinedIcon />} sx={{height: '100%'}}
+            <Button variant="contained" sx={{backgroundColor: "#042E6F", minWidth: '5px'}}
                 ref={button}
                 onClick={handleClick} >
-                Exportar
+                <DownloadIcon sx={{fontSize: '1rem'}} />
             </Button>
             <a id="image-download" download="map.png"></a>
         </div>

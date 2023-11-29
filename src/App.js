@@ -2,8 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 
 import React, { useEffect, useState, useRef } from "react";
-import FormLayer from "./components/FormLayer";
-import { Container } from 'react-bootstrap';
+import MainPane from "./components/MainPane";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ptBR } from '@mui/material/locale';
 
@@ -22,9 +21,7 @@ function App() {
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App">
-				<Container>
-					<FormLayer />
-				</Container>
+				<MainPane />
 			</div>
 		</ThemeProvider>
 	);

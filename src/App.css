@@ -4,7 +4,7 @@
 
 html, body, .map-container {
   margin: 0;
-  height: 600px;
+  height: 100vh;
   width: 100%;
   font-family: sans-serif;
 }
@@ -32,8 +32,26 @@ html, body, .map-container {
 }
 
 .ol-legend {
-  bottom: 2em;
-  right: 0.5em;
+  bottom: 10px;
+  right: 10px;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  position: absolute;
+  max-width: 250px !important;
+}
+
+.ol-legend.enter {
+  right: -228px;
+}
+
+.ol-legend-header {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  height: 100px;
+  bottom: 50px;
+  align-self: flex-end;
+  right: 1;
 }
 
 .ol-tooltip-legend {
@@ -42,12 +60,21 @@ html, body, .map-container {
   text-align: left;
 }
 
+/* .ol-control button {
+  display: inline !important;
+} */
+
+.ol-zoom {
+  bottom: 0 !important;
+  top: unset !important;
+  left: unset !important;
+}
+
 /* Info */
 .info {
   padding: 6px 8px;
   font: 14px/16px Arial, Helvetica, sans-serif;
   background: white;
-  background: rgba(255,255,255,0.8);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   border-radius: 5px;
 }
@@ -68,4 +95,31 @@ html, body, .map-container {
 /* Mapillary */
 .mapillary-canvas {
   position: relative !important; 
+}
+
+.ol-scale-line {
+  background: white !important;
+}
+
+.ol-scale-line-inner {
+  border: 1px solid black !important;
+  border-top: none !important;
+  color: black !important;
+}
+
+.ol-full-screen-false{
+  display: none !important;
+}
+
+.ol-scale-line {
+  left: 35px !important;;
+}
+
+.ol-north-arrow {
+  width: 24px;
+  height: 24px;
+  bottom: 8px;
+  left: 8px;
+  z-index: 20;
+  background-color: transparent;
 }
