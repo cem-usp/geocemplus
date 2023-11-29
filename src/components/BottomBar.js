@@ -2,17 +2,13 @@ import {useState, React} from "react";
 
 import ExportPNGButton from '../utils/ExportPNGButton';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Grid from '@mui/material/Grid';
 import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
         PushPin as PushPinIcon,
         Fullscreen as FullscreenIcon, Download as DownloadIcon,
         Share as ShareIcon, Streetview as StreetviewIcon, ExpandLess as ExpandLessIcon} from '@mui/icons-material';
-import { fontSize } from "@mui/system";
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
 
 //Button toogle style

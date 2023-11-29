@@ -8,9 +8,7 @@ import { useState, useEffect, useRef } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
-import Button from '@mui/material/Button';
-import {Fullscreen as FullscreenIcon} from '@mui/icons-material';
-import {FullScreen, defaults as defaultControls} from 'ol/control.js';
+import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
 
 function MainPane() {
@@ -204,6 +202,9 @@ function MainPane() {
 				attributesLF={attributesLF}
 				basicOptions={basicOptions}
                 fs_control={fs_control}
+                setFAttribute={setFAttribute}
+                setAttributesLF={setAttributesLF}
+                setAttributeTitle={setAttributeTitle}
             />
         </Box>
     

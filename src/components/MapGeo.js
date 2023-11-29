@@ -3,7 +3,7 @@ import { OSM } from 'ol/source';
 import GeoJSON from 'ol/format/GeoJSON';
 import {Tile as TileLayer, Vector as VectorLayer}  from 'ol/layer';
 import Projection from 'ol/proj/Projection';
-import { Map, View } from 'ol';
+import { View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import { Fill, Style, Stroke, Icon } from 'ol/style';
@@ -12,10 +12,6 @@ import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
 import {ScaleLine} from 'ol/control.js';
-
-import ToolbarFill from './Toolbar/ToolbarFill'
-import ToolbarBasic from './Toolbar/ToolbarBasic'
-
 import 'ol/ol.css';
 
 import {Fill as MapFill} from '../utils/Fill'
@@ -120,58 +116,6 @@ function MapGeo(props) {
 	// Full Screen Control	
 	props.map.addControl(props.fs_control)
 
-	//Toolbar Basic Options
-	//const [basicOptions, setBasicOptions] = useState(() => ['map']);
-	const [textTitulo, setTextTitulo] = useState(() => '')
-	const [attribute, setAttribute] = useState(null)
-
-	// const handleBasicOptionsChange = (event, newOptions) => {
-	// 	setBasicOptions(newOptions);
-	// };
-
-	const handleTituloChange = (event) => {
-		setTextTitulo(event.target.value);
-	};
-
-	const handleAttributeChange = (event) => {
-		setAttribute(event.target.value);
-	};
-
-	//Toolbar Fill
-    const [n_classes, setNClasses] = useState(5)
-    const [color_scheme, setColorScheme] = useState('sequential')
-
-    const handleNClassesChange = (e) => {
-        setNClasses(e.target.value)
-    }
-
-    const handleColorSchemeChange = (e) => {
-		setColorScheme(e.target.value);
-	};
-
-	const handlePaletteChange = (e) => {
-        setPalette(e.target.value)
-    }    
-    const [palette, setPalette] = useState('')
-
-	const handleMethodChange = (e) => {
-        setMethod(e.target.value)
-    }
-    const [method, setMethod] = useState('quantile')
-
-    const [attributesTT, setAttributesTT] = useState([])
-
-	const handleAttributesTTChange = (e) => {
-		setAttributesTT(e.target.value);
-	};
-
-    const [attributeTitle, setAttributeTitle] = useState('')
-
-    const handleAttributeTitleChange = (e) => {
-		console.log('title', e.target.value)
-        setAttributeTitle(e.target.value)
-    }
-
 	//Prevent map element to re-render	
 	const mapElement = useRef()
 
@@ -197,9 +141,9 @@ function MapGeo(props) {
 		//Updates GeoJSON
 		if (props.layer_url !== null && geoJSON !== props.layer_url) {
 			//Clear fields of attibute
-			setAttribute(null)
-			setAttributesTT([])
-			setAttributeTitle('')
+			props.setFAttribute('')
+			props.setAttributesLF([])
+			props.setAttributeTitle('')
 
 			setGeoJSON(props.layer_url)
 
@@ -336,12 +280,6 @@ function MapGeo(props) {
 
 		}
 	}, [props.basicOptions])
-
-	//Handle title change
-	// useEffect(() => {
-	// 	const infoEl = document.getElementById('ol-control-title')
-	// 	infoEl.innerHTML = textTitulo
-	// }, [textTitulo])
 
 	//Handle Attribute change
 	useEffect(() => {
