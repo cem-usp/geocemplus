@@ -32,17 +32,6 @@ export default function BootomBar(props) {
         setopenBBar(!openBBar)
     }
 
-    function getFSControl() {
-        let fs_control = null
-        props.map.getControls().forEach((control) => {
-            if(control.constructor.name == 'FullScreen')
-                fs_control = control
-        })
-        return fs_control
-    }
-
-    const fs_control = getFSControl()
-
     const StyledGrid = styled(Grid)(({ theme }) => ({
         zIndex:  10, 
         bottom: 10, 
@@ -98,7 +87,7 @@ export default function BootomBar(props) {
             
             <StyledGridItem xs={12} sm={1.5}>
                 <Button value="full_screen" aria-label="full_screen" variant="contained" 
-                onClick={() => fs_control.element.querySelector('button').click()}
+                onClick={() => props.fs_control.element.querySelector('button').click()}
                 sx={{backgroundColor: "#042E6F", minWidth: '5px'}} 
                 >
                     <FullscreenIcon sx={{fontSize: '1rem'}} />
