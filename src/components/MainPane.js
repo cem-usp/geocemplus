@@ -10,6 +10,9 @@ import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
 import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
+import MapillaryViewer from './Mapillary'
+import Slider from '@mui/material/Slider';
+import '../side-by-side.css';
 
 function MainPane() {
     const [layer_url, setLayerURL] = useState(null);
@@ -139,6 +142,9 @@ function MainPane() {
         }))
         setOpenFM(!openFM);
       };
+    
+    //Image ID of Mapillary Viewer
+    const [mapillary_viewer, setMViewer] = useState(() => []);
 
     return (
         <Box>
@@ -188,24 +194,35 @@ function MainPane() {
                 fs_control={fs_control}
                 openBars={openBars}
             />
-            <MapGeo 
-                map={map}
-                max_zoom={max_zoom}
-                layer_url={layer_url} 
-                attributes={attributes}
-                fill_attribute={fill_attribute}
-                method={method}
-                n_classes={n_classes}
-                color_scheme={color_scheme}
-                palette={palette}
-				attributeTitle={attributeTitle}
-				attributesLF={attributesLF}
-				basicOptions={basicOptions}
-                fs_control={fs_control}
-                setFAttribute={setFAttribute}
-                setAttributesLF={setAttributesLF}
-                setAttributeTitle={setAttributeTitle}
-            />
+            <div className="leaflet-sbs">
+                <Slider className="leaflet-sbs-range"/>
+            </div>
+            <Grid container>
+                <Grid item>
+                    <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                </Grid>
+                <Grid item>
+                    <MapGeo 
+                        map={map}
+                        max_zoom={max_zoom}
+                        layer_url={layer_url} 
+                        attributes={attributes}
+                        fill_attribute={fill_attribute}
+                        method={method}
+                        n_classes={n_classes}
+                        color_scheme={color_scheme}
+                        palette={palette}
+                        attributeTitle={attributeTitle}
+                        attributesLF={attributesLF}
+                        basicOptions={basicOptions}
+                        fs_control={fs_control}
+                        setFAttribute={setFAttribute}
+                        setAttributesLF={setAttributesLF}
+                        setAttributeTitle={setAttributeTitle}
+                        mapi_viewer={mapillary_viewer}
+                    />
+                </Grid>
+            </Grid>
         </Box>
     
     );
