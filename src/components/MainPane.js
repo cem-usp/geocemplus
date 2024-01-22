@@ -194,26 +194,26 @@ function MainPane() {
                 fs_control={fs_control}
                 openBars={openBars}
             />
-            <Slider />
-                    <MapGeo 
-                        map={map}
-                        max_zoom={max_zoom}
-                        layer_url={layer_url} 
-                        attributes={attributes}
-                        fill_attribute={fill_attribute}
-                        method={method}
-                        n_classes={n_classes}
-                        color_scheme={color_scheme}
-                        palette={palette}
-                        attributeTitle={attributeTitle}
-                        attributesLF={attributesLF}
-                        basicOptions={basicOptions}
-                        fs_control={fs_control}
-                        setFAttribute={setFAttribute}
-                        setAttributesLF={setAttributesLF}
-                        setAttributeTitle={setAttributeTitle}
-                        mapi_viewer={mapillary_viewer}
-                    />
+            {/* <Slider map={map} /> */}
+            <MapGeo 
+                map={map}
+                max_zoom={max_zoom}
+                layer_url={layer_url} 
+                attributes={attributes}
+                fill_attribute={fill_attribute}
+                method={method}
+                n_classes={n_classes}
+                color_scheme={color_scheme}
+                palette={palette}
+                attributeTitle={attributeTitle}
+                attributesLF={attributesLF}
+                basicOptions={basicOptions}
+                fs_control={fs_control}
+                setFAttribute={setFAttribute}
+                setAttributesLF={setAttributesLF}
+                setAttributeTitle={setAttributeTitle}
+                mapi_viewer={mapillary_viewer}
+            />
         </Box>
     
     );
