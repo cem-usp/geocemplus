@@ -194,7 +194,7 @@ function MainPane() {
                 fs_control={fs_control}
                 openBars={openBars}
             />
-            {/* <Slider map={map} /> */}
+            <Slider map={map} />
             <MapGeo 
                 map={map}
                 max_zoom={max_zoom}
