@@ -11,7 +11,7 @@ import { Map, View } from 'ol';
 import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
-import Slider from '@mui/material/Slider';
+import Slider from './subcomponents/Slider.js';
 import '../side-by-side.css';
 
 function MainPane() {
@@ -194,14 +194,7 @@ function MainPane() {
                 fs_control={fs_control}
                 openBars={openBars}
             />
-            <div className="leaflet-sbs">
-                <Slider className="leaflet-sbs-range"/>
-            </div>
-            <Grid container>
-                <Grid item>
-                    <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
-                </Grid>
-                <Grid item>
+            <Slider />
                     <MapGeo 
                         map={map}
                         max_zoom={max_zoom}
@@ -221,8 +214,6 @@ function MainPane() {
                         setAttributeTitle={setAttributeTitle}
                         mapi_viewer={mapillary_viewer}
                     />
-                </Grid>
-            </Grid>
         </Box>
     
     );
