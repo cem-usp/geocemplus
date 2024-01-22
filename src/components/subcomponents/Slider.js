@@ -16,14 +16,16 @@ export default function Slider(props) {
     }
 
     function updateClip() {
-        var dividerX = getPosition()
-        dividerEL.current.style.left = dividerX + 'px'
+        props.changeDX(getPosition())
     }
 
     useEffect(() => {
         sliderEL.current.value = 0.5
     },[])
 
+    useEffect(() => {
+        dividerEL.current.style.left = props.dividerX + 'px'
+    }, [props.dividerX])
     
     return(
         <div className="leaflet-sbs">

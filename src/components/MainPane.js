@@ -146,6 +146,9 @@ function MainPane() {
     //Image ID of Mapillary Viewer
     const [mapillary_viewer, setMViewer] = useState(() => []);
 
+    //Panel left size
+    const [dividerX, setDividerX] = useState();
+
     return (
         <Box>
             <Header
@@ -194,26 +197,33 @@ function MainPane() {
                 fs_control={fs_control}
                 openBars={openBars}
             />
-            <Slider map={map} />
-            <MapGeo 
-                map={map}
-                max_zoom={max_zoom}
-                layer_url={layer_url} 
-                attributes={attributes}
-                fill_attribute={fill_attribute}
-                method={method}
-                n_classes={n_classes}
-                color_scheme={color_scheme}
-                palette={palette}
-                attributeTitle={attributeTitle}
-                attributesLF={attributesLF}
-                basicOptions={basicOptions}
-                fs_control={fs_control}
-                setFAttribute={setFAttribute}
-                setAttributesLF={setAttributesLF}
-                setAttributeTitle={setAttributeTitle}
-                mapi_viewer={mapillary_viewer}
-            />
+            <Slider map={map} dividerX={dividerX} changeDX={setDividerX} />
+            <Grid container>
+                <Grid item width={dividerX + "px"}>
+                    <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                </Grid>
+                <Grid item>
+                    <MapGeo 
+                        map={map}
+                        max_zoom={max_zoom}
+                        layer_url={layer_url} 
+                        attributes={attributes}
+                        fill_attribute={fill_attribute}
+                        method={method}
+                        n_classes={n_classes}
+                        color_scheme={color_scheme}
+                        palette={palette}
+                        attributeTitle={attributeTitle}
+                        attributesLF={attributesLF}
+                        basicOptions={basicOptions}
+                        fs_control={fs_control}
+                        setFAttribute={setFAttribute}
+                        setAttributesLF={setAttributesLF}
+                        setAttributeTitle={setAttributeTitle}
+                        mapi_viewer={mapillary_viewer}
+                    />
+                </Grid>
+            </Grid>
         </Box>
     
     );
