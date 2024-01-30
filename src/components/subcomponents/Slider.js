@@ -1,13 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useLayoutEffect } from 'react';
 
 
 export default function Slider(props) {
     const sliderEL = useRef(null);
     const dividerEL = useRef(null);
-
-    function handleMove() {
-        updateClip()
-    }
 
     function getPosition () {
         var rangeValue = sliderEL.current.value
@@ -19,18 +15,19 @@ export default function Slider(props) {
         props.changeDX(getPosition())
     }
 
-    useEffect(() => {
-        sliderEL.current.value = 0.5
-    },[])
-
-    useEffect(() => {
+    useLayoutEffect(() => {
         dividerEL.current.style.left = props.dividerX + 'px'
     }, [props.dividerX])
+
+    useEffect(() => {
+        sliderEL.current.value = 0.5 //initial value
+        updateClip()
+    }, [])
     
     return(
         <div className="leaflet-sbs">
             <div className="leaflet-sbs-divider" ref={dividerEL}></div>
-            <input className="leaflet-sbs-range" type="range" min="0" max="1" step="any" ref={sliderEL} onChange={handleMove}/>
+            <input className="leaflet-sbs-range" type="range" min="0" max="1" step="any" ref={sliderEL} onChange={updateClip}/>
         </div>
     );
 }

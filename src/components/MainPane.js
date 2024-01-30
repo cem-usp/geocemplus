@@ -149,6 +149,20 @@ function MainPane() {
     //Panel left size
     const [dividerX, setDividerX] = useState();
 
+    //Panel left size
+    const [dividerON, turnDivider] = useState(false);
+    
+    //Activate slider
+    useEffect(() => {
+        //Mapillary option
+        if(basicOptions.includes('mapillary') && dividerON === false) {
+            setDividerX()
+            turnDivider(true)
+        } else if(!basicOptions.includes('mapillary')) {
+            turnDivider(false)
+        }
+	}, [basicOptions])
+
     return (
         <Box>
             <Header
@@ -196,10 +210,11 @@ function MainPane() {
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
                 openBars={openBars}
+                turnDivider={turnDivider}
             />
-            <Slider map={map} dividerX={dividerX} changeDX={setDividerX} />
+            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} />) : null}
             <Grid container>
-                <Grid item width={dividerX + "px"}>
+                <Grid item width={dividerX + "px"} display={dividerON ? 'block' : 'none'}>
                     <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
                 </Grid>
                 <Grid item>
