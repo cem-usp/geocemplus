@@ -212,31 +212,35 @@ function MainPane() {
                 openBars={openBars}
                 turnDivider={turnDivider}
             />
-            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} />) : null}
+            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
             <Grid container>
-                <Grid item width={dividerX + "px"} display={dividerON ? 'block' : 'none'}>
-                    <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
-                </Grid>
-                <Grid item>
-                    <MapGeo 
-                        map={map}
-                        max_zoom={max_zoom}
-                        layer_url={layer_url} 
-                        attributes={attributes}
-                        fill_attribute={fill_attribute}
-                        method={method}
-                        n_classes={n_classes}
-                        color_scheme={color_scheme}
-                        palette={palette}
-                        attributeTitle={attributeTitle}
-                        attributesLF={attributesLF}
-                        basicOptions={basicOptions}
-                        fs_control={fs_control}
-                        setFAttribute={setFAttribute}
-                        setAttributesLF={setAttributesLF}
-                        setAttributeTitle={setAttributeTitle}
-                        mapi_viewer={mapillary_viewer}
-                    />
+                    <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
+                        <Box>
+                            <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                        </Box>
+                    </Grid>
+                <Grid item xs>
+                    <Box>
+                        <MapGeo 
+                            map={map}
+                            max_zoom={max_zoom}
+                            layer_url={layer_url} 
+                            attributes={attributes}
+                            fill_attribute={fill_attribute}
+                            method={method}
+                            n_classes={n_classes}
+                            color_scheme={color_scheme}
+                            palette={palette}
+                            attributeTitle={attributeTitle}
+                            attributesLF={attributesLF}
+                            basicOptions={basicOptions}
+                            fs_control={fs_control}
+                            setFAttribute={setFAttribute}
+                            setAttributesLF={setAttributesLF}
+                            setAttributeTitle={setAttributeTitle}
+                            mapi_viewer={mapillary_viewer}
+                        />
+                    </Box>
                 </Grid>
             </Grid>
         </Box>

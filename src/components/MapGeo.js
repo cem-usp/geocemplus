@@ -96,22 +96,27 @@ function MapGeo(props) {
 	}
 
 	// Scale Control
-	const scaleControl = new ScaleLine({
-		units: 'metric',
-	  });
-	
-	props.map.addControl(scaleControl)
+	if(!getControl(props.map, 'scale')) {
+		const scaleControl = new ScaleLine({
+			units: 'metric',
+			properties: 'id'
+	  	});
+		scaleControl.set('id', 'scale')
+		props.map.addControl(scaleControl)
+	}
 
 	//Add North Arrow control
-	const outputNA = document.createElement("div")
-	const rootOutNA = ReactDOM.createRoot(outputNA)
-	rootOutNA.render(
-		<Box className='ol-north-arrow position-fixed'>
-			<NavigationIcon />
-		</Box>)
-	const naControl = new Control({element: outputNA, properties: 'id'})
-	naControl.set('id', 'north_arrow')
-	props.map.addControl(naControl)	
+	if(!getControl(props.map, 'north_arrow')) {
+		const outputNA = document.createElement("div")
+		const rootOutNA = ReactDOM.createRoot(outputNA)
+		rootOutNA.render(
+			<Box className='ol-north-arrow' position='absolute'>
+				<NavigationIcon />
+			</Box>)
+		const naControl = new Control({element: outputNA, properties: 'id'})
+		naControl.set('id', 'north_arrow')
+		props.map.addControl(naControl)	
+	}
 
 	// Full Screen Control	
 	props.map.addControl(props.fs_control)

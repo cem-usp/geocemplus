@@ -22,6 +22,6 @@ export default function ViewerComponent(props) {
   },[])
 
   return (
-    <div ref={containerRef} style={{width: '100%', height: '800px'}} />
+    <div ref={containerRef} style={{width:props.dividerX + "px" , height: '800px'}} />
   );
 }

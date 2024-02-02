@@ -7,7 +7,7 @@ export default function Slider(props) {
 
     function getPosition () {
         var rangeValue = sliderEL.current.value
-        var offset = (0.5 - rangeValue) * 42// (this.options.thumbSize) = 42
+        var offset = (0.33 - rangeValue) * 42// (this.options.thumbSize) = 42
         return props.map.getSize()[0] * rangeValue + offset
     }
 
@@ -15,8 +15,9 @@ export default function Slider(props) {
         props.changeDX(getPosition())
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         dividerEL.current.style.left = props.dividerX + 'px'
+        props.viewer.resize()
     }, [props.dividerX])
 
     useEffect(() => {
