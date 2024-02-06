@@ -13,6 +13,7 @@ import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
 import '../side-by-side.css';
+import Filter from './subcomponents/Filter.js'
 
 function MainPane() {
     const [layer_url, setLayerURL] = useState(null);
@@ -216,6 +217,7 @@ function MainPane() {
             <Grid container>
                     <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
                         <Box>
+                            <Filter />
                             <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
                         </Box>
                     </Grid>

@@ -9,7 +9,12 @@ export default function ViewerComponent(props) {
     const viewer = new Viewer({
       accessToken: 'MLY|9006973349373388|91a175c294e87cd0e18a346877811833',
       container: containerRef.current,
-      component: {cover: false},
+      component: {
+        cover: false,
+        sequence: {
+          visible: false,
+        }
+      },
     })
 
     props.changeViewer(viewer)
@@ -22,6 +27,6 @@ export default function ViewerComponent(props) {
   },[])
 
   return (
-    <div ref={containerRef} style={{width:props.dividerX + "px" , height: '800px'}} />
+    <div ref={containerRef} style={{width:props.dividerX + "px" , height: '100vh'}} />
   );
 }

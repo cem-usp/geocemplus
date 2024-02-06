@@ -1,7 +1,26 @@
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import MVT from 'ol/format/MVT';
-import { Style, Stroke } from 'ol/style';
+import {Circle, Fill, Stroke, Style} from 'ol/style';
+
+const fill = new Fill({
+  color: 'rgba(255,255,255,0.4)',
+});
+const stroke = new Stroke({
+  color: '#3399CC',
+  width: 1.25,
+});
+const styles = [
+  new Style({
+    image: new Circle({
+      fill: fill,
+      stroke: stroke,
+      radius: 5,
+    }),
+    fill: fill,
+    stroke: stroke,
+  }),
+];
 
 export default function getMapillaryVT(map, mapi_viewer) {
     const mapillary_layer = new VectorTileLayer({
@@ -12,7 +31,14 @@ export default function getMapillaryVT(map, mapi_viewer) {
         }),
         zIndex: 4,
         declutter: true,
-        properties: {'id': 'mapillary'}
+        properties: {'id': 'mapillary'},
+        style: function (feature) {
+          if(feature.properties_.organization_id !== 823491025860966) {
+            return null
+          } else {
+            return styles
+          }
+        }
     })
 
     showSLIPreview(mapillary_layer, map, mapi_viewer)

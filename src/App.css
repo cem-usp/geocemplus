@@ -4,7 +4,7 @@
 
 html, body, .map-container {
   margin: 0;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   font-family: sans-serif;
 }
@@ -29,19 +29,6 @@ html, body, .map-container {
 .ol-title {
   top: 0.5em;
   right: 0.5em;
-}
-
-.ol-legend {
-  bottom: 10px;
-  right: 10px;
-  transition: all 0.25s;
-  -webkit-transition: all 0.25s;
-  position: absolute;
-  max-width: 250px !important;
-}
-
-.ol-legend.enter {
-  right: -228px;
 }
 
 .ol-legend-header {
@@ -122,4 +109,41 @@ html, body, .map-container {
   left: 8px;
   z-index: 20;
   background-color: transparent;
+}
+
+.ol-legend {
+  bottom: 10px;
+  right: 10px;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  position: absolute;
+  max-width: 250px !important;
+}
+
+.ol-legend.enter {
+  right: -228px;
+}
+
+.mapi-filter {
+  border-radius: 50%;
+  width: 56px;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+}
+
+.mapi-filter.enter {
+  border-radius: 2em;
+  width: 100%;
+  padding-left: 20px;
+}
+
+.mapi-txtFilter {
+  width: 0%;
+  transition: all 0.50s;
+  -webkit-transition: all 0.50s;
+}
+
+.mapi-txtFilter.enter {
+  width: 100%;
+  margin-left: 20px;
 }
