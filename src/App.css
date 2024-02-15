@@ -127,23 +127,20 @@ html, body, .map-container {
 .mapi-filter {
   border-radius: 50%;
   width: 56px;
-  transition: all 0.25s;
-  -webkit-transition: all 0.25s;
+  transition: all 0.25s !important;
+  -webkit-transition:all 0.25s !important;
 }
 
 .mapi-filter.enter {
   border-radius: 2em;
-  width: 100%;
-  padding-left: 20px;
+  width: 275px;
 }
 
 .mapi-txtFilter {
   width: 0%;
-  transition: all 0.50s;
-  -webkit-transition: all 0.50s;
 }
 
 .mapi-txtFilter.enter {
-  width: 100%;
-  margin-left: 20px;
+  width: 65%;
+  margin-left: 15px;
 }

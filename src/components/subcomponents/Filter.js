@@ -7,20 +7,16 @@ import Box from '@mui/material/Box';
 export default function FABFilter() {
 
     const [open, setOpen] = React.useState(false);
-    const fabRef = React.useRef(null);
-    const txtRef = React.useRef(null);
   
     const handleChange = () => {
-        fabRef.current.classList.toggle('enter')
-        txtRef.current.classList.toggle('enter')
-        setOpen((open) => !open);
+      setOpen((open) => !open);
     };
     
     return (
-      <Box sx={{ left: 20, top: 80, zIndex: 10,}} className="position-fixed">
-        <Fab aria-label="filtro" ref={fabRef} className="mapi-filter"> 
+      <Box sx={{ marginLeft: 5, top: 80, zIndex: 10,}} className="position-fixed">
+        <Fab aria-label="filtro" className={`mapi-filter${open ? " enter" : ""}`}> 
           <SearchIcon gutterBottom onClick={handleChange} />
-          <TextField ref={txtRef} className="mapi-txtFilter" id="standard-basic" label="ID da Organização" variant="standard"/>
+          <TextField className={`mapi-txtFilter${open ? " enter" : ""}`} id="standard-basic" label="ID da Organização" variant="standard"/>
         </Fab>
       </Box>
     );
