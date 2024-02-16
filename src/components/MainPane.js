@@ -152,6 +152,9 @@ function MainPane() {
 
     //Panel left size
     const [dividerON, turnDivider] = useState(false);
+
+    //Mapillary Organization ID
+    const [mapilOID, setMapilOID] = useState('');
     
     //Activate slider
     useEffect(() => {
@@ -217,7 +220,7 @@ function MainPane() {
             <Grid container>
                     <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
                         <Box>
-                            <Filter />
+                            <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
                             <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
                         </Box>
                     </Grid>
@@ -241,6 +244,7 @@ function MainPane() {
                             setAttributesLF={setAttributesLF}
                             setAttributeTitle={setAttributeTitle}
                             mapi_viewer={mapillary_viewer}
+                            mapilOID={mapilOID}
                         />
                     </Box>
                 </Grid>

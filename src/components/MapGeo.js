@@ -6,7 +6,7 @@ import Projection from 'ol/proj/Projection';
 import { View } from 'ol';
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
-import { Fill, Style, Stroke, Icon } from 'ol/style';
+import { Circle, Fill, Style, Stroke, Icon } from 'ol/style';
 import geojsonvt from 'geojson-vt';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
@@ -25,7 +25,7 @@ import LegendAtInfo from '../services/LegendAtInfo'
 
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 
-import MapiLayer from '../services/mapillary/MapiLayer'
+import {getMapillaryVT, updateMapiLayer} from '../services/mapillary/MapiLayer'
 
 import {getLayer} from './ol-utils/Utils'
 
@@ -260,7 +260,7 @@ function MapGeo(props) {
 
 		//Mapillary option
 		if(props.basicOptions.includes('mapillary') && map_layer_mapillary === null) {
-			props.map.addLayer(MapiLayer(props.map, props.mapi_viewer))
+			props.map.addLayer(getMapillaryVT(props.map, props.mapi_viewer, props.mapilOID))
 		} else if(!props.basicOptions.includes('mapillary')) {
 			props.map.removeLayer(map_layer_mapillary)
 		}
@@ -285,6 +285,16 @@ function MapGeo(props) {
 
 		}
 	}, [props.basicOptions])
+
+	//Handle mapillary OID change
+	useEffect(() => {
+		const mapillary_layer = getLayer(props.map, 'mapillary')
+
+		if(mapillary_layer !== null) {
+			updateMapiLayer(mapillary_layer, props.map, props.mapi_viewer, props.mapilOID)
+		}
+		
+	}, [props.mapilOID])
 
 	//Handle Attribute change
 	useEffect(() => {

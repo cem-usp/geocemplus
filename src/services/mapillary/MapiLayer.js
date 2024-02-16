@@ -22,7 +22,8 @@ const styles = [
   }),
 ];
 
-export default function getMapillaryVT(map, mapi_viewer) {
+export function getMapillaryVT(map, mapi_viewer, moid) {
+  console.log('moid', moid)
     const mapillary_layer = new VectorTileLayer({
         source: new VectorTileSource({
           format: new MVT(),
@@ -33,7 +34,7 @@ export default function getMapillaryVT(map, mapi_viewer) {
         declutter: true,
         properties: {'id': 'mapillary'},
         style: function (feature) {
-          if(feature.properties_.organization_id !== 823491025860966) {
+          if(moid !== '' && feature.properties_.organization_id != moid) {
             return null
           } else {
             return styles
@@ -44,6 +45,20 @@ export default function getMapillaryVT(map, mapi_viewer) {
     showSLIPreview(mapillary_layer, map, mapi_viewer)
     
     return mapillary_layer
+}
+
+export function updateMapiLayer(mapillary_layer, map, mapi_viewer, mapilOID) {
+
+  mapillary_layer.setStyle(function (feature) {
+    if(mapilOID !== '' && feature.properties_.organization_id != mapilOID) {
+      return null
+    } else {
+      return styles
+    }
+  })
+
+  showSLIPreview(mapillary_layer, map, mapi_viewer)
+
 }
 
 

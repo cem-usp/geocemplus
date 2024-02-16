@@ -144,3 +144,11 @@ html, body, .map-container {
   width: 65%;
   margin-left: 15px;
 }
+
+.mapi-BackspaceIcon {
+  display: none !important;
+}
+
+.mapi-BackspaceIcon.enter {
+  display: inline-block !important;
+}
