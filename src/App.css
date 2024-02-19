@@ -127,6 +127,7 @@ html, body, .map-container {
 .mapi-filter {
   border-radius: 50%;
   width: 56px;
+  height: 69px;
   transition: all 0.25s !important;
   -webkit-transition:all 0.25s !important;
 }
@@ -134,6 +135,7 @@ html, body, .map-container {
 .mapi-filter.enter {
   border-radius: 2em;
   width: 275px;
+  height: 69px;
 }
 
 .mapi-txtFilter {

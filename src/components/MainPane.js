@@ -155,6 +155,8 @@ function MainPane() {
 
     //Mapillary Organization ID
     const [mapilOID, setMapilOID] = useState('');
+    //Mapillary Organization ID Found
+    const [moidFound, setMOIDFound] = useState(false);
     
     //Activate slider
     useEffect(() => {
@@ -162,8 +164,10 @@ function MainPane() {
         if(basicOptions.includes('mapillary') && dividerON === false) {
             setDividerX()
             turnDivider(true)
+            setOpenBars(false)
         } else if(!basicOptions.includes('mapillary')) {
             turnDivider(false)
+            setOpenBars(true)
         }
 	}, [basicOptions])
 
@@ -213,7 +217,7 @@ function MainPane() {
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
-                openBars={openBars}
+                dividerON={dividerON}
                 turnDivider={turnDivider}
             />
             {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
@@ -245,6 +249,7 @@ function MainPane() {
                             setAttributeTitle={setAttributeTitle}
                             mapi_viewer={mapillary_viewer}
                             mapilOID={mapilOID}
+                            setMOIDFound={setMOIDFound}
                         />
                     </Box>
                 </Grid>
