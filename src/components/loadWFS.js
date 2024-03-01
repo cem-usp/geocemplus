@@ -255,32 +255,36 @@ export default function LayerList(props) {
         <Box sx={{ display: (props.openBars ? 'flex' : 'none')}}
              >
 
-            <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '70vh', overflow: 'auto' }} >
-                <NavList>
+            <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '70vh'}} >
+                <NavList
+                 component="nav"
+                 >
                     {/* Menu de Camadas */}
                     <ListItemButton onClick={() => props.handleOpenLM('menu_camadas', 0)} 
                     sx = {{ bgcolor: '#042E6F', color: 'white'}}>
                         <ListItemText primary='Camadas' />
                         {props.openLM['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
-                    <Collapse in={props.openLM['menu_camadas'].open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
+                    <Collapse in={props.openLM['menu_camadas'].open} timeout="auto" >
+                        <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
+                            <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
 
-                            {/* Lista de Camadas do GeoCEM */}
-                            <ListItemButton onClick={() => props.handleOpenLM('gs_'+geoservices[0].name, 1)}>
-                                <ListItemIcon>
-                                    <PublicIcon sx={{ color: '#042E6F' }} />
-                                </ListItemIcon>
-                                <ListItemText primary={geoservices[0].name} />
-                                {props.openLM['gs_'+geoservices[0].name].open ? <ExpandLess /> : <ExpandMore />}
-                            </ListItemButton>
-                            <Collapse in={props.openLM['gs_'+geoservices[0].name].open} timeout="auto" unmountOnExit>
-                                <List component="div" sx = {{ bgcolor: 'white' }} disablePadding>
-                                    {geocem_cats_list}
-                                </List>
-                            </Collapse>
+                                {/* Lista de Camadas do GeoCEM */}
+                                <ListItemButton onClick={() => props.handleOpenLM('gs_'+geoservices[0].name, 1)}>
+                                    <ListItemIcon>
+                                        <PublicIcon sx={{ color: '#042E6F' }} />
+                                    </ListItemIcon>
+                                    <ListItemText primary={geoservices[0].name} />
+                                    {props.openLM['gs_'+geoservices[0].name].open ? <ExpandLess /> : <ExpandMore />}
+                                </ListItemButton>
+                                <Collapse in={props.openLM['gs_'+geoservices[0].name].open} timeout="auto" unmountOnExit>
+                                    <List component="div" sx = {{ bgcolor: 'white' }} disablePadding>
+                                        {geocem_cats_list}
+                                    </List>
+                                </Collapse>
 
-                        </List>
+                            </List>
+                        </Box>
                     </Collapse>
 
                     {/* Lista de Camadas do GeoSampa */}
