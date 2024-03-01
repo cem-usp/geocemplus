@@ -1,9 +1,28 @@
 import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import MVT from 'ol/format/MVT';
-import { Style, Stroke } from 'ol/style';
+import {Circle, Fill, Stroke, Style} from 'ol/style';
 
-export default function getMapillaryVT(map, mapi_viewer) {
+const fill = new Fill({
+  color: 'rgba(255,255,255,0.4)',
+});
+const stroke = new Stroke({
+  color: '#3399CC',
+  width: 1.25,
+});
+const styles = [
+  new Style({
+    image: new Circle({
+      fill: fill,
+      stroke: stroke,
+      radius: 5,
+    }),
+    fill: fill,
+    stroke: stroke,
+  }),
+];
+
+export function getMapillaryVT(map, mapi_viewer, moid) {
     const mapillary_layer = new VectorTileLayer({
         source: new VectorTileSource({
           format: new MVT(),
@@ -12,16 +31,38 @@ export default function getMapillaryVT(map, mapi_viewer) {
         }),
         zIndex: 4,
         declutter: true,
-        properties: {'id': 'mapillary'}
+        properties: {'id': 'mapillary'},
+        style: function (feature) {
+          if(moid !== '' && feature.properties_.organization_id != moid) {
+            return null
+          } else {
+            return styles
+          }
+        }
     })
 
     showSLIPreview(mapillary_layer, map, mapi_viewer)
+    highlightFeature(mapillary_layer, map, mapi_viewer)
     
     return mapillary_layer
 }
 
+export function updateMapiLayer(mapillary_layer, map, mapi_viewer, mapilOID) {
 
-function showSLIPreview(mapillary_layer, map, mapi_viewer) {
+  mapillary_layer.setStyle(function (feature) {
+    if(mapilOID !== '' && feature.properties_.organization_id != mapilOID) {
+      return null
+    } else {
+      return styles
+    }
+  })
+
+  showSLIPreview(mapillary_layer, map, mapi_viewer)
+  highlightFeature(mapillary_layer, map, mapi_viewer)
+
+}
+
+function highlightFeature(mapillary_layer, map, mapi_viewer) {
 
   //Feature to highlight
   let highlight;
@@ -31,12 +72,24 @@ function showSLIPreview(mapillary_layer, map, mapi_viewer) {
   if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
 
   //Highlight Style
-  const highlightFeature = new Style({
-    stroke: new Stroke({
-      color: 'white',
-      width: 4,
-    }),
+  const fillHighlight = new Fill({
+    color: 'rgba(255,255,255,1)',
   });
+  const strokeHighlight = new Stroke({
+    color: '#003475',
+    width: 10.25,
+  });
+  const highlightStyles = [
+    new Style({
+      image: new Circle({
+        fill: fill,
+        stroke: stroke,
+        radius: 10,
+      }),
+      fill: fillHighlight,
+      stroke: strokeHighlight,
+    }),
+  ];
 
   //Overlay Feature
   const featureOverlay = new VectorTileLayer({
@@ -44,25 +97,21 @@ function showSLIPreview(mapillary_layer, map, mapi_viewer) {
     map: map,
     renderMode: 'vector',
     style: function (feature) {
-      if (feature.getId() === highlight) {
-          return highlightFeature;
+      if (feature.get('id') === highlight) {
+          return highlightStyles;
       }
     },
     zIndex: 5
   });
 
-  const displayFeatureInfo = function (pixel) {
+  const highlightFeatureByPixel = function (pixel) {
 
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-      if(feature.getType() == 'Point' && feature.get('id') !== null) {
-			  mapi_viewer.moveTo(feature.get('id'))
-      }
-
-      return feature.getId();
+      return feature.get('id');
     });		
-
+    
     highlight = feature
-    //featureOverlay.changed()
+    featureOverlay.changed()
   }
 
   const handlePointerMoveHighlight = function (evt) {
@@ -70,11 +119,43 @@ function showSLIPreview(mapillary_layer, map, mapi_viewer) {
       return;
     }
     const pixel = map.getEventPixel(evt.originalEvent);
-    displayFeatureInfo(pixel);
+    highlightFeatureByPixel(pixel);
   }
 
-  const new_tlEventKey = map.on('click', handlePointerMoveHighlight);
+  const new_tlEventKey = map.on('pointermove', handlePointerMoveHighlight);
 
   map.set('tlEventKeyHighlightMapillary', new_tlEventKey)
+}
+
+
+function showSLIPreview(mapillary_layer, map, mapi_viewer) {
+
+  //Remove evento
+  const tlEventKey = map.get('tlEventKeyClickMapillary')
+  if(tlEventKey) map.un(tlEventKey.type, tlEventKey.listener)
+
+  const viewImage = function (pixel) {
+
+    const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+      if(feature.get('id') !== null) {
+        const image_id = (feature.getType() == 'Point') ? feature.get('id') : feature.properties_.image_id
+			  mapi_viewer.moveTo(image_id)
+      }
+
+      return feature.getId();
+    });		
+  }
+
+  const handleClick = function (evt) {
+    if (evt.dragging) {
+      return;
+    }
+    const pixel = map.getEventPixel(evt.originalEvent);
+    viewImage(pixel);
+  }
+
+  const click_tlEventKey = map.on('click', handleClick);
+
+  map.set('tlEventKeyClickMapillary', click_tlEventKey)
 
 };

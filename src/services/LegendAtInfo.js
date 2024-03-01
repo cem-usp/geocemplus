@@ -27,7 +27,7 @@ export default function (props) {
   );
 
     return (
-        <div className="info ol-control ol-tooltip-legend">
+        <div className="info ol-tooltip-legend">
             <Card>
                   <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     

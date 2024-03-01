@@ -13,6 +13,7 @@ import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
 import '../side-by-side.css';
+import Filter from './subcomponents/Filter.js'
 
 function MainPane() {
     const [layer_url, setLayerURL] = useState(null);
@@ -146,6 +147,30 @@ function MainPane() {
     //Image ID of Mapillary Viewer
     const [mapillary_viewer, setMViewer] = useState(() => []);
 
+    //Panel left size
+    const [dividerX, setDividerX] = useState();
+
+    //Panel left size
+    const [dividerON, turnDivider] = useState(false);
+
+    //Mapillary Organization ID
+    const [mapilOID, setMapilOID] = useState('');
+    //Mapillary Organization ID Found
+    const [moidFound, setMOIDFound] = useState(false);
+    
+    //Activate slider
+    useEffect(() => {
+        //Mapillary option
+        if(basicOptions.includes('mapillary') && dividerON === false) {
+            setDividerX()
+            turnDivider(true)
+            setOpenBars(false)
+        } else if(!basicOptions.includes('mapillary')) {
+            turnDivider(false)
+            setOpenBars(true)
+        }
+	}, [basicOptions])
+
     return (
         <Box>
             <Header
@@ -192,28 +217,43 @@ function MainPane() {
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
-                openBars={openBars}
+                dividerON={dividerON}
+                turnDivider={turnDivider}
             />
-            {/* <Slider map={map} /> */}
-            <MapGeo 
-                map={map}
-                max_zoom={max_zoom}
-                layer_url={layer_url} 
-                attributes={attributes}
-                fill_attribute={fill_attribute}
-                method={method}
-                n_classes={n_classes}
-                color_scheme={color_scheme}
-                palette={palette}
-                attributeTitle={attributeTitle}
-                attributesLF={attributesLF}
-                basicOptions={basicOptions}
-                fs_control={fs_control}
-                setFAttribute={setFAttribute}
-                setAttributesLF={setAttributesLF}
-                setAttributeTitle={setAttributeTitle}
-                mapi_viewer={mapillary_viewer}
-            />
+            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+            <Grid container>
+                    <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
+                        <Box>
+                            <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
+                            <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                        </Box>
+                    </Grid>
+                <Grid item xs>
+                    <Box>
+                        <MapGeo 
+                            map={map}
+                            max_zoom={max_zoom}
+                            layer_url={layer_url} 
+                            attributes={attributes}
+                            fill_attribute={fill_attribute}
+                            method={method}
+                            n_classes={n_classes}
+                            color_scheme={color_scheme}
+                            palette={palette}
+                            attributeTitle={attributeTitle}
+                            attributesLF={attributesLF}
+                            basicOptions={basicOptions}
+                            fs_control={fs_control}
+                            setFAttribute={setFAttribute}
+                            setAttributesLF={setAttributesLF}
+                            setAttributeTitle={setAttributeTitle}
+                            mapi_viewer={mapillary_viewer}
+                            mapilOID={mapilOID}
+                            setMOIDFound={setMOIDFound}
+                        />
+                    </Box>
+                </Grid>
+            </Grid>
         </Box>
     
     );

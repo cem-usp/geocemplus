@@ -4,7 +4,7 @@
 
 html, body, .map-container {
   margin: 0;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   font-family: sans-serif;
 }
@@ -31,19 +31,6 @@ html, body, .map-container {
   right: 0.5em;
 }
 
-.ol-legend {
-  bottom: 10px;
-  right: 10px;
-  transition: all 0.25s;
-  -webkit-transition: all 0.25s;
-  position: absolute;
-  max-width: 250px !important;
-}
-
-.ol-legend.enter {
-  right: -228px;
-}
-
 .ol-legend-header {
   writing-mode: vertical-rl;
   text-orientation: mixed;
@@ -55,14 +42,14 @@ html, body, .map-container {
 }
 
 .ol-tooltip-legend {
-  top: 4em;
+  top: 74px;
   right: 0.5em;
   text-align: left;
+  position: fixed;
+  background-color: rgba(255,255,255,0.4);
+  border-radius: 4px;
+  padding: 2px;
 }
-
-/* .ol-control button {
-  display: inline !important;
-} */
 
 .ol-zoom {
   bottom: 0 !important;
@@ -122,4 +109,48 @@ html, body, .map-container {
   left: 8px;
   z-index: 20;
   background-color: transparent;
+}
+
+.ol-legend {
+  bottom: 10px;
+  right: 10px;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  position: absolute;
+  max-width: 250px !important;
+}
+
+.ol-legend.enter {
+  right: -228px;
+}
+
+.mapi-filter {
+  border-radius: 50%;
+  width: 56px;
+  height: 69px;
+  transition: all 0.25s !important;
+  -webkit-transition:all 0.25s !important;
+}
+
+.mapi-filter.enter {
+  border-radius: 2em;
+  width: 275px;
+  height: 69px;
+}
+
+.mapi-txtFilter {
+  width: 0%;
+}
+
+.mapi-txtFilter.enter {
+  width: 65%;
+  margin-left: 15px;
+}
+
+.mapi-BackspaceIcon {
+  display: none !important;
+}
+
+.mapi-BackspaceIcon.enter {
+  display: inline-block !important;
 }
