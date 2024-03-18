@@ -486,7 +486,8 @@ function MapGeo(props) {
 			map: props.map,
 			renderMode: 'vector',
 			style: function (feature) {
-				if (feature.get('fid') === highlight) {
+				const feature_id = feature.getProperties()[feature.getKeys()[1]]
+				if (feature_id === highlight) {
 				  	return highlightFeature;
 				}
 			},
@@ -496,10 +497,12 @@ function MapGeo(props) {
 		const displayFeatureInfo = function (pixel) {
 
 			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
-				return feature.get('fid');
+				return feature;
 			});		
 
-			highlight = feature
+			const feature_id = feature.getProperties()[feature.getKeys()[1]]
+
+			highlight = feature_id
 			featureOverlay.changed()
 		}
 
