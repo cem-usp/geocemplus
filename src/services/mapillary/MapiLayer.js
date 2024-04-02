@@ -97,8 +97,7 @@ function highlightFeature(mapillary_layer, map, mapi_viewer) {
     map: map,
     renderMode: 'vector',
     style: function (feature) {
-			const feature_id = feature.getProperties()[feature.getKeys()[1]]
-      if (feature_id === highlight) {
+      if (feature.get('id') === highlight) {
           return highlightStyles;
       }
     },
@@ -108,8 +107,7 @@ function highlightFeature(mapillary_layer, map, mapi_viewer) {
   const highlightFeatureByPixel = function (pixel) {
 
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-			const feature_id = feature.getProperties()[feature.getKeys()[1]]
-      return feature_id;
+      return feature.get('id');
     });		
     
     highlight = feature
@@ -139,9 +137,8 @@ function showSLIPreview(mapillary_layer, map, mapi_viewer) {
   const viewImage = function (pixel) {
 
     const feature = map.forEachFeatureAtPixel(pixel, function (feature) {
-			const feature_id = feature.getProperties()[feature.getKeys()[1]]
-      if(feature_id !== null) {
-        const image_id = (feature.getType() == 'Point') ? feature_id : feature.properties_.image_id
+      if(feature.get('id') !== null) {
+        const image_id = (feature.getType() == 'Point') ? feature.get('id') : feature.properties_.image_id
 			  mapi_viewer.moveTo(image_id)
       }
 

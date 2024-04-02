@@ -223,7 +223,7 @@ function MapGeo(props) {
 						//Get center of the layer
 					const centerWebMercator = center(convertedJson).geometry.coordinates
 
-					//Set the center of the view
+						//Set the center of the view
 					const tExtent = bbox(convertedJson)
 					props.map.setView(new View({
 						center: centerWebMercator,
@@ -494,16 +494,20 @@ function MapGeo(props) {
 			zIndex: 1
 		  });
 
-		const displayFeatureInfo = function (pixel) {
+		const displayFeatureInfo = function (pixel,) {
 
 			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
-				return feature;
-			});		
+																		return feature;
+																	},
+															{layerFilter: function(layer) {
+																return layer.get('id') === 'Thematic';
+															}});		
+			if(feature) {
+				const feature_id = feature.getProperties()[feature.getKeys()[1]]
+				highlight = feature_id
+				featureOverlay.changed()
+			}
 
-			const feature_id = feature.getProperties()[feature.getKeys()[1]]
-
-			highlight = feature_id
-			featureOverlay.changed()
 		}
 
 		const handlePointerMoveHighlight = function (evt) {
