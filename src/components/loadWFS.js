@@ -4,9 +4,8 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import PublicIcon from '@mui/icons-material/Public';
-import LayersIcon from '@mui/icons-material/Layers';
-import AddIcon from '@mui/icons-material/Add';
+import {Remove as RemoveIcon, Add as AddIcon,
+Layers as LayersIcon, Help as HelpIcon} from '@mui/icons-material/';
 
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -16,11 +15,12 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 
 import { useEffect, useState } from 'react';
-import HelpIcon from '@mui/icons-material/Help';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import ModalAttributes from './subcomponents/ModalAttributes';
 import {NavList} from './subcomponents/NavBarComponents';
+
+import Checkbox from '@mui/material/Checkbox';
 
 const geoservices = [
     {
@@ -55,6 +55,7 @@ export default function LayerList(props) {
     const [geocem_cats_list, setGeoCEMCatsList] = useState('')
 
     const [selectedLayer, setSelectedLayer] = useState(0);
+    const [checked, setChecked] = useState([]);
 
     //Handle click on layer
     const handleLayerClick = (event, index) => {
@@ -91,7 +92,7 @@ export default function LayerList(props) {
     //Recreate category list after a change
     useEffect(() => {
         createCatList()
-    }, [geocem_cats, openCat, selectedLayer])
+    }, [geocem_cats, openCat, selectedLayer, checked])
 
     //Load layer
     useEffect(() => {
@@ -151,6 +152,61 @@ export default function LayerList(props) {
             });
     }
 
+    function ListLayers(props) {
+
+        const handleCheck = (layer) => () => {
+            const currentIndex = checked.findIndex((clayer) => clayer.id == layer.id);
+            const newChecked = [...checked];
+        
+            if (currentIndex === -1) {
+                newChecked.push(layer);
+            } else {
+                newChecked.splice(currentIndex, 1);
+            }
+        
+            console.log('clicados', newChecked)
+            setChecked(newChecked); //Começar aqui
+        };
+        
+
+        return (
+            <List component="div" disablePadding>
+                {props.layers.map((layer) => {
+                    return(
+                        <Grid container>
+                            <Grid item xs={10}>
+                                <ListItemButton sx={{ pl: 4 }}
+                                onClick={handleCheck(layer)}
+                                key={'geocem_'+layer.id}
+                                >
+                                    <ListItemIcon>
+                                        <LayersIcon />
+                                    </ListItemIcon>
+
+                                    <ListItemText primary={layer.title} />
+
+                                    <ListItemIcon>
+                                        <Checkbox
+                                        checked={checked.findIndex((clayer) => clayer.id == layer.id) !== -1}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        />
+                                    </ListItemIcon>
+                                </ListItemButton>
+                            </Grid>
+                            <Grid item xs={2} sx={{ alignSelf: 'center' }}>
+                                {/* Abre o modal de Atributos */}
+                                <IconButton onClick={() => handleOpenAM(layer.id)}>
+                                    <HelpIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>      
+                    )
+                })}
+            </List>
+        )
+    }
+
     function loadGeoCEMCategories() {
         const request = axios.create({
             baseURL: geoservices[0].baseurl,
@@ -203,44 +259,20 @@ export default function LayerList(props) {
     }
 
     function createCatList() {
-       const geocem_list = geocem_cats.map((category) =>
-       { 
-            const layers = category.layers.map(layer => 
-                <Grid container>
-                    <Grid item xs={10}>
-                        <ListItemButton sx={{ pl: 8 }}
-                            selected={selectedLayer === 'geocem_'+layer.id}
-                            onClick={(event) => handleLayerClick(event, 'geocem_'+layer.id)}
-                            key={'geocem_'+layer.id}
-                        >
-                            <ListItemIcon>
-                                <LayersIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={layer.title} />
-                        </ListItemButton>
-                    </Grid>
-                    <Grid item xs={2} sx={{ alignSelf: 'center' }}>
-                        {/* Abre o modal de Atributos */}
-                        <IconButton onClick={() => handleOpenAM(layer.id)}>
-                            <HelpIcon />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-                )
 
+       const geocem_list = geocem_cats.map((category) => {
             return (
                 <div key={category.id}>
-                    <ListItemButton sx={{ pl: 4 }}  onClick={() => handleClickCat('cat_'+category.id)}>
+                    <ListItemButton sx={{ pl: 2 }}  onClick={() => handleClickCat('cat_'+category.id)}>
                         <ListItemIcon>
-                            <AddIcon />
+                        {openCat['cat_'+category.id] ? <RemoveIcon /> :<AddIcon />}
                         </ListItemIcon>
                         <ListItemText primary={category.name} />
-                        {openCat['cat_'+category.id] ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
 
                     <Collapse in={openCat['cat_'+category.id]} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            {layers}
+                            <ListLayers layers={category.layers}/>
                         </List>
                     </Collapse>    
                 </div>
@@ -250,10 +282,22 @@ export default function LayerList(props) {
 
         setGeoCEMCatsList(geocem_list)
     }
+
+    function SelectedLayers({checked}) {
+        if (checked.length > 0) {
+          return (
+            <List component="div" disablePadding sx={{ color: 'text.secondary' }}>
+                <ListItemText disableTypography 
+                primary='Camadas Selecionadas' sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
+                <ListLayers layers={checked}/>
+            </List>
+            )
+        } else 
+        return null;
+      }
     
     return (
-        <Box sx={{ display: (props.openBars ? 'flex' : 'none')}}
-             >
+        <Box sx={{ display: (props.openBars ? 'flex' : 'none')}}>
 
             <Paper elevation={0} sx={{ bgcolor: '#042E6F', maxHeight: '70vh'}} >
                 <NavList
@@ -265,24 +309,17 @@ export default function LayerList(props) {
                         <ListItemText primary='Camadas' />
                         {props.openLM['menu_camadas'].open ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
+
                     <Collapse in={props.openLM['menu_camadas'].open} timeout="auto" >
                         <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
+                            {/* Lista de Camadas Selecionadas */}
+                            <SelectedLayers  checked={checked} />
+
+                            {/* Lista de Camadas do GeoCEM */}
                             <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
-
-                                {/* Lista de Camadas do GeoCEM */}
-                                <ListItemButton onClick={() => props.handleOpenLM('gs_'+geoservices[0].name, 1)}>
-                                    <ListItemIcon>
-                                        <PublicIcon sx={{ color: '#042E6F' }} />
-                                    </ListItemIcon>
-                                    <ListItemText primary={geoservices[0].name} />
-                                    {props.openLM['gs_'+geoservices[0].name].open ? <ExpandLess /> : <ExpandMore />}
-                                </ListItemButton>
-                                <Collapse in={props.openLM['gs_'+geoservices[0].name].open} timeout="auto" unmountOnExit>
-                                    <List component="div" sx = {{ bgcolor: 'white' }} disablePadding>
-                                        {geocem_cats_list}
-                                    </List>
-                                </Collapse>
-
+                                <ListItemText disableTypography primary='Selecione uma Camada' 
+                                sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
+                                {geocem_cats_list}
                             </List>
                         </Box>
                     </Collapse>

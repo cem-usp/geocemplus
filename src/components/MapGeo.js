@@ -134,9 +134,6 @@ function MapGeo(props) {
 	let controlEl= document.createElement('div');
 	controlEl.innerHTML= controlTitle;
 
-	//GeoJSON Variable
-	const [geoJSON, setGeoJSON] = useState()
-	
 	//Updates thematic layer
 	useEffect(() => {
 		props.map.setTarget(mapElement.current)
@@ -144,13 +141,11 @@ function MapGeo(props) {
 		var layer = null
 
 		//Updates GeoJSON
-		if (props.layer_url !== null && geoJSON !== props.layer_url) {
+		if (props.layer_url !== null) {
 			//Clear fields of attibute
 			props.setFAttribute('')
 			props.setAttributesLF([])
 			props.setAttributeTitle('')
-
-			setGeoJSON(props.layer_url)
 
 			// Adds layer as Vector Tile
 			layer = new VectorTileLayer({properties: 'id', zIndex: 1})
@@ -162,6 +157,7 @@ function MapGeo(props) {
 				.then(function (json) {
 					// const centerWebMercator = center(json).geometry.coordinates
 					// const tExtent = square(bbox(json))
+					console.log('json', json)
 					const tileIndex = geojsonvt(json, {
 						extent: 4096,
 						maxZoom: 20,
@@ -496,12 +492,9 @@ function MapGeo(props) {
 
 		const displayFeatureInfo = function (pixel,) {
 
-			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
-																		return feature;
-																	},
-															{layerFilter: function(layer) {
-																return layer.get('id') === 'Thematic';
-															}});		
+			const feature = props.map.forEachFeatureAtPixel(pixel, (feature) => feature,
+			{layerFilter: (layer) => layer.get('id') === 'Thematic'});		
+			
 			if(feature) {
 				const feature_id = feature.getProperties()[feature.getKeys()[1]]
 				highlight = feature_id
