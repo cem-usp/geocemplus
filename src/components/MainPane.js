@@ -14,9 +14,20 @@ import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
+import GeoLayers from './subcomponents/GeoLayers'
 
 function MainPane() {
-    const [layer_url, setLayerURL] = useState(null);
+
+    //Array of selected layers
+    const [checked_layers, setCheckedLayers] = useState([]);
+    //Array of geolayers on the map
+    const [plotted_layers, setPlottedLayers] = useState([])
+    const MapGeoLayers = new GeoLayers(checked_layers, plotted_layers)
+
+    useEffect(() => {
+        MapGeoLayers.updateLayers(checked_layers, plotted_layers, map)
+    },[checked_layers])
+
     const [attributes, setAttributes] = useState(null)
     
     const [openBars, setOpenBars] = useState('flex');
@@ -180,7 +191,8 @@ function MainPane() {
                          mt: '15vh', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
                 <Grid item xs={12}>
                     <LayerList 
-                        changeLayerURL={setLayerURL}
+                        checked_layers={checked_layers} 
+                        setCheckedLayers={setCheckedLayers}
                         changeAttributes={setAttributes}
                         openBars={openBars}
                         openLM={openLM}
@@ -233,7 +245,7 @@ function MainPane() {
                         <MapGeo 
                             map={map}
                             max_zoom={max_zoom}
-                            layer_url={layer_url} 
+                            checked_layers={checked_layers} 
                             attributes={attributes}
                             fill_attribute={fill_attribute}
                             method={method}

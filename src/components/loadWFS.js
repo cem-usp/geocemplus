@@ -55,7 +55,6 @@ export default function LayerList(props) {
     const [geocem_cats_list, setGeoCEMCatsList] = useState('')
 
     const [selectedLayer, setSelectedLayer] = useState(0);
-    const [checked, setChecked] = useState([]);
 
     //Handle click on layer
     const handleLayerClick = (event, index) => {
@@ -91,8 +90,8 @@ export default function LayerList(props) {
 
     //Recreate category list after a change
     useEffect(() => {
-        createCatList()
-    }, [geocem_cats, openCat, selectedLayer, checked])
+        createCatList(props)
+    }, [geocem_cats, openCat, selectedLayer, props.checked_layers])
 
     //Load layer
     useEffect(() => {
@@ -153,10 +152,9 @@ export default function LayerList(props) {
     }
 
     function ListLayers(props) {
-
         const handleCheck = (layer) => () => {
-            const currentIndex = checked.findIndex((clayer) => clayer.id == layer.id);
-            const newChecked = [...checked];
+            const currentIndex = props.checked_layers.findIndex((clayer) => clayer.id == layer.id);
+            const newChecked = [...props.checked_layers];
         
             if (currentIndex === -1) {
                 newChecked.push(layer);
@@ -164,11 +162,9 @@ export default function LayerList(props) {
                 newChecked.splice(currentIndex, 1);
             }
         
-            console.log('clicados', newChecked)
-            setChecked(newChecked); //Começar aqui
+            props.setCheckedLayers(newChecked); //Começar aqui
         };
         
-
         return (
             <List component="div" disablePadding>
                 {props.layers.map((layer) => {
@@ -187,7 +183,7 @@ export default function LayerList(props) {
 
                                     <ListItemIcon>
                                         <Checkbox
-                                        checked={checked.findIndex((clayer) => clayer.id == layer.id) !== -1}
+                                        checked={props.checked_layers.findIndex((clayer) => clayer.id == layer.id) !== -1}
                                         tabIndex={-1}
                                         disableRipple
                                         />
@@ -258,8 +254,7 @@ export default function LayerList(props) {
         
     }
 
-    function createCatList() {
-
+    function createCatList(props) {
        const geocem_list = geocem_cats.map((category) => {
             return (
                 <div key={category.id}>
@@ -272,7 +267,8 @@ export default function LayerList(props) {
 
                     <Collapse in={openCat['cat_'+category.id]} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListLayers layers={category.layers}/>
+                            <ListLayers layers={category.layers} checked_layers={props.checked_layers}
+                            setCheckedLayers={props.setCheckedLayers} />
                         </List>
                     </Collapse>    
                 </div>
@@ -283,18 +279,18 @@ export default function LayerList(props) {
         setGeoCEMCatsList(geocem_list)
     }
 
-    function SelectedLayers({checked}) {
-        if (checked.length > 0) {
+    function SelectedLayers({checked_layers}) {
+        if (checked_layers.length > 0) {
           return (
             <List component="div" disablePadding sx={{ color: 'text.secondary' }}>
                 <ListItemText disableTypography 
                 primary='Camadas Selecionadas' sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
-                <ListLayers layers={checked}/>
+                <ListLayers layers={checked_layers} checked_layers={checked_layers}/>
             </List>
             )
         } else 
         return null;
-      }
+    }
     
     return (
         <Box sx={{ display: (props.openBars ? 'flex' : 'none')}}>
@@ -313,7 +309,7 @@ export default function LayerList(props) {
                     <Collapse in={props.openLM['menu_camadas'].open} timeout="auto" >
                         <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
                             {/* Lista de Camadas Selecionadas */}
-                            <SelectedLayers  checked={checked} />
+                            <SelectedLayers  checked_layers={props.checked_layers} />
 
                             {/* Lista de Camadas do GeoCEM */}
                             <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
