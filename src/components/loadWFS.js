@@ -285,7 +285,7 @@ export default function LayerList(props) {
             <List component="div" disablePadding sx={{ color: 'text.secondary' }}>
                 <ListItemText disableTypography 
                 primary='Camadas Selecionadas' sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
-                <ListLayers layers={checked_layers} checked_layers={checked_layers}/>
+                <ListLayers layers={checked_layers} checked_layers={checked_layers} setCheckedLayers={props.setCheckedLayers}/>
             </List>
             )
         } else 

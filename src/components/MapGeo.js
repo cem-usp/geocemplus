@@ -1,15 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { OSM } from 'ol/source';
-import GeoJSON from 'ol/format/GeoJSON';
 import {Tile as TileLayer, Vector as VectorLayer}  from 'ol/layer';
-import Projection from 'ol/proj/Projection';
 import { View } from 'ol';
-import VectorTileSource from 'ol/source/VectorTile';
 import VectorTileLayer from 'ol/layer/VectorTile';
 import { Circle, Fill, Style, Stroke, Icon } from 'ol/style';
-import geojsonvt from 'geojson-vt';
-import center from '@turf/center';
-import {bbox} from '@turf/turf'
 import Control from 'ol/control/Control';
 import {ScaleLine} from 'ol/control.js';
 import 'ol/ol.css';
@@ -27,52 +21,15 @@ import {filterNumberAttributes} from '../utils/UtilFunctions'
 
 import {getMapillaryVT, updateMapiLayer} from '../services/mapillary/MapiLayer'
 
-import {getLayer} from './ol-utils/Utils'
+import {getLayerById} from './ol-utils/Utils'
 
 import NavigationIcon from '@mui/icons-material/Navigation';
 import Box from '@mui/material/Box';
 
+import GeoLayers from './subcomponents/GeoLayers'
+
 //Fill
 const mapFill = new MapFill()
-
-// Converts geojson-vt data to GeoJSON
-const replacer = function (key, value) {
-	if (!value || !value.geometry) {
-	  return value;
-	}
-  
-	let type;
-	const rawType = value.type;
-	let geometry = value.geometry;
-	if (rawType === 1) {
-	  type = 'MultiPoint';
-	  if (geometry.length === 1) {
-		type = 'Point';
-		geometry = geometry[0];
-	  }
-	} else if (rawType === 2) {
-	  type = 'MultiLineString';
-	  if (geometry.length === 1) {
-		type = 'LineString';
-		geometry = geometry[0];
-	  }
-	} else if (rawType === 3) {
-	  type = 'Polygon';
-	  if (geometry.length > 1) {
-		type = 'MultiPolygon';
-		geometry = [geometry];
-	  }
-	}
-  
-	return {
-	  'type': 'Feature',
-	  'geometry': {
-		'type': type,
-		'coordinates': geometry,
-	  },
-	  'properties': value.tags,
-	};
-};
 
 function MapGeo(props) {
 
@@ -133,121 +90,25 @@ function MapGeo(props) {
 
 	let controlEl= document.createElement('div');
 	controlEl.innerHTML= controlTitle;
+	
+	const MapGeoLayers = new GeoLayers(props.map, props.basicOptions, props.checked_layers, 
+		props.plotted_layers, props.setPlottedLayers)
 
 	//Updates thematic layer
 	useEffect(() => {
-		
+
 		props.map.setTarget(mapElement.current)
-		// updateLayers(props.checked_layers, props.map)
 		
-		// var layer = null
+		MapGeoLayers.updateLayers()
 
-		// //Updates GeoJSON
-		// if (props.layer_url !== null) {
-		// 	//Clear fields of attibute
-		// 	props.setFAttribute('')
-		// 	props.setAttributesLF([])
-		// 	props.setAttributeTitle('')
-
-		// 	// Adds layer as Vector Tile
-		// 	layer = new VectorTileLayer({properties: 'id', zIndex: 1})
-
-		// 	fetch(props.layer_url)
-		// 		.then(function (response) {
-		// 			return response.json();
-		// 		})
-		// 		.then(function (json) {
-		// 			// const centerWebMercator = center(json).geometry.coordinates
-		// 			// const tExtent = square(bbox(json))
-		// 			console.log('json', json)
-		// 			const tileIndex = geojsonvt(json, {
-		// 				extent: 4096,
-		// 				maxZoom: 20,
-		// 				debug: 0,
-		// 			});
-		// 			const format = new GeoJSON({
-		// 				// Data returned from geojson-vt is in tile pixel units
-		// 				dataProjection: new Projection({
-		// 					code: 'TILE_PIXELS',
-		// 					units: 'tile-pixels',
-		// 					extent: [0, 0, 4096, 4096],
-		// 				}),
-		// 			});
-		// 			const vectorSource = new VectorTileSource({
-		// 				tileUrlFunction: function (tileCoord) {
-		// 					// Use the tile coordinate as a pseudo URL for caching purposes
-		// 					return JSON.stringify(tileCoord);
-		// 				},
-		// 				tileLoadFunction: function (tile, url) {
-		// 					const tileCoord = JSON.parse(url);
-		// 					const data = tileIndex.getTile(
-		// 						tileCoord[0],
-		// 						tileCoord[1],
-		// 						tileCoord[2]
-		// 					);
-		// 					const geojson = JSON.stringify({
-		// 						type: 'FeatureCollection',
-		// 						features: data ? data.features : [],
-		// 					}, replacer);
-		// 					const features = format.readFeatures(geojson, {
-		// 						extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
-		// 						featureProjection: props.map.getView().getProjection(),
-		// 					});
-		// 					tile.setFeatures(features);
-		// 				},
-		// 			});
-
-		// 			layer.setSource(vectorSource);
-		// 			layer.set('id', 'Thematic') //Define the layer as a thematic one
-		// 			layer.set('features', 'Thematic') //Store features as property
-
-		// 			//Remove previous thematic layer, if any
-		// 			props.map.getLayers().forEach((layer) => {
-		// 				if(layer !== undefined && layer.get('id') === 'Thematic')
-		// 				props.map.removeLayer(layer)
-		// 			})
-		// 			//Adds thematic layer
-		// 			props.map.addLayer(layer)
-					
-		// 			//Focus the added layer
-		// 				//Convert GeoJSON Projection
-		// 			const features = new GeoJSON().readFeatures(json)
-		// 			layer.set('features', features)
-		// 			const convertedJson = JSON.parse(new GeoJSON().writeFeatures(features, {
-		// 				dataProjection: 'EPSG:3857',
-		// 				featureProjection: 'EPSG:4326'
-		// 				})
-		// 			)
-		// 				//Get center of the layer
-		// 			const centerWebMercator = center(convertedJson).geometry.coordinates
-
-		// 				//Set the center of the view
-		// 			const tExtent = bbox(convertedJson)
-		// 			props.map.setView(new View({
-		// 				center: centerWebMercator,
-		// 				extent: (props.basicOptions.includes('bounds')) ? tExtent : undefined,
-		// 				zoom: 6,
-		// 				maxZoom: props.max_zoom
-		// 			}))
-		// 			props.map.getView().fit(tExtent)
-		// 			layer.set('center', centerWebMercator)
-		// 			layer.set('extent', tExtent)
-
-		// 			document.body.style.cursor = "default"
-
-		// 			//Add Highlight Event 
-		// 			highlightFeature()
-
-		// 		})
-		// }
 	}, [props.checked_layers])
 
 	//Handle Basic Options change
 	useEffect(() => {
-		const map_layer_osm = getLayer(props.map, 'OSM')
-		const map_layer_thematic = getLayer(props.map, 'Thematic')
-		const map_layer_icon = getLayer(props.map, 'icon')
-		const map_layer_mapillary = getLayer(props.map, 'mapillary')
+		const map_layer_osm = getLayerById(props.map, 'OSM')
+		const map_layer_thematic = getLayerById(props.map, 'Thematic')
+		const map_layer_icon = getLayerById(props.map, 'icon')
+		const map_layer_mapillary = getLayerById(props.map, 'mapillary')
 
 		//Base Map option
 		if(props.basicOptions.includes('map') && map_layer_osm === null) {
@@ -286,7 +147,7 @@ function MapGeo(props) {
 
 	//Handle mapillary OID change
 	useEffect(() => {
-		const mapillary_layer = getLayer(props.map, 'mapillary')
+		const mapillary_layer = getLayerById(props.map, 'mapillary')
 
 		if(mapillary_layer !== null) {
 			updateMapiLayer(mapillary_layer, props.map, props.mapi_viewer, props.mapilOID)
@@ -296,7 +157,7 @@ function MapGeo(props) {
 
 	//Handle Attribute change
 	useEffect(() => {
-		const thematic_layer = getLayer(props.map, 'Thematic')
+		const thematic_layer = getLayerById(props.map, 'Thematic')
 	
 		if(thematic_layer !== null && props.fill_attribute !== null) {
 			const thematic_source = thematic_layer.getSource()
@@ -329,7 +190,7 @@ function MapGeo(props) {
 
 	//Handle Fill changes
 	useEffect(() => {
-		const thematic_layer = getLayer(props.map, 'Thematic')
+		const thematic_layer = getLayerById(props.map, 'Thematic')
 		
 		if(thematic_layer !== null && props.fill_attribute !== '') {
 
@@ -457,67 +318,6 @@ function MapGeo(props) {
 		props.map.set('tlEventKey', new_tlEventKey)
 
 	}
-
-	function highlightFeature() {
-
-		//Feature to highlight
-		let highlight;
-
-		//Remove evento
-		const tlEventKey = props.map.get('tlEventKeyHighlight')
-		if(tlEventKey) props.map.un(tlEventKey.type, tlEventKey.listener)
-
-		//Get Thematic Layer
-		const thematic_layer = getLayer(props.map, 'Thematic')
-
-		//Highlight Style
-		const highlightFeature = new Style({
-			stroke: new Stroke({
-				color: 'white',
-				width: 4,
-			}),
-		});
-
-		//Overlay Feature
-		const featureOverlay = new VectorTileLayer({
-			source: thematic_layer.getSource(),
-			map: props.map,
-			renderMode: 'vector',
-			style: function (feature) {
-				const feature_id = feature.getProperties()[feature.getKeys()[1]]
-				if (feature_id === highlight) {
-				  	return highlightFeature;
-				}
-			},
-			zIndex: 1
-		  });
-
-		const displayFeatureInfo = function (pixel,) {
-
-			const feature = props.map.forEachFeatureAtPixel(pixel, (feature) => feature,
-			{layerFilter: (layer) => layer.get('id') === 'Thematic'});		
-			
-			if(feature) {
-				const feature_id = feature.getProperties()[feature.getKeys()[1]]
-				highlight = feature_id
-				featureOverlay.changed()
-			}
-
-		}
-
-		const handlePointerMoveHighlight = function (evt) {
-			if (evt.dragging) {
-				return;
-			}
-			const pixel = props.map.getEventPixel(evt.originalEvent);
-			displayFeatureInfo(pixel);
-		}
-
-		const new_tlEventKey = props.map.on('pointermove', handlePointerMoveHighlight);
-
-		props.map.set('tlEventKeyHighlight', new_tlEventKey)
-
-	};
 
 	return (
 		<div name='map_geral'>

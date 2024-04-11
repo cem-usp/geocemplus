@@ -14,7 +14,6 @@ import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
-import GeoLayers from './subcomponents/GeoLayers'
 
 function MainPane() {
 
@@ -22,11 +21,6 @@ function MainPane() {
     const [checked_layers, setCheckedLayers] = useState([]);
     //Array of geolayers on the map
     const [plotted_layers, setPlottedLayers] = useState([])
-    const MapGeoLayers = new GeoLayers(checked_layers, plotted_layers)
-
-    useEffect(() => {
-        MapGeoLayers.updateLayers(checked_layers, plotted_layers, map)
-    },[checked_layers])
 
     const [attributes, setAttributes] = useState(null)
     
@@ -246,6 +240,8 @@ function MainPane() {
                             map={map}
                             max_zoom={max_zoom}
                             checked_layers={checked_layers} 
+                            plotted_layers={plotted_layers}
+                            setPlottedLayers={setPlottedLayers}
                             attributes={attributes}
                             fill_attribute={fill_attribute}
                             method={method}
