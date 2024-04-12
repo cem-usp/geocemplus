@@ -34,21 +34,49 @@ import HelpIcon from '@mui/icons-material/Help';
 import IconButton from '@mui/material/IconButton';
 
 export default function Fillbar(props) {
+    const [layerList, setLayerList] = useState(null)
+    const [selectedLayer, setLayer] = useState(null)
+    const handleLayerChange = (event) => {
+		setLayer(event.target.value);
+		setFAttribute('');
+	};
+    const [attributes, setAttributes] = useState(null)
     const [attrList, setAttrList] = useState(null)
-    const [filterAttrNames, setFilterAttrNames] = useState(null)
+
+    // Fill parameters state
+	const [fill_attribute, setFAttribute] = useState('')
+    const handleFAttributeChange = (event) => {
+		setFAttribute(event.target.value);
+
+        selectedLayer['attribute_to_symbolize'] = event.target.value
+
+        selectedLayer.updateLayer(selectedLayer)
+	};
+
+    // const [filterAttrNames, setFilterAttrNames] = useState(null)
+
     useEffect(() => {
-		const list = (props.attributes) ? props.attributes.map((attribute) =>
+		const list = (selectedLayer) ? selectedLayer.attributes.map((attribute) =>
 						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
 						) : null;
 		
-		const filtered_attributes = (props.attributes) ? filterNumberAttributes(props.attributes) : null
-		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
-									) : null;
+		// const filtered_attributes = (props.attributes) ? filterNumberAttributes(props.attributes) : null
+		// const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
+		// 							<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
+		// 							) : null;
 		
+        // setFilterAttrNames(filtered_names)
 		setAttrList(list)
-      	setFilterAttrNames(filtered_names)
-    },[props.attributes])
+        setAttributes( selectedLayer ? selectedLayer.attributes : null)
+    },[selectedLayer])
+
+    useEffect(() => {
+        const list = (props.plotted_layers) ? props.plotted_layers.map((layer) =>
+						<MenuItem key={layer.id} value={layer}>{layer.name}</MenuItem>
+						) : null;
+		
+                        setLayerList(list)
+    }, [props.plotted_layers])
 
     // Customized Button Group for Menu
     const MenuToogleBtn = styled(ToggleButton)({
@@ -71,19 +99,43 @@ export default function Fillbar(props) {
                     >
                         {/* Menu de Preenchimento */}
                         <ListItemButton onClick={props.handleClickOpenFM}>
-                            <ListItemText primary='Preenchimento' />
+                            <ListItemText primary='Simbologia' />
                             {props.openFM ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
                         <Collapse in={props.openFM} timeout="auto" unmountOnExit>
                             <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
+                                    Camada
+                                </InputLabel>
+                                
+                                <Select
+                                    sx={{ mb: 1, maxWidth: '60%' }}
+                                    displayEmpty
+                                    value={selectedLayer}
+                                    onChange={handleLayerChange}
+                                    renderValue={(selected) => {
+                                        if(selected === null) {
+                                            return <em>Nenhuma camada adicionada</em>
+                                        } else {
+                                            return selected.name
+                                        }
+                                    }}
+                                >
+                                    <MenuItem disabled value="">
+                                        <em>Selecione uma camada</em>
+                                    </MenuItem>
+                                    {layerList}
+                                </Select>
+
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Atributo de Preenchimento
                                 </InputLabel>
+
                                 <Select
-                                    sx={{ mb: 1 }}
+                                    sx={{ mb: 1, maxWidth: '60%' }}
                                     displayEmpty
-                                    value={props.fill_attribute}
-                                    onChange={props.changeFAttribute}
+                                    value={fill_attribute}
+                                    onChange={handleFAttributeChange}
                                     renderValue={(selected) => {
                                         if(selected === '') {
                                             return <em>Selecione um atributo</em>
@@ -106,12 +158,12 @@ export default function Fillbar(props) {
                                 <ModalAttributes
                                 open={openAM}
                                 close={handleCloseAM}
-                                attributes={props.attributes}
+                                attributes={attributes}
                                 >
                                 </ModalAttributes>
 
                                 {/* Método de Classificação */}
-                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Classificação
                                 </InputLabel>
                                 <Container maxWidth="sm">

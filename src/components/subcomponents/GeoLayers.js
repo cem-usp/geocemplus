@@ -19,7 +19,7 @@ export default class GeoLayers {
         this.overlays = {};
     }
 
-    updateLayers() {
+    async updateLayers() {
         //Check ids
         const checked_ids = this.checked.map(clayer => clayer.id);
         const plotted_ids = this.plotted.map(player => player.id);
@@ -32,7 +32,7 @@ export default class GeoLayers {
             //Retrieve Layer details
             axios
                 .get("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ newLayer_id)
-                .then((response) => {
+                .then(response => {
 
                     //Get link to GeoJSON
                     const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
@@ -50,12 +50,18 @@ export default class GeoLayers {
                     // - fill
                     //   - pallete
                     //   - ...
+                    
                     const new_layer = {
                         id: newLayer_id,
                         name: response.data.title,
-                        geojson_link: https_json
+                        geojson_link: https_json,
+                        attribute_to_symbolize: null
                     }
 
+                    this.getLayerAttributes(newLayer_id).then( attributes => {
+                        new_layer['attributes'] = attributes
+                    })
+                    
                     new_plotted_layers.push(new_layer)
                     this.setPlotted(new_plotted_layers)
 
@@ -74,6 +80,15 @@ export default class GeoLayers {
             this.setPlotted(new_plotted_layers)
         }
 
+    }
+
+    updateLayer(layer) {
+        const new_plotted_layers = [...this.plotted];
+        const plotted_ids = this.plotted.map(player => player.id);
+        const indexToUpdate = plotted_ids.findIndex(pid => layer.id);
+        new_plotted_layers.splice(indexToUpdate, 1);
+        new_plotted_layers.push(layer);
+        this.setPlotted(new_plotted_layers)
     }
     
     addVectorLayertoMap(layer, map, map_options) {
@@ -283,4 +298,23 @@ export default class GeoLayers {
         return featureOverlay
 
 	};
+
+    getLayerAttributes(layer_id) {
+    
+        return fetch("https://geocem.centrodametropole.fflch.usp.br/api/v2/layers/" + layer_id + "/attribute_set")
+        .then(response => {
+            return response.json();
+        })
+        .catch((err) => {
+            console.error("ops! ocorreu um erro" + err);
+            return null
+        })
+        .then(json => {
+            return json.attributes
+        })
+        .catch((err) => {
+            console.error("ops! ocorreu um erro" + err);
+            return null
+        });
+    }
 }

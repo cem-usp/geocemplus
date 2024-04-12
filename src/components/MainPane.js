@@ -1,3 +1,4 @@
+import GeoLayers from './subcomponents/GeoLayers'
 import Box from '@mui/material/Box';
 import MapGeo from './MapGeo'
 import Header from "./Header";
@@ -29,11 +30,6 @@ function MainPane() {
         setOpenBars(!openBars)
     }
     
-    // Fill parameters state
-	const [fill_attribute, setFAttribute] = useState('')
-    const handleFAttributeChange = (event) => {
-		setFAttribute(event.target.value);
-	};
     const [method, setMethod] = useState('quantile')
     const handleMethodChange = (e) => {
         setMethod(e.target.value)
@@ -176,6 +172,10 @@ function MainPane() {
         }
 	}, [basicOptions])
 
+	
+    const [mapGeoLayers, setMapGeoLayers] = useState(new GeoLayers(map, basicOptions, checked_layers, 
+        plotted_layers, setPlottedLayers));
+        
     return (
         <Box>
             <Header
@@ -195,9 +195,8 @@ function MainPane() {
                 </Grid>
                 <Grid item xs={12}>
                     <Fillbar 
+                        plotted_layers={plotted_layers}
                         attributes={attributes}
-                        fill_attribute={fill_attribute}
-                        changeFAttribute={handleFAttributeChange}
                         method={method}
                         changeMethod={handleMethodChange}
                         n_classes={n_classes}
@@ -237,13 +236,14 @@ function MainPane() {
                 <Grid item xs>
                     <Box>
                         <MapGeo 
+                            mapGeoLayers={mapGeoLayers}
+                            setMapGeoLayers={setMapGeoLayers}
                             map={map}
                             max_zoom={max_zoom}
                             checked_layers={checked_layers} 
                             plotted_layers={plotted_layers}
                             setPlottedLayers={setPlottedLayers}
                             attributes={attributes}
-                            fill_attribute={fill_attribute}
                             method={method}
                             n_classes={n_classes}
                             color_scheme={color_scheme}
@@ -252,7 +252,6 @@ function MainPane() {
                             attributesLF={attributesLF}
                             basicOptions={basicOptions}
                             fs_control={fs_control}
-                            setFAttribute={setFAttribute}
                             setAttributesLF={setAttributesLF}
                             setAttributeTitle={setAttributeTitle}
                             mapi_viewer={mapillary_viewer}
