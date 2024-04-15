@@ -6,8 +6,9 @@ import VectorTileSource from 'ol/source/VectorTile';
 import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import { View } from 'ol';
-import { Style, Stroke } from 'ol/style';
+import { Fill, Style, Stroke } from 'ol/style';
 import {getLayerById} from '../ol-utils/Utils'
+import {Fill as MapFill} from '../../utils/Fill'
 
 export default class GeoLayers {
     constructor(map, map_options, checked, plotted, setPlotted) {
@@ -19,12 +20,11 @@ export default class GeoLayers {
         this.overlays = {};
     }
 
-    async updateLayers() {
+    updateLayers() {
         //Check ids
         const checked_ids = this.checked.map(clayer => clayer.id);
         const plotted_ids = this.plotted.map(player => player.id);
         const new_plotted_layers = [...this.plotted];
-
         if(checked_ids.length > plotted_ids.length) { // If added layer
             const newLayer_id = checked_ids[checked_ids.length-1]
             const axios = require('axios')
@@ -51,11 +51,14 @@ export default class GeoLayers {
                     //   - pallete
                     //   - ...
                     
+                    const mapFill = new MapFill()
                     const new_layer = {
                         id: newLayer_id,
                         name: response.data.title,
                         geojson_link: https_json,
-                        attribute_to_symbolize: null
+                        attribute_to_symbolize: null,
+                        mapFill: mapFill,
+                        symbology: null
                     }
 
                     this.getLayerAttributes(newLayer_id).then( attributes => {
@@ -89,6 +92,7 @@ export default class GeoLayers {
         new_plotted_layers.splice(indexToUpdate, 1);
         new_plotted_layers.push(layer);
         this.setPlotted(new_plotted_layers)
+        console.log('new plotted', new_plotted_layers)
     }
     
     addVectorLayertoMap(layer, map, map_options) {
@@ -298,6 +302,53 @@ export default class GeoLayers {
         return featureOverlay
 
 	};
+
+    updateSymbology(pLayer, symbology) {
+        if(pLayer !== null && pLayer.attribute_to_symbolize !== null) {
+            pLayer.mapFill.updateParameters(symbology.method, symbology.color_scheme, 
+                symbology.palette, symbology.n_classes) 
+
+            const layer = getLayerById(this.map, pLayer.id)
+			layer.setStyle(function (feature) {
+				const value = feature.get(pLayer.attribute_to_symbolize.attribute)
+				const color = (!isNaN(value)) ? pLayer.mapFill.getColor(
+                    feature.get(pLayer.attribute_to_symbolize.attribute)) : 'rgba(128, 128, 128, 0.7)';
+				const style = new Style({
+					fill: new Fill({
+						color: color,
+					})
+				})
+				return style;
+			})
+
+            pLayer.symbology = symbology
+            // this.updateLayer(layer)
+
+			// updateLegend() pensar como fazer
+		}
+    }
+
+    resetSymbology(pLayer) {
+        const layer = getLayerById(this.map, pLayer.id)
+        layer.setStyle()
+        pLayer.symbology = null
+    }
+
+    setAttributeToSimbolize(pLayer, attribute) {
+
+        if(pLayer['attribute_to_symbolize'] != attribute) {
+            pLayer['attribute_to_symbolize'] = attribute
+            const layer = getLayerById(this.map, pLayer.id)
+			const features = layer.get('features')
+			let attr_values = []
+			features.map((feature) => {
+                attr_values.push(feature.get(attribute.attribute))
+			})
+			pLayer.mapFill.setArrValues(attr_values) 
+            console.log('attri', this.plotted)
+            // this.updateLayer(pLayer)
+        }
+    }
 
     getLayerAttributes(layer_id) {
     

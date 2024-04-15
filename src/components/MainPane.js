@@ -30,23 +30,6 @@ function MainPane() {
         setOpenBars(!openBars)
     }
     
-    const [method, setMethod] = useState('quantile')
-    const handleMethodChange = (e) => {
-        setMethod(e.target.value)
-    }
-    const [n_classes, setNClasses] = useState(5)
-    const handleNClassesChange = (e) => {
-        setNClasses(e.target.value)
-    }
-    const [color_scheme, setColorScheme] = useState('sequential')
-    const handleColorSchemeChange = (e) => {
-		setColorScheme(e.target.value);
-	};
-    const [palette, setPalette] = useState('')
-	const handlePaletteChange = (e,v) => {
-        setPalette(v)
-    }    
-
     const [attributeTitle, setAttributeTitle] = useState('')
     const handleAttributeTitleChange = (e) => {
         setAttributeTitle(e.target.value)
@@ -173,8 +156,8 @@ function MainPane() {
 	}, [basicOptions])
 
 	
-    const [mapGeoLayers, setMapGeoLayers] = useState(new GeoLayers(map, basicOptions, checked_layers, 
-        plotted_layers, setPlottedLayers));
+    const mapGeoLayers = new GeoLayers(map, basicOptions, checked_layers, 
+        plotted_layers, setPlottedLayers);
         
     return (
         <Box>
@@ -195,17 +178,9 @@ function MainPane() {
                 </Grid>
                 <Grid item xs={12}>
                     <Fillbar 
+                        mapGeoLayers={mapGeoLayers}
                         plotted_layers={plotted_layers}
                         attributes={attributes}
-                        method={method}
-                        changeMethod={handleMethodChange}
-                        n_classes={n_classes}
-                        changeNClasses={handleNClassesChange}
-                        color_scheme={color_scheme}
-                        changeCScheme={handleColorSchemeChange}
-                        palette={palette}
-                        setPalette={setPalette}
-                        changePallete={handlePaletteChange}
                         attributeTitle={attributeTitle}
                         onAttributeTitleChange={handleAttributeTitleChange}
                         attrList={attrList}
@@ -237,17 +212,12 @@ function MainPane() {
                     <Box>
                         <MapGeo 
                             mapGeoLayers={mapGeoLayers}
-                            setMapGeoLayers={setMapGeoLayers}
                             map={map}
                             max_zoom={max_zoom}
                             checked_layers={checked_layers} 
                             plotted_layers={plotted_layers}
                             setPlottedLayers={setPlottedLayers}
                             attributes={attributes}
-                            method={method}
-                            n_classes={n_classes}
-                            color_scheme={color_scheme}
-                            palette={palette}
                             attributeTitle={attributeTitle}
                             attributesLF={attributesLF}
                             basicOptions={basicOptions}

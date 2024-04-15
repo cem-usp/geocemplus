@@ -37,23 +37,62 @@ export default function Fillbar(props) {
     const [layerList, setLayerList] = useState(null)
     const [selectedLayer, setLayer] = useState(null)
     const handleLayerChange = (event) => {
-		setLayer(event.target.value);
-		setFAttribute('');
+        const chose_layer = event.target.value
+		setLayer(chose_layer);
+		setFAttribute(chose_layer.attribute_to_symbolize);
+
+        //Set symbology as previous defined
+        if(chose_layer.attribute_to_symbolize != null && chose_layer.symbology != null) {
+            setMethod(selectedLayer.symbology.method)
+            setNClasses(selectedLayer.symbology.n_classes)
+            setColorScheme(selectedLayer.symbology.color_scheme)
+            setPalette(selectedLayer.symbology.palette)
+        }
 	};
     const [attributes, setAttributes] = useState(null)
     const [attrList, setAttrList] = useState(null)
 
     // Fill parameters state
-	const [fill_attribute, setFAttribute] = useState('')
+	const [fill_attribute, setFAttribute] = useState(null)
     const handleFAttributeChange = (event) => {
-		setFAttribute(event.target.value);
-
-        selectedLayer['attribute_to_symbolize'] = event.target.value
-
-        selectedLayer.updateLayer(selectedLayer)
+        const attribute = event.target.value
+        props.mapGeoLayers.setAttributeToSimbolize(selectedLayer, attribute)
+		setFAttribute(attribute);
 	};
 
-    // const [filterAttrNames, setFilterAttrNames] = useState(null)
+    //Fill changes
+    const [method, setMethod] = useState('quantile')
+    const handleMethodChange = (e) => {
+        setMethod(e.target.value)
+    }
+    const [n_classes, setNClasses] = useState(5)
+    const handleNClassesChange = (e) => {
+        setNClasses(e.target.value)
+    }
+    const [color_scheme, setColorScheme] = useState('sequential')
+    const handleColorSchemeChange = (e) => {
+		setColorScheme(e.target.value);
+	};
+    const [palette, setPalette] = useState('')
+	const handlePaletteChange = (e,v) => {
+        setPalette(v)
+    }
+
+    useEffect(() => {
+        if(fill_attribute !== null) {
+            props.mapGeoLayers.updateSymbology(selectedLayer, {
+                method: method,
+                n_classes: n_classes,
+                color_scheme: color_scheme,
+                palette: palette
+            })
+        } else if(selectedLayer){
+            props.mapGeoLayers.resetSymbology(selectedLayer)
+            setMethod('quantile')
+            setNClasses(5)
+		    setColorScheme('sequential');
+    }
+    },[method, n_classes, color_scheme, palette, fill_attribute])
 
     useEffect(() => {
 		const list = (selectedLayer) ? selectedLayer.attributes.map((attribute) =>
@@ -71,11 +110,16 @@ export default function Fillbar(props) {
     },[selectedLayer])
 
     useEffect(() => {
+        
+        //Create layer list
         const list = (props.plotted_layers) ? props.plotted_layers.map((layer) =>
 						<MenuItem key={layer.id} value={layer}>{layer.name}</MenuItem>
-						) : null;
-		
-                        setLayerList(list)
+					) : null;
+        setLayerList(list)
+        
+        //Clear selected layer if plotted layer is empty
+        if(props.plotted_layers.length === 0) setLayer(null)
+
     }, [props.plotted_layers])
 
     // Customized Button Group for Menu
@@ -137,15 +181,15 @@ export default function Fillbar(props) {
                                     value={fill_attribute}
                                     onChange={handleFAttributeChange}
                                     renderValue={(selected) => {
-                                        if(selected === '') {
+                                        if(selected === null) {
                                             return <em>Selecione um atributo</em>
                                         } else {
                                             return selected.attribute_label
                                         }
                                     }}
                                 >
-                                    <MenuItem disabled value="">
-                                        <em>Selecione um atributo</em>
+                                    <MenuItem value={null}>
+                                        <em>Sem simbolização</em>
                                     </MenuItem>
                                     {attrList}
                                 </Select>
@@ -169,8 +213,8 @@ export default function Fillbar(props) {
                                 <Container maxWidth="sm">
                                     <ToggleButtonGroup sx={{mb: 2}}
                                         exclusive
-                                        onChange={props.changeMethod}
-                                        value={props.method}
+                                        onChange={handleMethodChange}
+                                        value={method}
                                     >
                                         <MenuToogleBtn size='small' value="quantile">Quantil</MenuToogleBtn>
                                         <MenuToogleBtn size='small' value="jenks">Quebras Naturais (Jenks)</MenuToogleBtn>
@@ -190,12 +234,12 @@ export default function Fillbar(props) {
                                         marks
                                         min={5}
                                         max={7}
-                                        value={props.n_classes}
-                                        onChange={props.changeNClasses}
+                                        value={n_classes}
+                                        onChange={handleNClassesChange}
                                     />
                                 </Container>
 
-                                {/* Método de Classificação */}
+                                {/* Esquema de cores */}
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
                                     Esquema de cores
                                 </InputLabel>
@@ -203,8 +247,8 @@ export default function Fillbar(props) {
                                     <ToggleButtonGroup sx={{mb: 2}} 
                                         size='small'
                                         exclusive
-                                        onChange={props.changeCScheme}
-                                        value={props.color_scheme}
+                                        onChange={handleColorSchemeChange}
+                                        value={color_scheme}
                                     >
                                         <MenuToogleBtn value="sequential">Sequencial</MenuToogleBtn>
                                         <MenuToogleBtn value="diverging">Divergente</MenuToogleBtn>
@@ -218,11 +262,11 @@ export default function Fillbar(props) {
                                 </InputLabel>
                                 <Container maxWidth="sm" sx={{pb: 3}}>
                                     <SelectPalette 
-                                        scheme={props.color_scheme}
-                                        setPalette={props.setPalette}
-                                        steps={props.n_classes}
-                                        handlePaletteChange={props.changePallete}
-                                        palette={props.palette}
+                                        scheme={color_scheme}
+                                        setPalette={setPalette}
+                                        steps={n_classes}
+                                        handlePaletteChange={handlePaletteChange}
+                                        palette={palette}
                                     />
                                 </Container>
 

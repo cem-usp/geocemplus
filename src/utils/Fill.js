@@ -4,13 +4,24 @@ import Palette from './Palette'
 
 export class Fill {
 
-    updateParameters(arr_values, method, scheme, palette, n_classes) {
+    constructor() {
+        this.arr_values = null
+        this.method = null
+        this.scheme = null
+        this.palette = null
+        this.n_classes = null
+    }
+
+    setArrValues(arr_values) {
         if(arr_values !== null){ 
             //Only numbers
             arr_values = arr_values.filter(Number);
             //Ordena Vetor
             this.arr_values = arr_values.sort(function(a, b){return a-b})
         }
+    }
+
+    updateParameters(method, scheme, palette, n_classes) {
 
         if(method !== null) this.method = method
 
