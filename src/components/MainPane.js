@@ -168,7 +168,9 @@ function MainPane() {
                          mt: '15vh', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
                 <Grid item xs={12}>
                     <LayerList 
+                        mapGeoLayers={mapGeoLayers}
                         checked_layers={checked_layers} 
+                        plotted_layers={plotted_layers}
                         setCheckedLayers={setCheckedLayers}
                         changeAttributes={setAttributes}
                         openBars={openBars}

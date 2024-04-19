@@ -58,7 +58,8 @@ export default class GeoLayers {
                         geojson_link: https_json,
                         attribute_to_symbolize: null,
                         mapFill: mapFill,
-                        symbology: null
+                        symbology: null,
+                        index: new_plotted_layers.length
                     }
 
                     this.getLayerAttributes(newLayer_id).then( attributes => {
@@ -92,7 +93,6 @@ export default class GeoLayers {
         new_plotted_layers.splice(indexToUpdate, 1);
         new_plotted_layers.push(layer);
         this.setPlotted(new_plotted_layers)
-        console.log('new plotted', new_plotted_layers)
     }
     
     addVectorLayertoMap(layer, map, map_options) {
@@ -345,7 +345,6 @@ export default class GeoLayers {
                 attr_values.push(feature.get(attribute.attribute))
 			})
 			pLayer.mapFill.setArrValues(attr_values) 
-            console.log('attri', this.plotted)
             // this.updateLayer(pLayer)
         }
     }
@@ -367,5 +366,20 @@ export default class GeoLayers {
             console.error("ops! ocorreu um erro" + err);
             return null
         });
+    }
+
+    reorderLayers(from, to) {
+        const layers = [...this.plotted]
+        const [reorderedLayer] = layers.splice(from, 1);
+        layers.splice(to, 0, reorderedLayer);
+        this.setPlotted(layers)
+        this.updateOrderOnMap()
+    }
+
+    updateOrderOnMap() {
+        this.plotted.forEach((pLayer, index) => {
+            const layer = getLayerById(this.map, pLayer.id)
+            layer.setZIndex(index)
+        })
     }
 }

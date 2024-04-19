@@ -1,6 +1,7 @@
 import {axios} from "../services/api";
 
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -21,6 +22,8 @@ import ModalAttributes from './subcomponents/ModalAttributes';
 import {NavList} from './subcomponents/NavBarComponents';
 
 import Checkbox from '@mui/material/Checkbox';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 const geoservices = [
     {
@@ -56,11 +59,6 @@ export default function LayerList(props) {
 
     const [selectedLayer, setSelectedLayer] = useState(0);
 
-    //Handle click on layer
-    const handleLayerClick = (event, index) => {
-        setSelectedLayer(index);
-    };
-
     //Handle Attributes Modal
     const [attributesModal, setAttributesModal] = useState(null)
     const [openAM, setOpenAM] = useState(false)
@@ -85,13 +83,12 @@ export default function LayerList(props) {
     //Load GeoCEM Categories
     useEffect(() => {
         loadGeoCEMCategories()
-        // loadGeoSampaLayers()
     }, [])
 
     //Recreate category list after a change
     useEffect(() => {
         createCatList(props)
-    }, [geocem_cats, openCat, selectedLayer, props.checked_layers])
+    }, [geocem_cats, openCat, selectedLayer, props.plotted_layers])
 
     //Load layer
     useEffect(() => {
@@ -118,6 +115,8 @@ export default function LayerList(props) {
 
         }
     }, [selectedLayer])
+
+    //z-Index management
 
     function getGeoCEMLayerAttributes(layer_id) {
         const request = axios.create({
@@ -151,6 +150,10 @@ export default function LayerList(props) {
             });
     }
 
+    function handleOnDragEnd(result) {
+        props.mapGeoLayers.reorderLayers(result.source.index, result.destination.index)
+    }
+
     function ListLayers(props) {
         const handleCheck = (layer) => () => {
             const currentIndex = props.checked_layers.findIndex((clayer) => clayer.id == layer.id);
@@ -164,43 +167,100 @@ export default function LayerList(props) {
         
             props.setCheckedLayers(newChecked); //Começar aqui
         };
-        
-        return (
-            <List component="div" disablePadding>
-                {props.layers.map((layer) => {
-                    return(
-                        <Grid container>
-                            <Grid item xs={10}>
-                                <ListItemButton sx={{ pl: 4 }}
-                                onClick={handleCheck(layer)}
-                                key={'geocem_'+layer.id}
-                                >
-                                    <ListItemIcon>
-                                        <LayersIcon />
-                                    </ListItemIcon>
 
-                                    <ListItemText primary={layer.title} />
+        if(props.variant == 'selected') {
+            return (
+                <DragDropContext onDragEnd={handleOnDragEnd}>
+                    <Droppable droppableId="selected_layers">
+                        {(provided) => (
+                            <List className="selected_layers" component="div" disablePadding 
+                            {...provided.droppableProps} ref={provided.innerRef}>
+                                {props.layers.map((layer, index) => {
+                                    return(
+                                        <Draggable key={layer.id} draggableId={layer.id.toString()} index={(index)}>
+                                            {(provided) => (
+                                                <ListItem ref={provided.innerRef} 
+                                                {...provided.draggableProps}>
+                                                    <Grid container>
+                                                        <Grid item xs={1} sx={{ alignSelf: 'center' }}>
+                                                            <ListItemIcon {...provided.dragHandleProps}>
+                                                                <DragHandleIcon />
+                                                            </ListItemIcon>
+                                                        </Grid>
+                                                        <Grid item xs={9}>
+                                                            <ListItemButton sx={{ pl: 2 }}
+                                                            onClick={handleCheck(layer)}
+                                                            key={'geocem_'+layer.id}
+                                                            >
+                                                                <ListItemText primary={layer.name} />
+    
+                                                                <ListItemIcon>
+                                                                    <Checkbox
+                                                                    checked={true}
+                                                                    tabIndex={-1}
+                                                                    disableRipple
+                                                                    />
+                                                                </ListItemIcon>
+                                                            </ListItemButton>
+                                                        </Grid>
+                                                        <Grid item xs={2} sx={{ alignSelf: 'center' }}>
+                                                            {/* Abre o modal de Atributos */}
+                                                            <IconButton onClick={() => handleOpenAM(layer.id)}>
+                                                                <HelpIcon />
+                                                            </IconButton>
+                                                        </Grid>
+                                                    </Grid>  
+                                                </ListItem>
+                                            )}
+                                        </Draggable>
+                                    )
+                                })}
+                                {provided.placeholder}
+                            </List>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            )
+        } else {
+            return (
+                    <List component="div" disablePadding>
+                        {props.layers.map((layer, index) => {
+                            return(
+                                <ListItem key={layer.id}>
+                                    <Grid container>
+                                        <Grid item xs={10}>
+                                            <ListItemButton sx={{ pl: 4 }}
+                                            onClick={handleCheck(layer)}
+                                            key={'geocem_'+layer.id}
+                                            >
+                                                <ListItemIcon>
+                                                    <LayersIcon />
+                                                </ListItemIcon>
 
-                                    <ListItemIcon>
-                                        <Checkbox
-                                        checked={props.checked_layers.findIndex((clayer) => clayer.id == layer.id) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        />
-                                    </ListItemIcon>
-                                </ListItemButton>
-                            </Grid>
-                            <Grid item xs={2} sx={{ alignSelf: 'center' }}>
-                                {/* Abre o modal de Atributos */}
-                                <IconButton onClick={() => handleOpenAM(layer.id)}>
-                                    <HelpIcon />
-                                </IconButton>
-                            </Grid>
-                        </Grid>      
-                    )
-                })}
-            </List>
-        )
+                                                <ListItemText primary={layer.title} />
+
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                    checked={props.checked_layers.findIndex((clayer) => clayer.id == layer.id) !== -1}
+                                                    tabIndex={-1}
+                                                    disableRipple
+                                                    />
+                                                </ListItemIcon>
+                                            </ListItemButton>
+                                        </Grid>
+                                        <Grid item xs={2} sx={{ alignSelf: 'center' }}>
+                                            {/* Abre o modal de Atributos */}
+                                            <IconButton onClick={() => handleOpenAM(layer.id)}>
+                                                <HelpIcon />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>  
+                                </ListItem>
+                            )
+                        })}
+                    </List>
+            )
+        }
     }
 
     function loadGeoCEMCategories() {
@@ -235,25 +295,6 @@ export default function LayerList(props) {
             })
     }
 
-    //Implementação Suspensa
-    function loadGeoSampaLayers() {       
-        const request = axios.create({
-            baseURL: geoservices[1].wfs_url,
-          });
-
-            request.get(geoservices[1].wfs_url, {
-            params: {
-                service: 'wfs',
-                version: '2.0.0',
-                request: 'GetCapabilities'
-            }
-        })
-        .then((response) => {
-            console.log(response)
-        })
-        
-    }
-
     function createCatList(props) {
        const geocem_list = geocem_cats.map((category) => {
             return (
@@ -279,17 +320,17 @@ export default function LayerList(props) {
         setGeoCEMCatsList(geocem_list)
     }
 
-    function SelectedLayers({checked_layers}) {
-        if (checked_layers.length > 0) {
+    function SelectedLayers({plotted_layers}) {
+        if (plotted_layers.length > 0) {
           return (
-            <List component="div" disablePadding sx={{ color: 'text.secondary' }}>
-                <ListItemText disableTypography 
-                primary='Camadas Selecionadas' sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
-                <ListLayers layers={checked_layers} checked_layers={checked_layers} setCheckedLayers={props.setCheckedLayers}/>
-            </List>
+                <List component="div" disablePadding sx={{ color: 'text.secondary' }}>
+                    <ListItemText disableTypography 
+                    primary='Camadas Selecionadas' sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
+                    <ListLayers variant='selected' layers={plotted_layers} checked_layers={props.checked_layers} 
+                    setCheckedLayers={props.setCheckedLayers} />
+                </List>
             )
-        } else 
-        return null;
+        } else return null;
     }
     
     return (
@@ -309,7 +350,7 @@ export default function LayerList(props) {
                     <Collapse in={props.openLM['menu_camadas'].open} timeout="auto" >
                         <Box sx={{ bgcolor: 'white', maxHeight: '62vh', overflow: 'auto' }}>
                             {/* Lista de Camadas Selecionadas */}
-                            <SelectedLayers  checked_layers={props.checked_layers} />
+                            <SelectedLayers plotted_layers={props.plotted_layers} />
 
                             {/* Lista de Camadas do GeoCEM */}
                             <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
@@ -319,22 +360,6 @@ export default function LayerList(props) {
                             </List>
                         </Box>
                     </Collapse>
-
-                    {/* Lista de Camadas do GeoSampa */}
-                    {/* SUSPENSO DEVIDO À CORS */}
-                    {/* <ListItemButton onClick={() => props.handleOpenLM('gs_'+geoservices[1].name)}>
-                        <ListItemIcon>
-                            <PublicIcon />
-                        </ListItemIcon>
-                        <ListItemText primary={geoservices[1].name} />
-                        {openLM['gs_'+geoservices[1].name] ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-
-                    <Collapse in={openLM['gs_'+geoservices[1].name]} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            {}
-                        </List>
-                    </Collapse> */}
 
                 </NavList>
             </Paper>
