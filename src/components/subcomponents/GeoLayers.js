@@ -59,7 +59,7 @@ export default class GeoLayers {
                         attribute_to_symbolize: null,
                         mapFill: mapFill,
                         symbology: null,
-                        index: new_plotted_layers.length
+                        panel: 0
                     }
 
                     this.getLayerAttributes(newLayer_id).then( attributes => {
@@ -87,11 +87,9 @@ export default class GeoLayers {
     }
 
     updateLayer(layer) {
-        const new_plotted_layers = [...this.plotted];
-        const plotted_ids = this.plotted.map(player => player.id);
-        const indexToUpdate = plotted_ids.findIndex(pid => layer.id);
-        new_plotted_layers.splice(indexToUpdate, 1);
-        new_plotted_layers.push(layer);
+        let new_plotted_layers = [...this.plotted];
+        const indexToUpdate = new_plotted_layers.findIndex(pLayer => layer.id === pLayer.id);
+        new_plotted_layers[indexToUpdate] = layer
         this.setPlotted(new_plotted_layers)
     }
     
@@ -381,5 +379,12 @@ export default class GeoLayers {
             const layer = getLayerById(this.map, pLayer.id)
             layer.setZIndex(index)
         })
+    }
+
+    updatePanel(pLayer, panel) {
+        if(pLayer.panel != panel) {
+            pLayer.panel = panel
+            this.updateLayer(pLayer)
+        }
     }
 }

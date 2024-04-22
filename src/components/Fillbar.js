@@ -40,14 +40,16 @@ export default function Fillbar(props) {
         const chose_layer = event.target.value
 		setLayer(chose_layer);
 		setFAttribute(chose_layer.attribute_to_symbolize);
+        setPanel(chose_layer.panel)
 
         //Set symbology as previous defined
         if(chose_layer.attribute_to_symbolize != null && chose_layer.symbology != null) {
-            setMethod(selectedLayer.symbology.method)
-            setNClasses(selectedLayer.symbology.n_classes)
-            setColorScheme(selectedLayer.symbology.color_scheme)
-            setPalette(selectedLayer.symbology.palette)
+            setMethod(chose_layer.symbology.method)
+            setNClasses(chose_layer.symbology.n_classes)
+            setColorScheme(chose_layer.symbology.color_scheme)
+            setPalette(chose_layer.symbology.palette)
         }
+
 	};
     const [attributes, setAttributes] = useState(null)
     const [attrList, setAttrList] = useState(null)
@@ -78,6 +80,13 @@ export default function Fillbar(props) {
         setPalette(v)
     }
 
+    //Panel
+    const [panel, setPanel] = useState(0)
+    const handlePanelChange = (e) => {
+        props.mapGeoLayers.updatePanel(selectedLayer, e.target.value)
+        setPanel(e.target.value)
+    }
+
     useEffect(() => {
         if(fill_attribute !== null) {
             props.mapGeoLayers.updateSymbology(selectedLayer, {
@@ -86,13 +95,14 @@ export default function Fillbar(props) {
                 color_scheme: color_scheme,
                 palette: palette
             })
+
         } else if(selectedLayer){
             props.mapGeoLayers.resetSymbology(selectedLayer)
             setMethod('quantile')
             setNClasses(5)
 		    setColorScheme('sequential');
     }
-    },[method, n_classes, color_scheme, palette, fill_attribute])
+    },[method, n_classes, color_scheme, palette, fill_attribute, panel])
 
     useEffect(() => {
 		const list = (selectedLayer) ? selectedLayer.attributes.map((attribute) =>
@@ -205,6 +215,30 @@ export default function Fillbar(props) {
                                 attributes={attributes}
                                 >
                                 </ModalAttributes>
+
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
+                                    Painel
+                                </InputLabel>
+
+                                <Select
+                                    sx={{ mb: 1, maxWidth: '60%' }}
+                                    value={panel}
+                                    onChange={handlePanelChange}
+                                    renderValue={(selected) => {
+                                        if(selected === 0) {
+                                            return <em>Padrão</em>
+                                        } else {
+                                            return <em>Comparado</em>
+                                        }
+                                    }}
+                                >
+                                    <MenuItem value={0}>
+                                        <em>Padrão</em>
+                                    </MenuItem>
+                                    <MenuItem value={1}>
+                                        <em>Comparado</em>
+                                    </MenuItem>
+                                </Select>
 
                                 {/* Método de Classificação */}
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
