@@ -13,8 +13,10 @@ import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
+import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
+import { SignalCellularNullOutlined } from '@mui/icons-material';
 
 function MainPane() {
 
@@ -134,13 +136,19 @@ function MainPane() {
     //Panel left size
     const [dividerX, setDividerX] = useState();
 
-    //Panel left size
+    //Turn ON/OFF Mapillary Slider Panel
     const [dividerON, turnDivider] = useState(false);
+
+    //Turn ON/OFF Compare / Open Layers (OL) Slider Panel
+    const [olDivider, turnOLDivider] = useState(false);
 
     //Mapillary Organization ID
     const [mapilOID, setMapilOID] = useState('');
     //Mapillary Organization ID Found
     const [moidFound, setMOIDFound] = useState(false);
+    
+    //rangeValue
+    const [dividerRangeValue, setDividerRangeValue] = useState(0.5);
     
     //Activate slider
     useEffect(() => {
@@ -155,9 +163,10 @@ function MainPane() {
         }
 	}, [basicOptions])
 
+    const sliderEL = useRef(null);
 	
     const mapGeoLayers = new GeoLayers(map, basicOptions, checked_layers, 
-        plotted_layers, setPlottedLayers);
+        plotted_layers, setPlottedLayers, turnOLDivider, sliderEL);
         
     return (
         <Box>
@@ -202,7 +211,9 @@ function MainPane() {
                 dividerON={dividerON}
                 turnDivider={turnDivider}
             />
-            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+            {dividerON ? (<Slider type='mapillary' map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+            {olDivider ? (<SliderMap type='OL' map={map}  sliderEL={sliderEL} setRange={setDividerRangeValue} rangeValue={dividerRangeValue}
+                        dividerX={dividerX} changeDX={setDividerX} mapGeoLayers={mapGeoLayers} />) : null}
             <Grid container>
                     <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
                         <Box>

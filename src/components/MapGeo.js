@@ -90,9 +90,6 @@ function MapGeo(props) {
 
 	let controlEl= document.createElement('div');
 	controlEl.innerHTML= controlTitle;
-	
-	// const MapGeoLayers = new GeoLayers(props.map, props.basicOptions, props.checked_layers, 
-	// 	props.plotted_layers, props.setPlottedLayers)
 
 	//Updates thematic layer
 	useEffect(() => {

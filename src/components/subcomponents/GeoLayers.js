@@ -9,15 +9,19 @@ import { View } from 'ol';
 import { Fill, Style, Stroke } from 'ol/style';
 import {getLayerById} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
+import {getRenderPixel} from 'ol/render.js';
+import RenderEvent from 'ol/render/Event'
 
 export default class GeoLayers {
-    constructor(map, map_options, checked, plotted, setPlotted) {
+    constructor(map, map_options, checked, plotted, setPlotted, activateSlider, dividerRange) {
         this.map = map;
         this.map_options = map_options;
         this.checked = checked;
         this.plotted = plotted;
         this.setPlotted = setPlotted;
         this.overlays = {};
+        this.activateSlider = activateSlider;
+        this.dividerRange = dividerRange
     }
 
     updateLayers() {
@@ -219,15 +223,21 @@ export default class GeoLayers {
        
     }
 
-    removeLayerOfMap(player) {
+    removeLayerOfMap(pLayer) {
+
         //Remove thematic layer, if any
         this.map.getLayers().forEach((layer) => {
             if(layer != undefined) {
-                if(player !== undefined && layer.get('id') === player.id) {
+                if(pLayer !== undefined && layer.get('id') === pLayer.id) {
                     this.map.removeLayer(layer)
                 }
             }
         })
+
+        //Remove Slider
+        const hasComparePanel = this.plotted.some(layer => layer.panel === 1)
+        if(!hasComparePanel)
+            this.activateSlider(0)
     }
 
     removeHighlight(layer_id) {
@@ -320,9 +330,6 @@ export default class GeoLayers {
 			})
 
             pLayer.symbology = symbology
-            // this.updateLayer(layer)
-
-			// updateLegend() pensar como fazer
 		}
     }
 
@@ -386,5 +393,97 @@ export default class GeoLayers {
             pLayer.panel = panel
             this.updateLayer(pLayer)
         }
+
+        const hasComparePanel = this.plotted.some(layer => layer.panel === 1)
+        const layer = getLayerById(this.map, pLayer.id)
+
+        if(panel === 0) { //Layer deactivated compare panel
+            //Remove event
+            const evtPre = layer.get('prerenderEvt')
+            const evtPost = layer.get('postrenderEvt')
+            if(evtPre && evtPost){
+                layer.un(evtPre.type, evtPre.listener)
+                layer.un(evtPost.type, evtPost.listener)
+            }
+
+            //Reset canvas
+            layer.once('prerender',  event => {
+                const ctx = event.context;
+                const mapSize = this.map.getSize();
+                const width = mapSize[0];
+                const tl = getRenderPixel(event, [width, 0]);
+                const tr = getRenderPixel(event, [mapSize[0], 0]);
+                const bl = getRenderPixel(event, [width, mapSize[1]]);
+                const br = getRenderPixel(event, mapSize);
+                
+                console.log('reset pre')
+                
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(tl[0], tl[1]);
+                ctx.lineTo(bl[0], bl[1]);
+                ctx.lineTo(br[0], br[1]);
+                ctx.lineTo(tr[0], tr[1]);
+                ctx.closePath();
+                ctx.clip();
+
+            })
+
+            layer.once('postrender', event => {
+                const ctx = event.context;
+                ctx.restore();
+                console.log('reset pos')
+            })
+
+            layer.changed()
+            this.map.renderSync()
+
+        } else { //Layer activated compare panel
+            console.log('prerender')
+            const dividerRange = this.dividerRange
+            const prerenderEvt = layer.on('prerender',  event => {
+                const ctx = event.context;
+                const mapSize = this.map.getSize();
+                const width = mapSize[0] * (this.dividerRange.current.value);
+                const tl = getRenderPixel(event, [width, 0]);
+                const tr = getRenderPixel(event, [mapSize[0], 0]);
+                const bl = getRenderPixel(event, [width, mapSize[1]]);
+                const br = getRenderPixel(event, mapSize);
+                
+                console.log('value', dividerRange.current.value)
+                
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(tl[0], tl[1]);
+                ctx.lineTo(bl[0], bl[1]);
+                ctx.lineTo(br[0], br[1]);
+                ctx.lineTo(tr[0], tr[1]);
+                ctx.closePath();
+                ctx.clip();
+
+            })
+
+            const postrenderEvt =  layer.on('postrender', event => {
+                const ctx = event.context;
+                ctx.restore();
+                console.log('postrender')
+            })
+
+            layer.set('prerenderEvt', prerenderEvt)
+            layer.set('postrenderEvt', postrenderEvt)
+        }
+        
+        if(!hasComparePanel) {
+            this.activateSlider(0)
+        } else {
+            this.activateSlider(1)
+        }      
+    }
+    
+    canCompare() {
+        if(this.plotted.length < 2)
+            return false
+        else 
+            return this.plotted.some(layer => layer.panel === 1)
     }
 }

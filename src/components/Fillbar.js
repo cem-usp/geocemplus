@@ -224,18 +224,18 @@ export default function Fillbar(props) {
                                     sx={{ mb: 1, maxWidth: '60%' }}
                                     value={panel}
                                     onChange={handlePanelChange}
-                                    renderValue={(selected) => {
-                                        if(selected === 0) {
-                                            return <em>Padrão</em>
-                                        } else {
-                                            return <em>Comparado</em>
-                                        }
-                                    }}
+                                    // renderValue={(selected) => {
+                                    //     if(selected === 0) {
+                                    //         return <em>Padrão</em>
+                                    //     } else {
+                                    //         return <em>Comparado</em>
+                                    //     }
+                                    // }}
                                 >
                                     <MenuItem value={0}>
                                         <em>Padrão</em>
                                     </MenuItem>
-                                    <MenuItem value={1}>
+                                    <MenuItem value={1} disabled={props.mapGeoLayers.canCompare()}>
                                         <em>Comparado</em>
                                     </MenuItem>
                                 </Select>
