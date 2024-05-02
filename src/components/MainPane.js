@@ -163,6 +163,13 @@ function MainPane() {
         }
 	}, [basicOptions])
 
+    //Check and remove Slider if plotted_layers changes 
+    useEffect(() => {
+        const hasComparePanel = plotted_layers.some(layer => layer.panel === 1)
+        if(!hasComparePanel)
+            turnOLDivider(0)
+    }, [plotted_layers])
+
     const sliderEL = useRef(null);
 	
     const mapGeoLayers = new GeoLayers(map, basicOptions, checked_layers, 

@@ -84,8 +84,8 @@ export default class GeoLayers {
             const diffElementIdx = plotted_ids.findIndex(pid => !checked_ids.includes(pid));
             new_plotted_layers.splice(diffElementIdx, 1);
             this.removeHighlight(this.plotted[diffElementIdx].id)
-            this.removeLayerOfMap(this.plotted[diffElementIdx])
             this.setPlotted(new_plotted_layers)
+            this.removeLayerOfMap(this.plotted[diffElementIdx])
         }
 
     }
@@ -233,11 +233,6 @@ export default class GeoLayers {
                 }
             }
         })
-
-        //Remove Slider
-        const hasComparePanel = this.plotted.some(layer => layer.panel === 1)
-        if(!hasComparePanel)
-            this.activateSlider(0)
     }
 
     removeHighlight(layer_id) {
@@ -416,8 +411,6 @@ export default class GeoLayers {
                 const bl = getRenderPixel(event, [width, mapSize[1]]);
                 const br = getRenderPixel(event, mapSize);
                 
-                console.log('reset pre')
-                
                 ctx.save();
                 ctx.beginPath();
                 ctx.moveTo(tl[0], tl[1]);
@@ -432,14 +425,12 @@ export default class GeoLayers {
             layer.once('postrender', event => {
                 const ctx = event.context;
                 ctx.restore();
-                console.log('reset pos')
             })
 
             layer.changed()
             this.map.renderSync()
 
         } else { //Layer activated compare panel
-            console.log('prerender')
             const dividerRange = this.dividerRange
             const prerenderEvt = layer.on('prerender',  event => {
                 const ctx = event.context;
@@ -449,8 +440,6 @@ export default class GeoLayers {
                 const tr = getRenderPixel(event, [mapSize[0], 0]);
                 const bl = getRenderPixel(event, [width, mapSize[1]]);
                 const br = getRenderPixel(event, mapSize);
-                
-                console.log('value', dividerRange.current.value)
                 
                 ctx.save();
                 ctx.beginPath();
@@ -466,7 +455,6 @@ export default class GeoLayers {
             const postrenderEvt =  layer.on('postrender', event => {
                 const ctx = event.context;
                 ctx.restore();
-                console.log('postrender')
             })
 
             layer.set('prerenderEvt', prerenderEvt)
