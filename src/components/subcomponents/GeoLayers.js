@@ -31,54 +31,43 @@ export default class GeoLayers {
         const new_plotted_layers = [...this.plotted];
         if(checked_ids.length > plotted_ids.length) { // If added layer
             const newLayer_id = checked_ids[checked_ids.length-1]
-            const axios = require('axios')
 
             //Retrieve Layer details
-            axios
-                .get("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ newLayer_id)
-                .then(response => {
+            fetch("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ newLayer_id)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(response => {
 
-                    //Get link to GeoJSON
-                    const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
-                    const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
-                    
-                    
-                    //Adicionar a layer no plotted array
-                    // GeocemLayer
-                    // - layer_id
-                    // - layer_url
-                    // - slider_panel
-                    // - visible
-                    // - opacity
-                    // - z-index
-                    // - fill
-                    //   - pallete
-                    //   - ...
-                    
-                    const mapFill = new MapFill()
-                    const new_layer = {
-                        id: newLayer_id,
-                        name: response.data.title,
-                        geojson_link: https_json,
-                        attribute_to_symbolize: null,
-                        mapFill: mapFill,
-                        symbology: null,
-                        panel: 0
-                    }
+                //Get link to GeoJSON
+                const json_url = response.links.filter(link => link.name === 'GeoJSON')[0].url
+                const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
+                
+                const mapFill = new MapFill()
+                const new_layer = {
+                    id: newLayer_id,
+                    name: response.title,
+                    geojson_link: https_json,
+                    attribute_to_symbolize: null,
+                    mapFill: mapFill,
+                    symbology: null,
+                    panel: 0,
+                    ol_layer: null
+                }
 
-                    this.getLayerAttributes(newLayer_id).then( attributes => {
-                        new_layer['attributes'] = attributes
-                    })
-                    
-                    new_plotted_layers.push(new_layer)
-                    this.setPlotted(new_plotted_layers)
-
-                    this.addVectorLayertoMap(new_layer, this.map, this.map_options)
-
+                this.getLayerAttributes(newLayer_id).then( attributes => {
+                    new_layer['attributes'] = attributes
                 })
-                .catch((err) => {
-                    console.error("ops! ocorreu um erro" + err);
-                });
+                
+                new_plotted_layers.push(new_layer)
+                this.setPlotted(new_plotted_layers)
+
+                this.addVectorLayertoMap(new_layer, this.map, this.map_options)
+
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
 
         } else if(checked_ids.length < plotted_ids.length) { // If removed layer
             const diffElementIdx = plotted_ids.findIndex(pid => !checked_ids.includes(pid));
@@ -189,6 +178,9 @@ export default class GeoLayers {
 
             //Adds thematic layer
             map.addLayer(vt_layer)
+
+            //Adds thematic layer to plotted object
+            layer.ol_layer = vt_layer
             
             //Focus the added layer
                 //Convert GeoJSON Projection
@@ -435,7 +427,8 @@ export default class GeoLayers {
             const prerenderEvt = layer.on('prerender',  event => {
                 const ctx = event.context;
                 const mapSize = this.map.getSize();
-                const width = mapSize[0] * (this.dividerRange.current.value);
+                const offset = (0.5 - this.dividerRange.current.value) * 42
+                const width = mapSize[0] * (this.dividerRange.current.value) + offset;
                 const tl = getRenderPixel(event, [width, 0]);
                 const tr = getRenderPixel(event, [mapSize[0], 0]);
                 const bl = getRenderPixel(event, [width, mapSize[1]]);

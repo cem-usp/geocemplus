@@ -23,6 +23,10 @@ import Slider from '@mui/material/Slider';
 import FormControl from '@mui/material/FormControl';
 import SelectPalette from './subcomponents/SelectPalette' 
 
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+
 //Select of Attributes to Tooltip
 import SelectAttributes from './subcomponents/SelectAttributes';
 
@@ -48,6 +52,12 @@ export default function Fillbar(props) {
             setNClasses(chose_layer.symbology.n_classes)
             setColorScheme(chose_layer.symbology.color_scheme)
             setPalette(chose_layer.symbology.palette)
+        }
+
+        //Set layer options as previous defined
+        if(chose_layer.ol_layer) {
+            setOpacity(chose_layer.ol_layer.getOpacity())
+            setVisibility(chose_layer.ol_layer.isVisible())
         }
 
 	};
@@ -85,6 +95,24 @@ export default function Fillbar(props) {
     const handlePanelChange = (e) => {
         props.mapGeoLayers.updatePanel(selectedLayer, e.target.value)
         setPanel(e.target.value)
+    }
+
+    //Opacity
+    const [opacity, setOpacity] = useState(1)
+    const handleOpacityChange = (e) => {
+        if(selectedLayer.ol_layer) {
+            selectedLayer.ol_layer.setOpacity(e.target.value)
+            setOpacity(e.target.value)
+        } 
+    }
+
+    //Visibility
+    const [visible, setVisibility] = useState(true)
+    const handleVisibilityChange = (e) => {
+        if(selectedLayer.ol_layer) {
+            selectedLayer.ol_layer.setVisible(e.target.checked)
+            setVisibility(e.target.checked)
+        } 
     }
 
     useEffect(() => {
@@ -182,6 +210,29 @@ export default function Fillbar(props) {
                                 </Select>
 
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
+                                    Opções da camada
+                                </InputLabel>
+                                
+                                <Grid container>
+                                    <Grid item xs={10}  sx={{ alignSelf: 'center' }} >
+                                        <Slider sx={{ ml:5, maxWidth: '60%' }}
+                                            getAriaLabel={() => 'Opacidade'}
+                                            value={opacity}
+                                            onChange={handleOpacityChange}
+                                            valueLabelDisplay="auto"
+                                            getAriaValueText={() => opacity}
+                                            step={0.1}
+                                            min={0}
+                                            max={1}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormControlLabel  sx={{ mb: 1, maxWidth: '10%' }}
+                                        control={<Checkbox checked={visible} onChange={handleVisibilityChange} />} label="Visibilidade" />
+                                    </Grid>
+                                </Grid>
+
+                                <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Atributo de Preenchimento
                                 </InputLabel>
 
@@ -224,13 +275,6 @@ export default function Fillbar(props) {
                                     sx={{ mb: 1, maxWidth: '60%' }}
                                     value={panel}
                                     onChange={handlePanelChange}
-                                    // renderValue={(selected) => {
-                                    //     if(selected === 0) {
-                                    //         return <em>Padrão</em>
-                                    //     } else {
-                                    //         return <em>Comparado</em>
-                                    //     }
-                                    // }}
                                 >
                                     <MenuItem value={0}>
                                         <em>Padrão</em>
@@ -244,7 +288,7 @@ export default function Fillbar(props) {
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Classificação
                                 </InputLabel>
-                                <Container maxWidth="sm">
+                                <Container>
                                     <ToggleButtonGroup sx={{mb: 2}}
                                         exclusive
                                         onChange={handleMethodChange}
@@ -259,7 +303,7 @@ export default function Fillbar(props) {
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
                                     Número de classes
                                 </InputLabel>
-                                <Container maxWidth="sm" sx={{width:'200px'}}>
+                                <Container sx={{width:'200px'}}>
                                     <Slider
                                         aria-label="Número de Classes"
                                         defaultValue={5}
@@ -277,7 +321,7 @@ export default function Fillbar(props) {
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
                                     Esquema de cores
                                 </InputLabel>
-                                <Container maxWidth="sm">
+                                <Container>
                                     <ToggleButtonGroup sx={{mb: 2}} 
                                         size='small'
                                         exclusive
@@ -294,7 +338,7 @@ export default function Fillbar(props) {
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:3 }}>
                                     Paleta de cores
                                 </InputLabel>
-                                <Container maxWidth="sm" sx={{pb: 3}}>
+                                <Container sx={{pb: 3}}>
                                     <SelectPalette 
                                         scheme={color_scheme}
                                         setPalette={setPalette}
@@ -309,7 +353,7 @@ export default function Fillbar(props) {
                                     Legenda Flutuante
                                 </InputLabel>
                                 {/* Atributo título */}
-                                <FormControl variant="filled" maxWidth="sm" sx={{pb: 3}}>
+                                <FormControl variant="filled" sx={{pb: 3}}>
                                     <InputLabel id="select-title-var-filled-label">Atributo Título</InputLabel>
                                     <Select
                                     labelId="select-title-var-filled-label"

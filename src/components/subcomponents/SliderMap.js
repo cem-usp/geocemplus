@@ -5,24 +5,24 @@ export default function Slider(props) {
     const dividerEL = useRef(null);
 
     function getPosition () {
-        var offset = (0.5 - props.rangeValue) * 42// (this.options.thumbSize) = 42
-        return props.map.getSize()[0] * props.rangeValue + offset
+        const offset = (0.5 - props.sliderEL.current.value) * 42// (this.options.thumbSize) = 42
+        return props.map.getSize()[0] * props.sliderEL.current.value + offset
     }
 
     const handleRange = (e) => {
-        props.setRange(e.target.value)
+        dividerEL.current.style.left = getPosition() + 'px'
+        props.map.render()
+        // console.log(e.target.value)
     }
 
     useEffect(() => {
-        props.changeDX(getPosition())
-        dividerEL.current.style.left = props.dividerX + 'px'
-        props.map.render()
-    }, [props.rangeValue])
+        props.sliderEL.current.value = 0.5
+    }, [])
     
     return(
         <div className="leaflet-sbs">
             <div className="leaflet-sbs-divider" ref={dividerEL}></div>
-            <input className="leaflet-sbs-range" value={props.rangeValue} type="range" min="0" max="1" step="any" ref={props.sliderEL} 
+            <input className="leaflet-sbs-range" type="range" min="0" max="1" step="any" ref={props.sliderEL} 
             onChange={handleRange}/>
         </div>
     );

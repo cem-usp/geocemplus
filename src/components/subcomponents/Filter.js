@@ -16,14 +16,15 @@ export default function FABFilter(props) {
     };
 
     function getOrgName(moid) {
-      const axios = require('axios');
       const token = "MLY|9006973349373388|91a175c294e87cd0e18a346877811833"
     
-      const response = axios
-      .get(`https://graph.mapillary.com/${moid}?access_token=${token}&fields=name`)
+      const response = fetch(`https://graph.mapillary.com/${moid}?access_token=${token}&fields=name`)
+      .then(function (response) {
+          return response.json();
+      })
       .then((response) => {
         setError(false)
-        setMoname(response.data.name)
+        setMoname(response.name)
       })
       .catch((err) => {
         console.error("ops! ocorreu um erro" + err);

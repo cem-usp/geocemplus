@@ -1,5 +1,3 @@
-import {axios} from "../services/api";
-
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -30,7 +28,7 @@ const geoservices = [
         name: 'GeoCEM',
         baseurl: 'https://geocem.centrodametropole.fflch.usp.br/api/',
         catalog_category_uri: 'categories/',
-        catolog_layers_in_cat_uri: '/layers/?category__identifier__in=',
+        catolog_layers_in_cat_uri: 'layers/?category__identifier__in=',
         wfs_url: 'https://geocem.centrodametropole.fflch.usp.br/geoserver/ows'
     },
     {
@@ -96,14 +94,16 @@ export default function LayerList(props) {
             const [geoservice, layer_id] = selectedLayer.split('_')
 
             if(geoservice === 'geocem') {
-                const request = axios.create({
-                    baseURL: geoservices[0].baseurl
-                });  
+                // const request = axios.create({
+                //     baseURL: geoservices[0].baseurl
+                // });  
         
-                request
-                .get("/layers/"+ layer_id)
+                fetch(geoservices[0].baseurl + "/layers/" + layer_id)
+                .then(function (response) {
+                    return response.json();
+                })
                 .then((response) => {
-                    const json_url = response.data.links.filter(link => link.name === 'GeoJSON')[0].url
+                    const json_url = response.links.filter(link => link.name === 'GeoJSON')[0].url
                     const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
                     props.changeLayerURL(https_json)
                     setGeoCEMLayerAttributes(layer_id)
@@ -119,14 +119,16 @@ export default function LayerList(props) {
     //z-Index management
 
     function getGeoCEMLayerAttributes(layer_id) {
-        const request = axios.create({
-            baseURL: geoservices[0].baseurl
-        });  
+        // const request = axios.create({
+        //     baseURL: geoservices[0].baseurl
+        // });  
     
-        return request
-            .get("/v2/layers/" + layer_id + "/attribute_set")
+        return fetch(geoservices[0].baseurl + "/v2/layers/" + layer_id + "/attribute_set")
+            .then(function (response) {
+                return response.json();
+            })
             .then((response) => {
-                return response.data.attributes
+                return response.attributes
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);
@@ -136,18 +138,20 @@ export default function LayerList(props) {
 
     function setGeoCEMLayerAttributes(layer_id) {
         
-        const request = axios.create({
-            baseURL: geoservices[0].baseurl
-        });  
+        // const request = axios.create({
+        //     baseURL: geoservices[0].baseurl
+        // });  
     
-        request
-            .get("/v2/layers/" + layer_id + "/attribute_set")
-            .then((response) => {
-                props.changeAttributes(response.data.attributes)
-            })
-            .catch((err) => {
-                console.error("ops! ocorreu um erro" + err);
-            });
+        fetch(geoservices[0].baseurl + "/v2/layers/" + layer_id + "/attribute_set")
+        .then(function (response) {
+            return response.json();
+        })
+        .then((response) => {
+            props.changeAttributes(response.attributes)
+        })
+        .catch((err) => {
+            console.error("ops! ocorreu um erro" + err);
+        });
     }
 
     function handleOnDragEnd(result) {
@@ -264,35 +268,40 @@ export default function LayerList(props) {
     }
 
     function loadGeoCEMCategories() {
-        const request = axios.create({
-            baseURL: geoservices[0].baseurl,
-            params: {type: 'layer'},
-        });        
+        // const request = axios.create({
+        //     baseURL: geoservices[0].baseurl,
+        //     params: {type: 'layer'},
+        // });        
         
-        request.get(geoservices[0].catalog_category_uri)
-            .then((response) => {
-                let promises = []
-                response.data.objects.forEach(category => {
-                    if(category.layers_count > 0 ) {
-                        const promise = request
-                            .get(geoservices[0].catolog_layers_in_cat_uri+category.identifier)
-                            .then((reponsecat) => {
-                                const new_category = {
-                                    name: category.gn_description,
-                                    id: category.id,
-                                    layers: reponsecat.data.objects
-                                }
-                                return new_category
-                            })
-                        promises.push(promise)
-                    }
-                });
-                return promises
-            })
-            .then((promises) => {
-                Promise.all(promises)
-                .then((categories) => setGeoCEMCats(categories));
-            })
+        fetch(geoservices[0].baseurl + geoservices[0].catalog_category_uri)
+        .then(function (response) {
+            return response.json();
+        })
+        .then((response) => {
+            let promises = []
+            response.objects.forEach(category => {
+                if(category.layers_count > 0 ) {
+                    const promise = fetch(geoservices[0].baseurl + geoservices[0].catolog_layers_in_cat_uri + category.identifier)
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then((reponsecat) => {
+                            const new_category = {
+                                name: category.gn_description,
+                                id: category.id,
+                                layers: reponsecat.objects
+                            }
+                            return new_category
+                        })
+                    promises.push(promise)
+                }
+            });
+            return promises
+        })
+        .then((promises) => {
+            Promise.all(promises)
+            .then((categories) => setGeoCEMCats(categories));
+        })
     }
 
     function createCatList(props) {
