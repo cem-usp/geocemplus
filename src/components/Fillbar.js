@@ -85,7 +85,7 @@ export default function Fillbar(props) {
     const handleColorSchemeChange = (e) => {
 		setColorScheme(e.target.value);
 	};
-    const [palette, setPalette] = useState('')
+    const [palette, setPalette] = useState(null)
 	const handlePaletteChange = (e,v) => {
         setPalette(v)
     }
@@ -210,12 +210,17 @@ export default function Fillbar(props) {
                                 </Select>
 
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
-                                    Opções da camada
+                                    Visibilidade da camada
                                 </InputLabel>
                                 
-                                <Grid container>
-                                    <Grid item xs={10}  sx={{ alignSelf: 'center' }} >
-                                        <Slider sx={{ ml:5, maxWidth: '60%' }}
+                                <Grid container spacing={0}>
+                                    <Grid item xs={2}>
+                                        <FormControlLabel  sx={{ maxWidth: '10%' }}
+                                        control={<Checkbox checked={visible} onChange={handleVisibilityChange} />} label="Visibilidade" />
+                                    </Grid>
+                                    <Grid item xs={8}  sx={{ alignSelf: 'center'}} >
+                                        <Slider sx={{ width: '100%' }}
+                                            disabled={!visible}
                                             getAriaLabel={() => 'Opacidade'}
                                             value={opacity}
                                             onChange={handleOpacityChange}
@@ -225,10 +230,6 @@ export default function Fillbar(props) {
                                             min={0}
                                             max={1}
                                         />
-                                    </Grid>
-                                    <Grid item xs={2}>
-                                        <FormControlLabel  sx={{ mb: 1, maxWidth: '10%' }}
-                                        control={<Checkbox checked={visible} onChange={handleVisibilityChange} />} label="Visibilidade" />
                                     </Grid>
                                 </Grid>
 

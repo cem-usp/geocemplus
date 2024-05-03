@@ -330,13 +330,15 @@ export default class GeoLayers {
 
         if(pLayer['attribute_to_symbolize'] != attribute) {
             pLayer['attribute_to_symbolize'] = attribute
-            const layer = getLayerById(this.map, pLayer.id)
-			const features = layer.get('features')
+            // const layer = getLayerById(this.map, pLayer.id)
+			const features = pLayer.ol_layer.get('features')
 			let attr_values = []
-			features.map((feature) => {
-                attr_values.push(feature.get(attribute.attribute))
-			})
-			pLayer.mapFill.setArrValues(attr_values) 
+            if(attribute !== null) {
+                features.map((feature) => {
+                    attr_values.push(feature.get(attribute.attribute))
+                })
+            }
+            pLayer.mapFill.setArrValues(attr_values) 
             // this.updateLayer(pLayer)
         }
     }

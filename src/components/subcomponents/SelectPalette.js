@@ -27,7 +27,9 @@ export default function SelectPalette(props) {
     }
     
     useEffect(() => {
-        props.setPalette(menuItems[0].key)
+        if(props.palette === null)
+            props.setPalette(menuItems[0].key)
+        
     }, [props.scheme])
 
     return (
