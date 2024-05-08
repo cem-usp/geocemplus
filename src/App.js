@@ -1,23 +1,13 @@
 import logo from './logo.svg';
 import './App.css';
 
-import React, { useEffect, useState, useRef } from "react";
+import React from "react";
 import MainPane from "./components/MainPane";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { ptBR } from '@mui/material/locale';
-
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from './config/Theme'
 
 function App() {
 	
-	const theme = createTheme(
-		{
-			palette: {
-			primary: { main: '#1976d2' },
-			},
-		},
-		ptBR,
-	);
-
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App">

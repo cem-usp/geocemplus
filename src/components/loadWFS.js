@@ -305,7 +305,7 @@ export default function LayerList(props) {
     }
 
     function createCatList(props) {
-       const geocem_list = geocem_cats.map((category) => {
+        const geocem_list = geocem_cats.map((category) => {
             return (
                 <div key={category.id}>
                     <ListItemButton sx={{ pl: 2 }}  onClick={() => handleClickCat('cat_'+category.id)}>

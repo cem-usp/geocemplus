@@ -26,8 +26,6 @@ import {getLayerById} from './ol-utils/Utils'
 import NavigationIcon from '@mui/icons-material/Navigation';
 import Box from '@mui/material/Box';
 
-import GeoLayers from './subcomponents/GeoLayers'
-
 //Fill
 const mapFill = new MapFill()
 
@@ -319,39 +317,6 @@ function MapGeo(props) {
 	return (
 		<div name='map_geral'>
 			<div ref={mapElement} className="map-container position-fixed" name='map_cart'/>
-{/* 
-
-			<ToolbarBasic 
-				mt="388px"
-				basicOptions={basicOptions}
-				onBasicOptionsChange={handleBasicOptionsChange}
-				titulo={textTitulo}
-				onTituloChange={handleTituloChange}
-				attributes={props.attributes}
-				attrList={attrList}
-				filterAttrNames={filterAttrNames}
-				attribute={attribute}
-				onAttributeChange={handleAttributeChange}
-				map={props.map}
-			/>
-			<ToolbarFill 
-				mt="484.8px"
-				n_classes={n_classes}
-				handleNClassesChange={handleNClassesChange}
-				color_scheme={color_scheme}
-				handleColorSchemeChange={handleColorSchemeChange}
-				palette={palette}
-				handlePaletteChange={handlePaletteChange}
-				setPalette={setPalette}
-				method={method}
-				handleMethodChange={handleMethodChange}
-				attributesTT={attributesTT}
-				handleATTChange={handleAttributesTTChange}
-				attributeTitle={attributeTitle}
-				onAttributeTitleChange={handleAttributeTitleChange}
-				attrList={attrList}
-				attributes={props.attributes}
-				/> */}
 		</div>
 	);
 }

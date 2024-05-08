@@ -7,10 +7,13 @@ import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import { View } from 'ol';
 import { Fill, Style, Stroke } from 'ol/style';
-import {getLayerById} from '../ol-utils/Utils'
+import {getLayerById, getControl} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
 import {getRenderPixel} from 'ol/render.js';
 import RenderEvent from 'ol/render/Event'
+import ReactDOM from 'react-dom/client';
+import Legend from '../../services/Legend'
+import Control from 'ol/control/Control';
 
 export default class GeoLayers {
     constructor(map, map_options, checked, plotted, setPlotted, activateSlider, dividerRange) {
@@ -210,7 +213,10 @@ export default class GeoLayers {
     
             //Add Highlight Event and get featureOverlay
             this.highlightFeature(vt_layer)
-    
+
+            //If slider activate, apply panel events
+            if(this.plotted.some(layer => layer.panel === 1))
+                this.applyComparePanelEvents()
         })
        
     }
@@ -225,6 +231,9 @@ export default class GeoLayers {
                 }
             }
         })
+
+        //Updates Bottom Legend
+        this.updateLegend()
     }
 
     removeHighlight(layer_id) {
@@ -317,6 +326,8 @@ export default class GeoLayers {
 			})
 
             pLayer.symbology = symbology
+
+            this.updateLegend()
 		}
     }
 
@@ -384,19 +395,123 @@ export default class GeoLayers {
         }
 
         const hasComparePanel = this.plotted.some(layer => layer.panel === 1)
-        const layer = getLayerById(this.map, pLayer.id)
 
         if(panel === 0) { //Layer deactivated compare panel
             //Remove event
-            const evtPre = layer.get('prerenderEvt')
-            const evtPost = layer.get('postrenderEvt')
+            this.removeComparePanelEvents()
+        } else { //Layer activated compare panel
+            //Remove event
+            this.applyComparePanelEvents()
+        }
+        
+        if(!hasComparePanel) {
+            this.activateSlider(0)
+        } else {
+            this.activateSlider(1)
+        }      
+    }
+    
+    canCompare() {
+        if(this.plotted.length < 2)
+            return false
+        else 
+            return this.plotted.some(layer => layer.panel === 1)
+    }
+
+    applyComparePanelEvents() {
+        //If Slider deactivated then remove panel events
+
+        //Get Standard and Compare Panel layers
+        const layersStandardPane = this.plotted.filter(layer => layer.panel === 0)
+        const layersComparePane = this.plotted.filter(layer => layer.panel === 1)
+
+        //Check and apply Standard panel
+        layersStandardPane.forEach(layer => {
+            if(layer.ol_layer.get('prerenderEvt') === undefined) {
+                const prerenderEvt = layer.ol_layer.on('prerender',  event => {
+                    const ctx = event.context;
+                    const mapSize = this.map.getSize();
+                    const offset = (0.5 - this.dividerRange.current.value) * 42
+                    const width = mapSize[0] * (this.dividerRange.current.value) + offset;
+                    
+                    // Standard Panel
+                    const tr = getRenderPixel(event, [width, 0]);
+                    const br = getRenderPixel(event, [width, mapSize[1]]);
+                    const tl = getRenderPixel(event, [0, 0]);
+                    const bl = getRenderPixel(event, [0, mapSize[1]]);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(tl[0], tl[1]);
+                    ctx.lineTo(bl[0], bl[1]);
+                    ctx.lineTo(br[0], br[1]);
+                    ctx.lineTo(tr[0], tr[1]);
+                    ctx.closePath();
+                    ctx.clip();
+
+                })
+
+                const postrenderEvt =  layer.ol_layer.on('postrender', event => {
+                    const ctx = event.context;
+                    ctx.restore();
+                })
+
+                layer.ol_layer.set('prerenderEvt', prerenderEvt)
+                layer.ol_layer.set('postrenderEvt', postrenderEvt)
+
+            }
+        }); 
+
+        //Check and apply Compare panel
+        layersComparePane.forEach(layer => {
+            if(layer.ol_layer.get('prerenderEvt') === undefined) {
+                const prerenderEvt = layer.ol_layer.on('prerender',  event => {
+                    const ctx = event.context;
+                    const mapSize = this.map.getSize();
+                    const offset = (0.5 - this.dividerRange.current.value) * 42
+                    const width = mapSize[0] * (this.dividerRange.current.value) + offset;
+                    
+                    // Compare Panel
+                    const tl = getRenderPixel(event, [width, 0]);
+                    const tr = getRenderPixel(event, [mapSize[0], 0]);
+                    const bl = getRenderPixel(event, [width, mapSize[1]]);
+                    const br = getRenderPixel(event, mapSize);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(tl[0], tl[1]);
+                    ctx.lineTo(bl[0], bl[1]);
+                    ctx.lineTo(br[0], br[1]);
+                    ctx.lineTo(tr[0], tr[1]);
+                    ctx.closePath();
+                    ctx.clip();
+
+                })
+
+                const postrenderEvt =  layer.ol_layer.on('postrender', event => {
+                    const ctx = event.context;
+                    ctx.restore();
+                })
+
+                layer.ol_layer.set('prerenderEvt', prerenderEvt)
+                layer.ol_layer.set('postrenderEvt', postrenderEvt)
+
+            }
+        });
+    }
+
+    removeComparePanelEvents() {
+        this.plotted.forEach(layer => {
+            //Remove event
+            const evtPre = layer.ol_layer.get('prerenderEvt')
+            const evtPost = layer.ol_layer.get('postrenderEvt')
             if(evtPre && evtPost){
-                layer.un(evtPre.type, evtPre.listener)
-                layer.un(evtPost.type, evtPost.listener)
+                layer.ol_layer.un(evtPre.type, evtPre.listener)
+                layer.ol_layer.un(evtPost.type, evtPost.listener)
             }
 
             //Reset canvas
-            layer.once('prerender',  event => {
+            layer.ol_layer.once('prerender',  event => {
                 const ctx = event.context;
                 const mapSize = this.map.getSize();
                 const width = mapSize[0];
@@ -416,57 +531,40 @@ export default class GeoLayers {
 
             })
 
-            layer.once('postrender', event => {
+            layer.ol_layer.once('postrender', event => {
                 const ctx = event.context;
                 ctx.restore();
             })
 
-            layer.changed()
+            layer.ol_layer.changed()
             this.map.renderSync()
+        });
+    }
 
-        } else { //Layer activated compare panel
-            const dividerRange = this.dividerRange
-            const prerenderEvt = layer.on('prerender',  event => {
-                const ctx = event.context;
-                const mapSize = this.map.getSize();
-                const offset = (0.5 - this.dividerRange.current.value) * 42
-                const width = mapSize[0] * (this.dividerRange.current.value) + offset;
-                const tl = getRenderPixel(event, [width, 0]);
-                const tr = getRenderPixel(event, [mapSize[0], 0]);
-                const bl = getRenderPixel(event, [width, mapSize[1]]);
-                const br = getRenderPixel(event, mapSize);
-                
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(tl[0], tl[1]);
-                ctx.lineTo(bl[0], bl[1]);
-                ctx.lineTo(br[0], br[1]);
-                ctx.lineTo(tr[0], tr[1]);
-                ctx.closePath();
-                ctx.clip();
+    //Bottom Legend Control 
+    updateLegend() {
+		//remove Legend control
+		this.removeLegend()
 
-            })
+        //Get all layers with attribute to simbolize
+        const layersWithSymbol = this.plotted.filter(layer => layer.attribute_to_symbolize !== null)
 
-            const postrenderEvt =  layer.on('postrender', event => {
-                const ctx = event.context;
-                ctx.restore();
-            })
+        if(layersWithSymbol.length > 0) {
+            const mapFills = layersWithSymbol.map((layer) => layer.mapFill)
 
-            layer.set('prerenderEvt', prerenderEvt)
-            layer.set('postrenderEvt', postrenderEvt)
+            //Add Legend control
+            const output = document.createElement("div")
+            const rootOut = ReactDOM.createRoot(output)
+            rootOut.render(<Legend fills={mapFills}/>)
+            const lControl = new Control({element: output, properties: 'id'})
+            lControl.set('id', 'legend')
+            this.map.addControl(lControl)	
+
         }
-        
-        if(!hasComparePanel) {
-            this.activateSlider(0)
-        } else {
-            this.activateSlider(1)
-        }      
-    }
-    
-    canCompare() {
-        if(this.plotted.length < 2)
-            return false
-        else 
-            return this.plotted.some(layer => layer.panel === 1)
-    }
+	}
+
+	removeLegend() {
+		const legendControl = getControl(this.map, 'legend')
+		if(legendControl) this.map.removeControl(legendControl)
+	}
 }

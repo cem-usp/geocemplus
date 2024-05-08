@@ -18,3 +18,14 @@ export function getLayersByType(map, type) {
 	})
 	return found_layers
 }
+
+//Function get a Control by ID property
+export function getControl(map, id) {
+	let found_control = null
+	map.getControls(map, id).forEach((control) => {
+		if(control.get('id') === id){
+			found_control = control
+		}
+	})
+	return found_control
+}

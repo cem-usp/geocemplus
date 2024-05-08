@@ -1,60 +1,80 @@
 import * as React from 'react';
-import List from '@mui/material/List';
+import Tooltip from '@mui/material/Tooltip';
 import ListItem from '@mui/material/ListItem';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Collapse from '@mui/material/Collapse';
-import Slide from '@mui/material/Slide';
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '../config/Theme'
 
 export default function LegendControl(props) {
-    const colors = props.fill.getColors()
+    
+    function Steps({fill}) {
+        const colors = fill.getColors()
+    
+        return(
+            colors.map((step) => {
+                const intervalText = `${step.interval.start.toLocaleString("pt-BR", {maximumFractionDigits: 4})} ${(step.interval.start) ? '-' : ''} ${step.interval.end.toLocaleString("pt-BR", {maximumFractionDigits: 4})}`
+                return(
+                    <Tooltip title={intervalText}>
+                        <ListItem key={step.interval.start+'_'+step.interval.end}>
+                            <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                '& > :not(style)': {
+                                m: 1,
+                                width: '1.5em',
+                                height: '1.5em',
+                                alignItems: 'center',
+                                },
+                            }}
+                            >
+                                <i style={{backgroundColor: step.color}}/>
+                            </Box>
+                            <Typography variant="body1" noWrap>
+                                {intervalText}
+                            </Typography>
+                        </ListItem>
+                    </Tooltip>
+            )
+        }))
+    }
 
-    const listSteps = colors.map((step) =>
-        <ListItem key={step.interval.start+'_'+step.interval.end}>
-            <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                '& > :not(style)': {
-                m: 1,
-                width: '1.5em',
-                height: '1.5em',
-                alignItems: 'center',
-                },
-            }}
-            >
-                <i style={{backgroundColor: step.color}}/>
-            </Box>
-            <Typography variant="body1">
-                {step.interval.start.toLocaleString("pt-BR", {maximumFractionDigits: 4})} {(step.interval.start) ? '-' : '' } {step.interval.end.toLocaleString("pt-BR", {maximumFractionDigits: 4})}
-            </Typography>
-        </ListItem>
-    );
+    const attributes_share = 12 / props.fills.length
+    const legendLayers = props.fills.map((mapFill) => 
+        <Grid item xs={attributes_share}>
+            <Steps fill={mapFill} />
+        </Grid>
+    )
 
     const [open, setOpen] = React.useState(false);
-    const containerRef = React.useRef(null);
   
     const handleChange = () => {
-        containerRef.current.classList.toggle('enter')
         setOpen((open) => !open);
     };
 
     return (
-        <Grid container className="ol-legend" ref={containerRef}>
-            <Grid item xs={1} className="ol-legend-header">
-                <Paper elevation={4} >
-                    <Typography variant="button" display="block" gutterBottom onClick={handleChange}>
-                        Legendas
-                    </Typography>
-                </Paper>
-            </Grid>
-            <Grid item xs={11} >
-                <List sx={{ bgcolor: 'background.paper' }}>
-                    { listSteps }
-                </List>
-            </Grid>
-        </Grid>
+        <ThemeProvider theme={theme}>
+            <Box className="ol-legend" sx={{right: (open) ? `${props.fills.length * -167}px` : '10px' }}>
+                <Grid container>
+                    <Grid item xs={1} className="ol-legend-header">
+                        <Paper elevation={4} >
+                            <Typography variant="button" display="block" gutterBottom onClick={handleChange}>
+                                Legendas
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={11}>
+                        <Paper elevation={4} >
+                            <Grid container>
+                                {legendLayers}
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Box>
+		</ThemeProvider>
       );
 }

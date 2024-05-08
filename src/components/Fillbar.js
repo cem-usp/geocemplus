@@ -129,7 +129,7 @@ export default function Fillbar(props) {
             setMethod('quantile')
             setNClasses(5)
 		    setColorScheme('sequential');
-    }
+        }
     },[method, n_classes, color_scheme, palette, fill_attribute, panel])
 
     useEffect(() => {
