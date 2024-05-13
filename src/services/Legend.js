@@ -45,6 +45,9 @@ export default function LegendControl(props) {
     const attributes_share = 12 / props.fills.length
     const legendLayers = props.fills.map((mapFill) => 
         <Grid item xs={attributes_share}>
+            <Typography variant="body1" noWrap>
+                {mapFill.attribute}
+            </Typography>
             <Steps fill={mapFill} />
         </Grid>
     )

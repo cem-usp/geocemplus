@@ -5,6 +5,7 @@ import Palette from './Palette'
 export class Fill {
 
     constructor() {
+        this.attribute = null
         this.arr_values = null
         this.method = null
         this.scheme = null
@@ -21,7 +22,9 @@ export class Fill {
         }
     }
 
-    updateParameters(method, scheme, palette, n_classes) {
+    updateParameters(attribute, method, scheme, palette, n_classes) {
+
+        if(attribute !== null) this.attribute = attribute
 
         if(method !== null) this.method = method
 

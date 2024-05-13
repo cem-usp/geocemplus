@@ -8,7 +8,7 @@ export const theme = createTheme(
         },
         typography: {
             body1: {
-              fontSize: 14,
+              fontSize: '0.875rem',
             },
           },
     },

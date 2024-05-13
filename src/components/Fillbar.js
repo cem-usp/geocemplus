@@ -36,6 +36,7 @@ import { styled } from '@mui/material/styles';
 import ModalAttributes from './subcomponents/ModalAttributes';
 import HelpIcon from '@mui/icons-material/Help';
 import IconButton from '@mui/material/IconButton';
+import GeoLayers from "./subcomponents/GeoLayers";
 
 export default function Fillbar(props) {
     const [layerList, setLayerList] = useState(null)
@@ -60,7 +61,35 @@ export default function Fillbar(props) {
             setVisibility(chose_layer.ol_layer.isVisible())
         }
 
+        //Set tooltip options as previous defined
+        if(chose_layer.tooltip.title !== null) {
+            setTooltipTitle(chose_layer.tooltip.title)
+        } else {
+            setTooltipTitle('')
+        }
+        if(chose_layer.tooltip.attributes !== null) {
+            setTooltipAttributes(chose_layer.tooltip.attributes)
+        } else {
+            setTooltipAttributes([])
+        }
+
+
 	};
+
+    // Tooltip options
+    const [tooltipTitle, setTooltipTitle] = useState("")
+    const [tooltipAttributes, setTooltipAttributes] = useState([])
+    
+	const handleTooltipATsChange = (e) => {
+		setTooltipAttributes(e.target.value);
+        props.mapGeoLayers.updateTooltipAttributes(selectedLayer, e.target.value)
+	};
+    
+    const handleTooltipTitleChange = (e) => {
+        setTooltipTitle(e.target.value)
+        props.mapGeoLayers.updateTooltipTitle(selectedLayer, e.target.value)
+    }
+
     const [attributes, setAttributes] = useState(null)
     const [attrList, setAttrList] = useState(null)
 
@@ -355,24 +384,25 @@ export default function Fillbar(props) {
                                 </InputLabel>
                                 {/* Atributo título */}
                                 <FormControl variant="filled" sx={{pb: 3}}>
-                                    <InputLabel id="select-title-var-filled-label">Atributo Título</InputLabel>
+                                    <InputLabel id="select-title-var-filled-label">Título dinâmico</InputLabel>
                                     <Select
                                     labelId="select-title-var-filled-label"
                                     id="title-var-select-filled"
                                         sx={{ minWidth: 200, mb: 1 }}
-                                        displayEmpty
-                                        value={props.attributeTitle}
-                                        onChange={props.onAttributeTitleChange}
-                                        renderValue={(selected) => selected.attribute_label}
+                                        value={tooltipTitle}
+                                        onChange={handleTooltipTitleChange}
                                     >
-                                        {props.attrList}
+                                        <MenuItem value="">
+                                            <em>Sem título</em>
+                                        </MenuItem>
+                                        {attrList}
                                     </Select>
                                 </FormControl>
                                 {/* Atributos da legenda */}
                                 <SelectAttributes
-                                    attributes={props.attributes}
-                                    attributesLF={props.attributesLF}
-                                    handleALFChange={props.handleALFChange}
+                                    attributes={attributes}
+                                    tooltipAttributes={tooltipAttributes}
+                                    handleALFChange={handleTooltipATsChange}
                                 />
                             </Box>
                         </Collapse>

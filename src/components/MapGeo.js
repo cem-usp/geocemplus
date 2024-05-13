@@ -15,8 +15,6 @@ import ReactDOM from 'react-dom/client';
 
 import MenuItem from '@mui/material/MenuItem';
 
-import LegendAtInfo from '../services/LegendAtInfo'
-
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 
 import {getMapillaryVT, updateMapiLayer} from '../services/mapillary/MapiLayer'
@@ -208,7 +206,7 @@ function MapGeo(props) {
 
 	//Update Attributes legend tooltip
 	useEffect(() => {
-		updateTooltipLegend(props.attributesLF, props.attributeTitle)
+		// updateTooltipLegend(props.attributesLF, props.attributeTitle)
 	}, [props.attributesLF, props.attributeTitle])
 
 	//Update Attribute list options when layer changes
@@ -248,71 +246,71 @@ function MapGeo(props) {
 	}
 
 	//Add Tooltip Legend control
-	function updateTooltipLegend(attributes_tt, attribute_title) {
+	// function updateTooltipLegend(attributes_tt, attribute_title) {
 
-		//Remove legenda
-		const legendControl = getControl(props.map, 'tooltip-legend')
-		if(legendControl) props.map.removeControl(legendControl)
+	// 	//Remove legenda
+	// 	const legendControl = getControl(props.map, 'tooltip-legend')
+	// 	if(legendControl) props.map.removeControl(legendControl)
 
-		//Remove evento
-		const tlEventKey = props.map.get('tlEventKey')
-		if(tlEventKey) props.map.un(tlEventKey.type, tlEventKey.listener)
+	// 	//Remove evento
+	// 	const tlEventKey = props.map.get('tlEventKey')
+	// 	if(tlEventKey) props.map.un(tlEventKey.type, tlEventKey.listener)
 
-		//Se não há atributos selecionados, para a execução
-		if(props.attributesLF.length === 0 && props.attributeTitle === '') return
+	// 	//Se não há atributos selecionados, para a execução
+	// 	if(props.attributesLF.length === 0 && props.attributeTitle === '') return
 		
-		const output = document.createElement("div")
-		const rootOut = ReactDOM.createRoot(output)
-		rootOut.render(<LegendAtInfo title={props.attributeTitle} attributes={props.attributesLF}/>)
-		const LegendAt = new Control({element: output, properties: 'id'})
-		LegendAt.set('id', 'tooltip-legend')
-		props.map.addControl(LegendAt)
+	// 	const output = document.createElement("div")
+	// 	const rootOut = ReactDOM.createRoot(output)
+	// 	rootOut.render(<LegendAtInfo title={props.attributeTitle} attributes={props.attributesLF}/>)
+	// 	const LegendAt = new Control({element: output, properties: 'id'})
+	// 	LegendAt.set('id', 'tooltip-legend')
+	// 	props.map.addControl(LegendAt)
 
-		//Update function to get the attributes
-		const displayFeatureInfo = function (pixel) {
+	// 	//Update function to get the attributes
+	// 	const displayFeatureInfo = function (pixel) {
 
-			const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
-			  return feature;
-			});
+	// 		const feature = props.map.forEachFeatureAtPixel(pixel, function (feature) {
+	// 		  return feature;
+	// 		});
 
-			const info_title = document.getElementById('attributeTitle_infomap');
+	// 		const info_title = document.getElementById('attributeTitle_infomap');
 		  
-			if (feature) {
-				if(info_title && props.attributeTitle !== '')
-					info_title.innerHTML = feature.get(props.attributeTitle.attribute)
+	// 		if (feature) {
+	// 			if(info_title && props.attributeTitle !== '')
+	// 				info_title.innerHTML = feature.get(props.attributeTitle.attribute)
 				
-					props.attributesLF.map((attribute) => {
-					const info = document.getElementById('infomap_' + attribute.attribute);
-					if(!feature.get(attribute.attribute))
-						info.innerHTML = '&nbsp;'
-					else
-						info.innerHTML = (isNaN(feature.get(attribute.attribute))) ? feature.get(attribute.attribute) : feature.get(attribute.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
-				})
+	// 				props.attributesLF.map((attribute) => {
+	// 				const info = document.getElementById('infomap_' + attribute.attribute);
+	// 				if(!feature.get(attribute.attribute))
+	// 					info.innerHTML = '&nbsp;'
+	// 				else
+	// 					info.innerHTML = (isNaN(feature.get(attribute.attribute))) ? feature.get(attribute.attribute) : feature.get(attribute.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
+	// 			})
 
-			} else {
-				if(info_title)
-					info_title.innerHTML = '&nbsp;'
+	// 		} else {
+	// 			if(info_title)
+	// 				info_title.innerHTML = '&nbsp;'
 				
-					props.attributesLF.map((attribute) => {
-					const info = document.getElementById('infomap_' + attribute.attribute);
-					info.innerHTML = '&nbsp;';
-				})
-			}
-		}
+	// 				props.attributesLF.map((attribute) => {
+	// 				const info = document.getElementById('infomap_' + attribute.attribute);
+	// 				info.innerHTML = '&nbsp;';
+	// 			})
+	// 		}
+	// 	}
 
-		const handlePointerMoveLegend = function (evt) {
-			if (evt.dragging) {
-				return;
-			}
-			const pixel = props.map.getEventPixel(evt.originalEvent);
-			displayFeatureInfo(pixel);
-		}
+	// 	const handlePointerMoveLegend = function (evt) {
+	// 		if (evt.dragging) {
+	// 			return;
+	// 		}
+	// 		const pixel = props.map.getEventPixel(evt.originalEvent);
+	// 		displayFeatureInfo(pixel);
+	// 	}
 
-		const new_tlEventKey = props.map.on('pointermove', handlePointerMoveLegend);
+	// 	const new_tlEventKey = props.map.on('pointermove', handlePointerMoveLegend);
 
-		props.map.set('tlEventKey', new_tlEventKey)
+	// 	props.map.set('tlEventKey', new_tlEventKey)
 
-	}
+	// }
 
 	return (
 		<div name='map_geral'>

@@ -10,10 +10,10 @@ import { Fill, Style, Stroke } from 'ol/style';
 import {getLayerById, getControl} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
 import {getRenderPixel} from 'ol/render.js';
-import RenderEvent from 'ol/render/Event'
 import ReactDOM from 'react-dom/client';
 import Legend from '../../services/Legend'
 import Control from 'ol/control/Control';
+import LegendAtInfo from '../../services/LegendAtInfo'
 
 export default class GeoLayers {
     constructor(map, map_options, checked, plotted, setPlotted, activateSlider, dividerRange) {
@@ -55,6 +55,10 @@ export default class GeoLayers {
                     mapFill: mapFill,
                     symbology: null,
                     panel: 0,
+                    tooltip: {
+                        title: null,
+                        attributes: null
+                    },
                     ol_layer: null
                 }
 
@@ -224,16 +228,8 @@ export default class GeoLayers {
     removeLayerOfMap(pLayer) {
 
         //Remove thematic layer, if any
-        this.map.getLayers().forEach((layer) => {
-            if(layer != undefined) {
-                if(pLayer !== undefined && layer.get('id') === pLayer.id) {
-                    this.map.removeLayer(layer)
-                }
-            }
-        })
-
-        //Updates Bottom Legend
-        this.updateLegend()
+        if(pLayer.ol_layer !== undefined && pLayer.ol_layer !== null)
+            this.map.removeLayer(pLayer.ol_layer)
     }
 
     removeHighlight(layer_id) {
@@ -309,7 +305,7 @@ export default class GeoLayers {
 
     updateSymbology(pLayer, symbology) {
         if(pLayer !== null && pLayer.attribute_to_symbolize !== null) {
-            pLayer.mapFill.updateParameters(symbology.method, symbology.color_scheme, 
+            pLayer.mapFill.updateParameters(pLayer.attribute_to_symbolize.attribute_label, symbology.method, symbology.color_scheme, 
                 symbology.palette, symbology.n_classes) 
 
             const layer = getLayerById(this.map, pLayer.id)
@@ -566,5 +562,105 @@ export default class GeoLayers {
 	removeLegend() {
 		const legendControl = getControl(this.map, 'legend')
 		if(legendControl) this.map.removeControl(legendControl)
+	}
+
+    updateTooltipTitle(layer, title) {
+        layer.tooltip.title = (title === "") ? null : title //Update Attributes legend tooltip
+        this.updateTooltipLegend()
+    }
+
+    updateTooltipAttributes(layer, attributes) {
+        layer.tooltip.attributes = (attributes.length > 0) ? attributes : null
+        this.updateTooltipLegend()
+
+    }
+
+    getAllTooltips() {
+        //tooltips[0] = Titles | tooltips[1] = Attributes
+        return this.plotted.reduce(([titles, tooltips], layer) => {
+            if(layer.tooltip.title) titles.push(layer.tooltip.title)
+            if(layer.tooltip.attributes) tooltips.push(...layer.tooltip.attributes)
+            return [titles,tooltips]
+        }, [[],[]])
+    }
+
+    //Add Tooltip Legend control
+	updateTooltipLegend() {
+
+		// //Remove legenda
+		const legendControl = getControl(this.map, 'tooltip-legend')
+		if(legendControl) this.map.removeControl(legendControl)
+
+		// //Remove evento
+		const tlEventKey = this.map.get('tlEventKey')
+		if(tlEventKey) this.map.un(tlEventKey.type, tlEventKey.listener)
+
+        const tooltips = this.getAllTooltips()
+
+		// //Se não há atributos selecionados, para a execução
+        //tooltips[0] = Titles | tooltips[1] = Attributes
+		if(tooltips[0].length === 0 && tooltips[1].length === 0) return
+		
+		const output = document.createElement("div")
+		const rootOut = ReactDOM.createRoot(output)
+		rootOut.render(<LegendAtInfo titles={tooltips[0]} attributes={tooltips[1]}/>)
+		const LegendAt = new Control({element: output, properties: 'id'})
+		LegendAt.set('id', 'tooltip-legend')
+		this.map.addControl(LegendAt)
+
+
+		//Update function to get the attributes
+		const displayFeatureInfo = (pixel) => {
+
+			const feature = this.map.forEachFeatureAtPixel(pixel, function (feature) {
+			  return feature;
+			});
+
+			if (feature) {
+                const titlesOfFeature = tooltips[0].filter((title) => feature.getKeys().includes(title.attribute))
+                const tooltipsOfFeature = tooltips[1].filter((attribute) => feature.getKeys().includes(attribute.attribute))
+				if(titlesOfFeature.length > 0) {
+                    titlesOfFeature.map((title) => {
+                        const info = document.getElementById('attributeTitle_infomap_' + title.attribute);
+                        if(!feature.get(title.attribute))
+                            info.innerHTML = '&nbsp;'
+                        else
+                            info.innerHTML = (isNaN(feature.get(title.attribute))) ? feature.get(title.attribute) : feature.get(title.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
+                    })
+                }
+				
+                tooltipsOfFeature.map((attribute) => {
+                    const info = document.getElementById('infomap_' + attribute.attribute);
+                    if(!feature.get(attribute.attribute))
+                        info.innerHTML = '&nbsp;'
+                    else
+                        info.innerHTML = (isNaN(feature.get(attribute.attribute))) ? feature.get(attribute.attribute) : feature.get(attribute.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
+                })
+
+			} else {
+				tooltips[0].map((title) => {
+					const info = document.getElementById('attributeTitle_infomap_' + title.attribute);
+					info.innerHTML = '&nbsp;';
+				})
+				
+				tooltips[1].map((attribute) => {
+					const info = document.getElementById('infomap_' + attribute.attribute);
+					info.innerHTML = '&nbsp;';
+				})
+			}
+		}
+
+		const handlePointerMoveLegend = evt => {
+			if (evt.dragging) {
+				return;
+			}
+			const pixel = this.map.getEventPixel(evt.originalEvent);
+			displayFeatureInfo(pixel);
+		}
+
+		const new_tlEventKey = this.map.on('pointermove', handlePointerMoveLegend);
+
+		this.map.set('tlEventKey', new_tlEventKey)
+
 	}
 }

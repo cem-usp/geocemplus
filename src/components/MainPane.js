@@ -16,7 +16,6 @@ import Slider from './subcomponents/Slider.js';
 import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
-import { SignalCellularNullOutlined } from '@mui/icons-material';
 
 function MainPane() {
 
@@ -31,33 +30,23 @@ function MainPane() {
     const handleOpenBars = () => {
         setOpenBars(!openBars)
     }
-    
-    const [attributeTitle, setAttributeTitle] = useState('')
-    const handleAttributeTitleChange = (e) => {
-        setAttributeTitle(e.target.value)
-    }
-    //Update Attribute list options when layer changes
-    const [attrList, setAttrList] = useState(null)
-    const [filterAttrNames, setFilterAttrNames] = useState(null)
-    useEffect(() => {
-		const list = (attributes) ? attributes.map((attribute) =>
-						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
-						) : null;
-		
-		const filtered_attributes = (attributes) ? filterNumberAttributes(attributes) : null
-		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
-									) : null;
-		
-		setAttrList(list)
-      	setFilterAttrNames(filtered_names)
-    },[attributes])
-    
-    const [attributesLF, setAttributesLF] = useState([])
 
-	const handleAttributesLFChange = (e) => {
-		setAttributesLF(e.target.value);
-	};
+    //Update Attribute list options when layer changes
+    // const [attrList, setAttrList] = useState(null)
+    // const [filterAttrNames, setFilterAttrNames] = useState(null)
+    // useEffect(() => {
+	// 	const list = (attributes) ? attributes.map((attribute) =>
+	// 					<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
+	// 					) : null;
+		
+	// 	const filtered_attributes = (attributes) ? filterNumberAttributes(attributes) : null
+	// 	const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
+	// 								<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
+	// 								) : null;
+		
+	// 	setAttrList(list)
+    //   	setFilterAttrNames(filtered_names)
+    // },[attributes])
 
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
     const handleBasicOptionsChange = (event, option) => {
@@ -165,9 +154,19 @@ function MainPane() {
 
     //Check and remove Slider if plotted_layers changes 
     useEffect(() => {
+
+        //Updates panel
         const hasComparePanel = plotted_layers.some(layer => layer.panel === 1)
         if(!hasComparePanel)
             turnOLDivider(0)
+        
+        //Updates bottom legend
+        mapGeoLayers.updateLegend()
+
+        //remove tooltip if any
+        mapGeoLayers.updateTooltipLegend() 
+
+
     }, [plotted_layers])
 
     const sliderEL = useRef(null);
@@ -181,7 +180,7 @@ function MainPane() {
                 handleOpenBars={handleOpenBars}
              />
             <Grid container className="position-fixed" sx={{ zIndex:  10, zIndex:  10,
-                         mt: '15vh', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
+                         mt: '90px', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
                 <Grid item xs={12}>
                     <LayerList 
                         mapGeoLayers={mapGeoLayers}
@@ -199,11 +198,6 @@ function MainPane() {
                         mapGeoLayers={mapGeoLayers}
                         plotted_layers={plotted_layers}
                         attributes={attributes}
-                        attributeTitle={attributeTitle}
-                        onAttributeTitleChange={handleAttributeTitleChange}
-                        attrList={attrList}
-                        attributesLF={attributesLF}
-                        handleALFChange={handleAttributesLFChange}
                         openBars={openBars}
                         handleClickOpenFM={handleClickOpenFM}
                         openFM={openFM}
@@ -238,12 +232,8 @@ function MainPane() {
                             plotted_layers={plotted_layers}
                             setPlottedLayers={setPlottedLayers}
                             attributes={attributes}
-                            attributeTitle={attributeTitle}
-                            attributesLF={attributesLF}
                             basicOptions={basicOptions}
                             fs_control={fs_control}
-                            setAttributesLF={setAttributesLF}
-                            setAttributeTitle={setAttributeTitle}
                             mapi_viewer={mapillary_viewer}
                             mapilOID={mapilOID}
                             setMOIDFound={setMOIDFound}
