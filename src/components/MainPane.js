@@ -20,7 +20,7 @@ import Filter from './subcomponents/Filter.js'
 function MainPane() {
 
     //Array of selected layers
-    const [checked_layers, setCheckedLayers] = useState([]);
+    const [counter, setCounter] = useState([]);
     //Array of geolayers on the map
     const [plotted_layers, setPlottedLayers] = useState([])
 
@@ -171,7 +171,7 @@ function MainPane() {
 
     const sliderEL = useRef(null);
 	
-    const mapGeoLayers = new GeoLayers(map, basicOptions, checked_layers, 
+    const mapGeoLayers = new GeoLayers(map, basicOptions, counter, setCounter,
         plotted_layers, setPlottedLayers, turnOLDivider, sliderEL);
         
     return (
@@ -184,9 +184,7 @@ function MainPane() {
                 <Grid item xs={12}>
                     <LayerList 
                         mapGeoLayers={mapGeoLayers}
-                        checked_layers={checked_layers} 
                         plotted_layers={plotted_layers}
-                        setCheckedLayers={setCheckedLayers}
                         changeAttributes={setAttributes}
                         openBars={openBars}
                         openLM={openLM}
@@ -211,7 +209,8 @@ function MainPane() {
                 fs_control={fs_control}
                 dividerON={dividerON}
                 turnDivider={turnDivider}
-            />
+                plotted_layers={plotted_layers}
+                />
             {dividerON ? (<Slider type='mapillary' map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
             {olDivider ? (<SliderMap type='OL' map={map}  sliderEL={sliderEL} setRange={setDividerRangeValue} rangeValue={dividerRangeValue}
                         dividerX={dividerX} changeDX={setDividerX} mapGeoLayers={mapGeoLayers} />) : null}
@@ -228,7 +227,6 @@ function MainPane() {
                             mapGeoLayers={mapGeoLayers}
                             map={map}
                             max_zoom={max_zoom}
-                            checked_layers={checked_layers} 
                             plotted_layers={plotted_layers}
                             setPlottedLayers={setPlottedLayers}
                             attributes={attributes}

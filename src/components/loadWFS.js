@@ -94,10 +94,6 @@ export default function LayerList(props) {
             const [geoservice, layer_id] = selectedLayer.split('_')
 
             if(geoservice === 'geocem') {
-                // const request = axios.create({
-                //     baseURL: geoservices[0].baseurl
-                // });  
-        
                 fetch(geoservices[0].baseurl + "/layers/" + layer_id)
                 .then(function (response) {
                     return response.json();
@@ -116,13 +112,17 @@ export default function LayerList(props) {
         }
     }, [selectedLayer])
 
-    //z-Index management
+    // Add Layer
+    const handleAddLayer = (layer_id) => () => {
+        props.mapGeoLayers.addLayer(layer_id);
+    };
+    
+    // Remove Layer
+    const handleRemoveLayer = (layer_id) => () => {
+        props.mapGeoLayers.removeLayer(layer_id);
+    };
 
     function getGeoCEMLayerAttributes(layer_id) {
-        // const request = axios.create({
-        //     baseURL: geoservices[0].baseurl
-        // });  
-    
         return fetch(geoservices[0].baseurl + "/v2/layers/" + layer_id + "/attribute_set")
             .then(function (response) {
                 return response.json();
@@ -137,11 +137,6 @@ export default function LayerList(props) {
     }
 
     function setGeoCEMLayerAttributes(layer_id) {
-        
-        // const request = axios.create({
-        //     baseURL: geoservices[0].baseurl
-        // });  
-    
         fetch(geoservices[0].baseurl + "/v2/layers/" + layer_id + "/attribute_set")
         .then(function (response) {
             return response.json();
@@ -159,19 +154,6 @@ export default function LayerList(props) {
     }
 
     function ListLayers(props) {
-        const handleCheck = (layer) => () => {
-            const currentIndex = props.checked_layers.findIndex((clayer) => clayer.id == layer.id);
-            const newChecked = [...props.checked_layers];
-        
-            if (currentIndex === -1) {
-                newChecked.push(layer);
-            } else {
-                newChecked.splice(currentIndex, 1);
-            }
-        
-            props.setCheckedLayers(newChecked); //Começar aqui
-        };
-
         if(props.variant == 'selected') {
             return (
                 <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -193,17 +175,13 @@ export default function LayerList(props) {
                                                         </Grid>
                                                         <Grid item xs={9}>
                                                             <ListItemButton sx={{ pl: 2 }}
-                                                            onClick={handleCheck(layer)}
+                                                            onClick={handleRemoveLayer(layer.id)}
                                                             key={'geocem_'+layer.id}
                                                             >
-                                                                <ListItemText primary={layer.name} />
+                                                                <ListItemText primary={layer.id + ' - ' + layer.name} />
     
                                                                 <ListItemIcon>
-                                                                    <Checkbox
-                                                                    checked={true}
-                                                                    tabIndex={-1}
-                                                                    disableRipple
-                                                                    />
+                                                                    <RemoveIcon />
                                                                 </ListItemIcon>
                                                             </ListItemButton>
                                                         </Grid>
@@ -234,7 +212,7 @@ export default function LayerList(props) {
                                     <Grid container>
                                         <Grid item xs={10}>
                                             <ListItemButton sx={{ pl: 4 }}
-                                            onClick={handleCheck(layer)}
+                                            onClick={handleAddLayer(layer.id)}
                                             key={'geocem_'+layer.id}
                                             >
                                                 <ListItemIcon>
@@ -244,11 +222,7 @@ export default function LayerList(props) {
                                                 <ListItemText primary={layer.title} />
 
                                                 <ListItemIcon>
-                                                    <Checkbox
-                                                    checked={props.checked_layers.findIndex((clayer) => clayer.id == layer.id) !== -1}
-                                                    tabIndex={-1}
-                                                    disableRipple
-                                                    />
+                                                    <AddIcon />
                                                 </ListItemIcon>
                                             </ListItemButton>
                                         </Grid>
@@ -268,11 +242,6 @@ export default function LayerList(props) {
     }
 
     function loadGeoCEMCategories() {
-        // const request = axios.create({
-        //     baseURL: geoservices[0].baseurl,
-        //     params: {type: 'layer'},
-        // });        
-        
         fetch(geoservices[0].baseurl + geoservices[0].catalog_category_uri)
         .then(function (response) {
             return response.json();
@@ -317,8 +286,7 @@ export default function LayerList(props) {
 
                     <Collapse in={openCat['cat_'+category.id]} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListLayers layers={category.layers} checked_layers={props.checked_layers}
-                            setCheckedLayers={props.setCheckedLayers} />
+                            <ListLayers layers={category.layers} />
                         </List>
                     </Collapse>    
                 </div>
@@ -364,7 +332,7 @@ export default function LayerList(props) {
                             {/* Lista de Camadas do GeoCEM */}
                             <List component="div" disablePadding sx={{ bgcolor: 'white' }}>
                                 <ListItemText disableTypography primary='Selecione uma Camada' 
-                                sx={{fontSize: 'h5.fontSize', fontWeight: 'bold'}} />
+                                sx={{fontSize: 'h6.fontSize', fontWeight: 'bold', textAlign: 'left', ml: '16px'}} />
                                 {geocem_cats_list}
                             </List>
                         </Box>

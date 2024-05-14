@@ -7,7 +7,7 @@ import center from '@turf/center';
 import {bbox} from '@turf/turf'
 import { View } from 'ol';
 import { Fill, Style, Stroke } from 'ol/style';
-import {getLayerById, getControl} from '../ol-utils/Utils'
+import {getControl} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
 import {getRenderPixel} from 'ol/render.js';
 import ReactDOM from 'react-dom/client';
@@ -16,10 +16,11 @@ import Control from 'ol/control/Control';
 import LegendAtInfo from '../../services/LegendAtInfo'
 
 export default class GeoLayers {
-    constructor(map, map_options, checked, plotted, setPlotted, activateSlider, dividerRange) {
+    constructor(map, map_options, counter, setCounter, plotted, setPlotted, activateSlider, dividerRange) {
         this.map = map;
         this.map_options = map_options;
-        this.checked = checked;
+        this.counter = counter;
+        this.setCounter = setCounter;
         this.plotted = plotted;
         this.setPlotted = setPlotted;
         this.overlays = {};
@@ -27,63 +28,56 @@ export default class GeoLayers {
         this.dividerRange = dividerRange
     }
 
-    updateLayers() {
-        //Check ids
-        const checked_ids = this.checked.map(clayer => clayer.id);
-        const plotted_ids = this.plotted.map(player => player.id);
-        const new_plotted_layers = [...this.plotted];
-        if(checked_ids.length > plotted_ids.length) { // If added layer
-            const newLayer_id = checked_ids[checked_ids.length-1]
+    addLayer(geocem_layer_id) {
+        //Retrieve Layer details
+        fetch("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ geocem_layer_id)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(response => {
+            //Get link to GeoJSON
+            const json_url = response.links.filter(link => link.name === 'GeoJSON')[0].url
+            const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
+            const mapFill = new MapFill()
+            const new_layer = {
+                id: (this.counter + 1),
+                name: response.title,
+                geojson_link: https_json,
+                attribute_to_symbolize: null,
+                mapFill: mapFill,
+                symbology: null,
+                panel: 0,
+                tooltip: {
+                    title: null,
+                    attributes: null
+                },
+                ol_layer: null
+            }
+            this.setCounter(++this.counter)
+            console.log('new_layer.id', new_layer.id)
 
-            //Retrieve Layer details
-            fetch("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ newLayer_id)
-            .then(function (response) {
-                return response.json();
+            this.getLayerAttributes(geocem_layer_id).then( attributes => {
+                new_layer['attributes'] = attributes
             })
-            .then(response => {
-
-                //Get link to GeoJSON
-                const json_url = response.links.filter(link => link.name === 'GeoJSON')[0].url
-                const https_json = (json_url.startsWith("http://")) ? "https://" + json_url.substring(7) : json_url
-                
-                const mapFill = new MapFill()
-                const new_layer = {
-                    id: newLayer_id,
-                    name: response.title,
-                    geojson_link: https_json,
-                    attribute_to_symbolize: null,
-                    mapFill: mapFill,
-                    symbology: null,
-                    panel: 0,
-                    tooltip: {
-                        title: null,
-                        attributes: null
-                    },
-                    ol_layer: null
-                }
-
-                this.getLayerAttributes(newLayer_id).then( attributes => {
-                    new_layer['attributes'] = attributes
-                })
-                
-                new_plotted_layers.push(new_layer)
-                this.setPlotted(new_plotted_layers)
-
-                this.addVectorLayertoMap(new_layer, this.map, this.map_options)
-
-            })
-            .catch((err) => {
-                console.error("ops! ocorreu um erro" + err);
-            });
-
-        } else if(checked_ids.length < plotted_ids.length) { // If removed layer
-            const diffElementIdx = plotted_ids.findIndex(pid => !checked_ids.includes(pid));
-            new_plotted_layers.splice(diffElementIdx, 1);
-            this.removeHighlight(this.plotted[diffElementIdx].id)
+            
+            const new_plotted_layers = [...this.plotted];
+            new_plotted_layers.push(new_layer)
             this.setPlotted(new_plotted_layers)
-            this.removeLayerOfMap(this.plotted[diffElementIdx])
-        }
+            this.addVectorLayertoMap(new_layer, this.map, this.map_options)
+        })
+        .catch((err) => {
+            console.error("ops! ocorreu o seguinte erro: " + err);
+        });
 
+    }
+
+    removeLayer(layerIdToRemove) {
+        const new_plotted_layers = [...this.plotted];
+        const layerIndexToRemove = this.plotted.findIndex(pLayer => layerIdToRemove === pLayer.id);
+        new_plotted_layers.splice(layerIndexToRemove, 1);
+        this.removeHighlight(this.plotted[layerIndexToRemove])
+        this.setPlotted(new_plotted_layers)
+        this.removeLayerOfMap(this.plotted[layerIndexToRemove])
     }
 
     updateLayer(layer) {
@@ -232,19 +226,19 @@ export default class GeoLayers {
             this.map.removeLayer(pLayer.ol_layer)
     }
 
-    removeHighlight(layer_id) {
+    removeHighlight(layer) {
         //Remove highlightOverlay
-        const highlightOverlay = getLayerById(this.map, layer_id).get('overlay')
+        const highlightOverlay = layer.ol_layer.get('overlay')
         highlightOverlay.setStyle(null)
         
         //Remove event
-		const tlEventKey = this.map.get('tlEventKeyHighlight_'+ layer_id)
+		const tlEventKey = this.map.get('tlEventKeyHighlight_'+ layer.id)
 		if(tlEventKey){
             this.map.un(tlEventKey.type, tlEventKey.listener)
         } 
     }
 
-	highlightFeature(thematic_layer) {
+	highlightFeature(vt_layer) {
 		//Feature to highlight
 		let highlight;
 
@@ -258,7 +252,7 @@ export default class GeoLayers {
 
 		//Overlay Feature
 		const featureOverlay = new VectorTileLayer({
-			source: thematic_layer.getSource(),
+			source: vt_layer.getSource(),
 			map: this.map,
 			renderMode: 'vector',
 			style: function (feature) {
@@ -273,7 +267,7 @@ export default class GeoLayers {
 		const highlightFeatureByPixel = pixel => {
 
 			const feature = this.map.forEachFeatureAtPixel(pixel, (feature) => feature,
-			{layerFilter: (layer) => layer.get('id') === thematic_layer.get('id')});		
+			{layerFilter: (layer) => layer.get('id') === vt_layer.get('id')});		
 			
 			if(feature) {
 				const feature_id = feature.getProperties()[feature.getKeys()[1]]
@@ -295,9 +289,9 @@ export default class GeoLayers {
 
 		const new_tlEventKey = this.map.on('pointermove', handlePointerMoveHighlight);
 
-		this.map.set('tlEventKeyHighlight_' + thematic_layer.get('id'), new_tlEventKey)
+		this.map.set('tlEventKeyHighlight_' + vt_layer.get('id'), new_tlEventKey)
         
-        thematic_layer.set('overlay', featureOverlay) //Store highlight overlay layer as property
+        vt_layer.set('overlay', featureOverlay) //Store highlight overlay layer as property
         
         return featureOverlay
 
@@ -308,7 +302,7 @@ export default class GeoLayers {
             pLayer.mapFill.updateParameters(pLayer.attribute_to_symbolize.attribute_label, symbology.method, symbology.color_scheme, 
                 symbology.palette, symbology.n_classes) 
 
-            const layer = getLayerById(this.map, pLayer.id)
+            const layer = pLayer.ol_layer
 			layer.setStyle(function (feature) {
 				const value = feature.get(pLayer.attribute_to_symbolize.attribute)
 				const color = (!isNaN(value)) ? pLayer.mapFill.getColor(
@@ -328,7 +322,7 @@ export default class GeoLayers {
     }
 
     resetSymbology(pLayer) {
-        const layer = getLayerById(this.map, pLayer.id)
+        const layer = pLayer.ol_layer
         layer.setStyle()
         pLayer.symbology = null
     }
@@ -337,7 +331,6 @@ export default class GeoLayers {
 
         if(pLayer['attribute_to_symbolize'] != attribute) {
             pLayer['attribute_to_symbolize'] = attribute
-            // const layer = getLayerById(this.map, pLayer.id)
 			const features = pLayer.ol_layer.get('features')
 			let attr_values = []
             if(attribute !== null) {
@@ -346,7 +339,6 @@ export default class GeoLayers {
                 })
             }
             pLayer.mapFill.setArrValues(attr_values) 
-            // this.updateLayer(pLayer)
         }
     }
 
@@ -379,7 +371,7 @@ export default class GeoLayers {
 
     updateOrderOnMap() {
         this.plotted.forEach((pLayer, index) => {
-            const layer = getLayerById(this.map, pLayer.id)
+            const layer = pLayer.ol_layer
             layer.setZIndex(index)
         })
     }

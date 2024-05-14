@@ -36,7 +36,6 @@ import { styled } from '@mui/material/styles';
 import ModalAttributes from './subcomponents/ModalAttributes';
 import HelpIcon from '@mui/icons-material/Help';
 import IconButton from '@mui/material/IconButton';
-import GeoLayers from "./subcomponents/GeoLayers";
 
 export default function Fillbar(props) {
     const [layerList, setLayerList] = useState(null)
@@ -72,7 +71,6 @@ export default function Fillbar(props) {
         } else {
             setTooltipAttributes([])
         }
-
 
 	};
 
@@ -180,7 +178,7 @@ export default function Fillbar(props) {
         
         //Create layer list
         const list = (props.plotted_layers) ? props.plotted_layers.map((layer) =>
-						<MenuItem key={layer.id} value={layer}>{layer.name}</MenuItem>
+						<MenuItem key={layer.id} value={layer}>{layer.id + ' - ' + layer.name}</MenuItem>
 					) : null;
         setLayerList(list)
         
@@ -228,7 +226,7 @@ export default function Fillbar(props) {
                                         if(selected === null) {
                                             return <em>Nenhuma camada adicionada</em>
                                         } else {
-                                            return selected.name
+                                            return selected.id + ' - ' + selected.name
                                         }
                                     }}
                                 >
