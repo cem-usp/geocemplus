@@ -123,7 +123,7 @@ export default function LayerList(props) {
     };
 
     function getGeoCEMLayerAttributes(layer_id) {
-        return fetch(geoservices[0].baseurl + "/v2/layers/" + layer_id + "/attribute_set")
+        return fetch(geoservices[0].baseurl + "v2/layers/" + layer_id + "/attribute_set")
             .then(function (response) {
                 return response.json();
             })

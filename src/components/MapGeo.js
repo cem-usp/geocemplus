@@ -103,22 +103,26 @@ function MapGeo(props) {
 			props.map.removeLayer(map_layer_mapillary)
 		}
 
-		if (map_layer_thematic !== null) {
+		
+		if (props.plotted_layers.length > 0) {
 			//Bounds option
+			const centre = props.mapGeoLayers.getOverallCenter()
 			if(props.basicOptions.includes('bounds')) {
 				props.map.setView(new View({
-					center: map_layer_thematic.get('center'),
-					extent: map_layer_thematic.get('extent'),
+					center: centre.point,
+					smoothExtentConstraint: true,
+					showFullExtent: true,
+					extent: centre.extent,
 					zoom: 6,
 					maxZoom: props.max_zoom
 				}))
 			} else{
 				props.map.setView(new View({
-					center: map_layer_thematic.get('center'),
+					center: centre.point,
 					zoom: 6,
 					maxZoom: props.max_zoom
 				}))
-				props.map.getView().fit(map_layer_thematic.get('extent'))
+				props.map.getView().fit(centre.extent)
 			}
 
 		}

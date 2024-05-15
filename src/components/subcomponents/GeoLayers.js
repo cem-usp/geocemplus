@@ -4,7 +4,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Projection from 'ol/proj/Projection';
 import VectorTileSource from 'ol/source/VectorTile';
 import center from '@turf/center';
-import {bbox} from '@turf/turf'
+import { bbox, points } from '@turf/turf'
 import { View } from 'ol';
 import { Fill, Style, Stroke } from 'ol/style';
 import {getControl} from '../ol-utils/Utils'
@@ -192,20 +192,23 @@ export default class GeoLayers {
                 featureProjection: 'EPSG:4326'
                 })
             )
-                //Get center of the layer
+            //Get center of the layer
             const centerWebMercator = center(convertedJson).geometry.coordinates
-
-                //Set the center of the view
+            //Set the center of the view
             const tExtent = bbox(convertedJson)
+            vt_layer.set('center', centerWebMercator)
+            vt_layer.set('extent', tExtent)
+
+            console.log('tExtent', tExtent)
             map.setView(new View({
                 center: centerWebMercator,
-                extent: (map_options.includes('bounds')) ? tExtent : undefined,
+                extent: undefined,
+                smoothExtentConstraint: true,
+                showFullExtent: true,
                 zoom: 6,
                 maxZoom: 20
             }))
             map.getView().fit(tExtent)
-            vt_layer.set('center', centerWebMercator)
-            vt_layer.set('extent', tExtent)
     
             document.body.style.cursor = "default"
     
@@ -217,6 +220,22 @@ export default class GeoLayers {
                 this.applyComparePanelEvents()
         })
        
+    }
+
+    getOverallCenter() {
+        //get all centers
+        const centers = points(this.plotted.map(layer => {
+            return layer.ol_layer.get('center')
+        }));
+        
+        const centralPostions = {
+            point: center(centers).geometry.coordinates,
+            extent: bbox(centers)
+        }
+
+        console.log(centralPostions)
+
+        return centralPostions
     }
 
     removeLayerOfMap(pLayer) {
