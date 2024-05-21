@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { OSM } from 'ol/source';
-import {Tile as TileLayer, Vector as VectorLayer}  from 'ol/layer';
+import OSM from 'ol/source/OSM';
+import TileLayer  from 'ol/layer/WebGLTile';
 import { View } from 'ol';
 import Control from 'ol/control/Control';
 import {ScaleLine} from 'ol/control.js';
@@ -85,8 +85,6 @@ function MapGeo(props) {
 	//Handle Basic Options change
 	useEffect(() => {
 		const map_layer_osm = getLayerById(props.map, 'OSM')
-		const map_layer_thematic = getLayerById(props.map, 'Thematic')
-		const map_layer_icon = getLayerById(props.map, 'icon')
 		const map_layer_mapillary = getLayerById(props.map, 'mapillary')
 
 		//Base Map option
@@ -103,29 +101,6 @@ function MapGeo(props) {
 			props.map.removeLayer(map_layer_mapillary)
 		}
 
-		
-		if (props.plotted_layers.length > 0) {
-			//Bounds option
-			const centre = props.mapGeoLayers.getOverallCenter()
-			if(props.basicOptions.includes('bounds')) {
-				props.map.setView(new View({
-					center: centre.point,
-					smoothExtentConstraint: true,
-					showFullExtent: true,
-					extent: centre.extent,
-					zoom: 6,
-					maxZoom: props.max_zoom
-				}))
-			} else{
-				props.map.setView(new View({
-					center: centre.point,
-					zoom: 6,
-					maxZoom: props.max_zoom
-				}))
-				props.map.getView().fit(centre.extent)
-			}
-
-		}
 	}, [props.basicOptions])
 
 	//Handle mapillary OID change

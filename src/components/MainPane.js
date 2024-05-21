@@ -51,9 +51,9 @@ function MainPane() {
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
     const handleBasicOptionsChange = (event, option) => {
         let arr = [...basicOptions]
-        const teste = basicOptions.indexOf(option)
+        const isDeselected = basicOptions.indexOf(option)
 
-        if(teste > -1) arr.splice(teste, 1)
+        if(isDeselected > -1) arr.splice(isDeselected, 1)
         else arr = arr.concat(option)
 
         setBasicOptions(arr)
@@ -150,6 +150,9 @@ function MainPane() {
             turnDivider(false)
             setOpenBars(true)
         }
+
+        mapGeoLayers.updateView() //criar option separada
+
 	}, [basicOptions])
 
     //Check and remove Slider if plotted_layers changes 
@@ -165,7 +168,6 @@ function MainPane() {
 
         //remove tooltip if any
         mapGeoLayers.updateTooltipLegend() 
-
 
     }, [plotted_layers])
 

@@ -1,19 +1,28 @@
-import VectorTileLayer from 'ol/layer/VectorTile';
 import geojsonvt from 'geojson-vt';
 import GeoJSON from 'ol/format/GeoJSON';
 import Projection from 'ol/proj/Projection';
 import VectorTileSource from 'ol/source/VectorTile';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import center from '@turf/center';
-import { bbox, points } from '@turf/turf'
+import { bbox, points, bboxPolygon, featureCollection } from '@turf/turf'
 import { View } from 'ol';
 import { Fill, Style, Stroke } from 'ol/style';
-import {getControl} from '../ol-utils/Utils'
+import {getControl, getLayersByType} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
 import {getRenderPixel} from 'ol/render.js';
 import ReactDOM from 'react-dom/client';
 import Legend from '../../services/Legend'
 import Control from 'ol/control/Control';
 import LegendAtInfo from '../../services/LegendAtInfo'
+
+import WebGLVectorLayerRenderer from 'ol/renderer/webgl/VectorLayer';
+import Layer from 'ol/layer/Layer';
+
+import WebGLVectorTileLayerRenderer from 'ol/renderer/webgl/VectorTileLayer';
+import {asArray} from 'ol/color';
+import {packColor, parseLiteralStyle} from 'ol/webgl/styleparser';
 
 export default class GeoLayers {
     constructor(map, map_options, counter, setCounter, plotted, setPlotted, activateSlider, dividerRange) {
@@ -54,7 +63,6 @@ export default class GeoLayers {
                 ol_layer: null
             }
             this.setCounter(++this.counter)
-            console.log('new_layer.id', new_layer.id)
 
             this.getLayerAttributes(geocem_layer_id).then( attributes => {
                 new_layer['attributes'] = attributes
@@ -63,7 +71,7 @@ export default class GeoLayers {
             const new_plotted_layers = [...this.plotted];
             new_plotted_layers.push(new_layer)
             this.setPlotted(new_plotted_layers)
-            this.addVectorLayertoMap(new_layer, this.map, this.map_options)
+            this.addVectorTileLayertoMap(new_layer, this.map, this.map_options)
         })
         .catch((err) => {
             console.error("ops! ocorreu o seguinte erro: " + err);
@@ -86,11 +94,97 @@ export default class GeoLayers {
         new_plotted_layers[indexToUpdate] = layer
         this.setPlotted(new_plotted_layers)
     }
-    
-    addVectorLayertoMap(layer, map, map_options) {
-        //Create Vector Tile layer
-        const vt_layer = new VectorTileLayer({properties: ['id', 'type', 'overlay'], zIndex: 1})
-    
+
+    addWebGLVectorLayerToMap(layer, map, map_options) {
+        /** @type {import('ol/style/webgl.js').WebGLStyle} */
+        const style = {
+            'stroke-color': ['*', ['get', 'COLOR'], [220, 220, 220]],
+            'stroke-width': 2,
+            'stroke-offset': -1,
+            'fill-color': ['*', ['get', 'COLOR'], [255, 255, 255, 0.6]],
+        };
+        
+        class WebGLLayer extends Layer {
+            createRenderer() {
+            return new WebGLVectorLayerRenderer(this, {
+                style,
+            });
+            }
+        }
+        
+        const vt_layer = new WebGLLayer({
+            source: new VectorSource({
+            url: layer.geojson_link,
+            format: new GeoJSON(),
+            }),
+        });
+
+        vt_layer.set('id', layer.id) //Define the layer as a thematic one
+        vt_layer.set('type', 'Thematic') //Define the layer as a thematic one
+        vt_layer.set('features', 'Thematic') //Store features as property
+
+        //Adds thematic layer
+        map.addLayer(vt_layer)
+
+        //Adds thematic layer to plotted object
+        layer.ol_layer = vt_layer
+
+        document.body.style.cursor = "default"
+
+        //Add Highlight Event and get featureOverlay
+        // this.highlightFeature(vt_layer)
+
+        //If slider activate, apply panel events
+        if(this.plotted.some(layer => layer.panel === 1))
+            this.applyComparePanelEvents()
+    }
+
+    addWebGLVectorTileLayerToMap(layer, map, map_options) {
+        const result = parseLiteralStyle({
+            'fill-color': ['get', 'fillColor'],
+            'stroke-color': ['get', 'strokeColor'],
+            'stroke-width': ['get', 'strokeWidth'],
+            'circle-radius': 4,
+            'circle-fill-color': '#777',
+          });
+        
+        class WebGLVectorTileLayer extends VectorTileLayer {
+            createRenderer() {
+                return new WebGLVectorTileLayerRenderer(this, {
+                    style: {
+                        builder: result.builder,
+                        attributes: {
+                            fillColor: {
+                                size: 2,
+                                callback: (feature) => {
+                                const style = this.getStyle()(feature, 1)[0];
+                                const color = asArray(style?.getFill()?.getColor() || '#eee');
+                                return packColor(color);
+                                },
+                            },
+                            strokeColor: {
+                                size: 2,
+                                callback: (feature) => {
+                                const style = this.getStyle()(feature, 1)[0];
+                                const color = asArray(style?.getStroke()?.getColor() || '#eee');
+                                return packColor(color);
+                                },
+                            },
+                            strokeWidth: {
+                                size: 1,
+                                callback: (feature) => {
+                                const style = this.getStyle()(feature, 1)[0];
+                                return style?.getStroke()?.getWidth() || 0;
+                                },
+                            },
+                        },
+                    },
+                });
+            }
+        }
+
+        const vt_layer = new WebGLVectorTileLayer({properties: ['id', 'type', 'overlay'], zIndex: 1})
+        
         // Converts geojson-vt data to GeoJSON
         const replacer = function (key, value) {
             if (!value || !value.geometry) {
@@ -199,7 +293,6 @@ export default class GeoLayers {
             vt_layer.set('center', centerWebMercator)
             vt_layer.set('extent', tExtent)
 
-            console.log('tExtent', tExtent)
             map.setView(new View({
                 center: centerWebMercator,
                 extent: undefined,
@@ -213,27 +306,191 @@ export default class GeoLayers {
             document.body.style.cursor = "default"
     
             //Add Highlight Event and get featureOverlay
-            this.highlightFeature(vt_layer)
+            // this.highlightWebGLFeature(vt_layer)
 
             //If slider activate, apply panel events
             if(this.plotted.some(layer => layer.panel === 1))
                 this.applyComparePanelEvents()
         })
-       
+    }
+
+    addVectorLayerToMap(layer, map, map_options) {
+
+        //Create Vector Tile layer
+        const vt_layer = new VectorLayer({
+            properties: ['id', 'type', 'overlay'], 
+            zIndex: 1,
+            source: new VectorSource({
+                url: layer.geojson_link,
+                format: new GeoJSON(),
+            }),
+        })
+
+        vt_layer.set('id', layer.id) //Define the layer as a thematic one
+        vt_layer.set('type', 'Thematic') //Define the layer as a thematic one
+        vt_layer.set('features', 'Thematic') //Store features as property
+
+        //Adds thematic layer
+        map.addLayer(vt_layer)
+
+        //Adds thematic layer to plotted object
+        layer.ol_layer = vt_layer
+
+        document.body.style.cursor = "default"
+
+        //Add Highlight Event and get featureOverlay
+        // this.highlightFeature(vt_layer)
+
+        //If slider activate, apply panel events
+        if(this.plotted.some(layer => layer.panel === 1))
+            this.applyComparePanelEvents()
+
+    }
+    
+    addVectorTileLayertoMap(layer, map, map_options) {
+        //Create Vector Tile layer
+        const vt_layer = new VectorTileLayer({properties: ['id', 'type', 'overlay'], zIndex: 1})
+    
+        // Converts geojson-vt data to GeoJSON
+        const replacer = function (key, value) {
+            if (!value || !value.geometry) {
+            return value;
+            }
+        
+            let type;
+            const rawType = value.type;
+            let geometry = value.geometry;
+            if (rawType === 1) {
+            type = 'MultiPoint';
+            if (geometry.length === 1) {
+                type = 'Point';
+                geometry = geometry[0];
+            }
+            } else if (rawType === 2) {
+            type = 'MultiLineString';
+            if (geometry.length === 1) {
+                type = 'LineString';
+                geometry = geometry[0];
+            }
+            } else if (rawType === 3) {
+            type = 'Polygon';
+            if (geometry.length > 1) {
+                type = 'MultiPolygon';
+                geometry = [geometry];
+            }
+            }
+        
+            return {
+            'type': 'Feature',
+            'geometry': {
+                'type': type,
+                'coordinates': geometry,
+            },
+            'properties': value.tags,
+            };
+        };
+
+        fetch(layer.geojson_link)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(json => {
+            const tileIndex = geojsonvt(json, {
+                extent: 4096,
+                maxZoom: 20,
+                debug: 0,
+            });
+            const format = new GeoJSON({
+                // Data returned from geojson-vt is in tile pixel units
+                dataProjection: new Projection({
+                    code: 'TILE_PIXELS',
+                    units: 'tile-pixels',
+                    extent: [0, 0, 4096, 4096],
+                }),
+            });
+            const vectorSource = new VectorTileSource({
+                tileUrlFunction: function (tileCoord) {
+                    // Use the tile coordinate as a pseudo URL for caching purposes
+                    return JSON.stringify(tileCoord);
+                },
+                tileLoadFunction: function (tile, url) {
+                    const tileCoord = JSON.parse(url);
+                    const data = tileIndex.getTile(
+                        tileCoord[0],
+                        tileCoord[1],
+                        tileCoord[2]
+                    );
+                    const geojson = JSON.stringify({
+                        type: 'FeatureCollection',
+                        features: data ? data.features : [],
+                    }, replacer);
+                    const features = format.readFeatures(geojson, {
+                        extent: vectorSource.getTileGrid().getTileCoordExtent(tileCoord),
+                        featureProjection: map.getView().getProjection(),
+                    });
+                    tile.setFeatures(features);
+                },
+            });
+
+            vt_layer.setSource(vectorSource);
+            vt_layer.set('id', layer.id) //Define the layer as a thematic one
+            vt_layer.set('type', 'Thematic') //Define the layer as a thematic one
+            vt_layer.set('features', 'Thematic') //Store features as property
+            
+            //Focus the added layer
+                //Convert GeoJSON Projection
+            const features = new GeoJSON().readFeatures(json)
+            vt_layer.set('features', features)
+            const convertedJson = JSON.parse(new GeoJSON().writeFeatures(features, {
+                dataProjection: 'EPSG:3857',
+                featureProjection: 'EPSG:4326'
+                })
+            )
+            //Get center of the layer
+            const centerWebMercator = center(convertedJson).geometry.coordinates
+            //Set the center of the view
+            const tExtent = bbox(convertedJson)
+            vt_layer.set('center', centerWebMercator)
+            vt_layer.set('extent', tExtent)
+
+            document.body.style.cursor = "default"
+
+            //Adds thematic layer
+            map.addLayer(vt_layer)
+
+            //Adds thematic layer to plotted object
+            layer.ol_layer = vt_layer
+    
+            //Add Highlight Event and get featureOverlay
+            this.highlightFeature(vt_layer)
+
+            //If slider activate, apply panel events
+            if(this.plotted.some(layer => layer.panel === 1))
+                this.applyComparePanelEvents()
+
+            this.updateView()
+        })
     }
 
     getOverallCenter() {
+
+        const thematicLayers = getLayersByType(this.map, 'Thematic')
+        if(thematicLayers.length < 1) return null
+
         //get all centers
-        const centers = points(this.plotted.map(layer => {
-            return layer.ol_layer.get('center')
+        const centers = points(thematicLayers.map(layer => {
+            return layer.get('center')
         }));
         
+        //get all extents
+        const extents = bbox(featureCollection(thematicLayers.map(layer => {
+            return bboxPolygon(layer.get('extent'))
+        })));
+
         const centralPostions = {
             point: center(centers).geometry.coordinates,
-            extent: bbox(centers)
+            extent: extents
         }
-
-        console.log(centralPostions)
 
         return centralPostions
     }
@@ -243,6 +500,9 @@ export default class GeoLayers {
         //Remove thematic layer, if any
         if(pLayer.ol_layer !== undefined && pLayer.ol_layer !== null)
             this.map.removeLayer(pLayer.ol_layer)
+
+        this.updateView()
+
     }
 
     removeHighlight(layer) {
@@ -257,7 +517,7 @@ export default class GeoLayers {
         } 
     }
 
-	highlightFeature(vt_layer) {
+    highlightFeature(vt_layer) {
 		//Feature to highlight
 		let highlight;
 
@@ -674,4 +934,25 @@ export default class GeoLayers {
 		this.map.set('tlEventKey', new_tlEventKey)
 
 	}
+
+    updateView() {
+        //Bounds option
+		const centre = this.getOverallCenter()
+		if(this.map_options.includes('bounds') && centre !== null) {
+			this.map.setView(new View({
+				center: centre.point,
+				smoothExtentConstraint: true,
+				showFullExtent: true,
+				extent: centre.extent,
+				maxZoom: 20
+			}))
+		} else if(!this.map_options.includes('bounds')) {
+			this.map.setView(new View({
+				center: (centre) ? centre.point : this.map.getView().getCenter(),
+				zoom: this.map.getView().getZoom(),
+				maxZoom: 20
+			}))
+		}
+		if(centre) this.map.getView().fit(centre.extent)
+    }
 }

@@ -11,7 +11,7 @@ export function getLayerById(map, id) {
 
 export function getLayersByType(map, type) {
 	let found_layers = []
-	map.getLayers(map, type).forEach((layer) => {
+	map.getLayers().forEach((layer) => {
 		if(layer.get('type') === type){
 			found_layers.push(layer)
 		}
