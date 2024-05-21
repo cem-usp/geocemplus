@@ -20,7 +20,7 @@
     "geojson-vt": "^3.2.1",
     "html2canvas": "^1.4.1",
     "mapillary-js": "^4.1.1",
-    "ol": "^9.2.0",
+    "ol": "^9.x",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.5.0",

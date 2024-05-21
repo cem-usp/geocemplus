@@ -9,13 +9,13 @@ import { useState, useEffect, useRef } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
-import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
 import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
+import {FullScreen, defaults as defaultControls} from 'ol/control.js';
 
 function MainPane() {
 
@@ -64,10 +64,9 @@ function MainPane() {
     const max_zoom = 20
 	//Initialize map
     const [fs_control, setFsControl] = useState(new FullScreen())
-    
+
 	const initialMap = new Map({
-		// interactions: defaultInteractions().extend([new Drag()]),
-        controls: [fs_control],
+        controls: [],
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
@@ -237,6 +236,7 @@ function MainPane() {
                             mapi_viewer={mapillary_viewer}
                             mapilOID={mapilOID}
                             setMOIDFound={setMOIDFound}
+                            setFsContro={setFsControl}
                         />
                     </Box>
                 </Grid>

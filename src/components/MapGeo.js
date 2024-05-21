@@ -36,6 +36,17 @@ function MapGeo(props) {
 		return found_control
 	}
 
+	//Updates thematic layer
+	useEffect(() => {
+		props.map.setTarget(mapElement.current)
+
+		// Full Screen Control
+		if(!getControl(props.map, 'fullscreen')) {
+			props.fs_control.set('id', 'fullscreen')
+			props.map.addControl(props.fs_control)
+		}
+	}, [])
+
 	// Scale Control
 	if(!getControl(props.map, 'scale')) {
 		const scaleControl = new ScaleLine({
@@ -59,9 +70,6 @@ function MapGeo(props) {
 		props.map.addControl(naControl)	
 	}
 
-	// Full Screen Control	
-	props.map.addControl(props.fs_control)
-
 	//Prevent map element to re-render	
 	const mapElement = useRef()
 
@@ -74,13 +82,6 @@ function MapGeo(props) {
 
 	let controlEl= document.createElement('div');
 	controlEl.innerHTML= controlTitle;
-
-	//Updates thematic layer
-	useEffect(() => {
-
-		props.map.setTarget(mapElement.current)
-		
-	}, [props.plotted_layers])
 
 	//Handle Basic Options change
 	useEffect(() => {
