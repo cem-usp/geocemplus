@@ -682,7 +682,7 @@ export default class GeoLayers {
         if(this.plotted.length < 2)
             return false
         else 
-            return this.plotted.some(layer => layer.panel === 1)
+            return this.plotted.some(layer => layer.panel === 0)
     }
 
     applyComparePanelEvents() {

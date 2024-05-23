@@ -125,7 +125,7 @@ function MainPane() {
     const [dividerX, setDividerX] = useState();
 
     //Turn ON/OFF Mapillary Slider Panel
-    const [dividerON, turnDivider] = useState(false);
+    const [dividerMapillary, turnDivider] = useState(false);
 
     //Turn ON/OFF Compare / Open Layers (OL) Slider Panel
     const [olDivider, turnOLDivider] = useState(false);
@@ -141,7 +141,7 @@ function MainPane() {
     //Activate slider
     useEffect(() => {
         //Mapillary option
-        if(basicOptions.includes('mapillary') && dividerON === false) {
+        if(basicOptions.includes('mapillary') && dividerMapillary === false) {
             setDividerX()
             turnDivider(true)
             setOpenBars(false)
@@ -200,6 +200,7 @@ function MainPane() {
                         openBars={openBars}
                         handleClickOpenFM={handleClickOpenFM}
                         openFM={openFM}
+                        dividerMapillary={dividerMapillary}
                     />
                 </Grid>
             </Grid>
@@ -208,15 +209,16 @@ function MainPane() {
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
-                dividerON={dividerON}
+                dividerMapillary={dividerMapillary}
                 turnDivider={turnDivider}
                 plotted_layers={plotted_layers}
+                olDivider={olDivider}
                 />
-            {dividerON ? (<Slider type='mapillary' map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+            {dividerMapillary ? (<Slider type='mapillary' map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
             {olDivider ? (<SliderMap type='OL' map={map}  sliderEL={sliderEL} setRange={setDividerRangeValue} rangeValue={dividerRangeValue}
                         dividerX={dividerX} changeDX={setDividerX} mapGeoLayers={mapGeoLayers} />) : null}
             <Grid container>
-                    <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
+                    <Grid item style={{width: dividerX + "px"}} display={dividerMapillary ? 'block' : 'none'}>
                         <Box>
                             <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
                             <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>

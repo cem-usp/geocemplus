@@ -305,10 +305,10 @@ export default function Fillbar(props) {
                                     onChange={handlePanelChange}
                                 >
                                     <MenuItem value={0}>
-                                        <em>Padrão</em>
+                                        <em>Esquerdo</em>
                                     </MenuItem>
-                                    <MenuItem value={1} disabled={props.mapGeoLayers.canCompare()}>
-                                        <em>Comparado</em>
+                                    <MenuItem value={1} disabled={!props.mapGeoLayers.canCompare() || props.dividerMapillary}>
+                                        <em>Direito</em>
                                     </MenuItem>
                                 </Select>
 
