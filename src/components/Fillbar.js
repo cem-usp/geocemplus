@@ -157,7 +157,7 @@ export default function Fillbar(props) {
             setNClasses(5)
 		    setColorScheme('sequential');
         }
-    },[method, n_classes, color_scheme, palette, fill_attribute, panel])
+    },[method, n_classes, palette, fill_attribute, panel])
 
     useEffect(() => {
 		const list = (selectedLayer) ? selectedLayer.attributes.map((attribute) =>
