@@ -69,7 +69,7 @@ export default class GeoLayers {
             })
             
             const new_plotted_layers = [...this.plotted];
-            new_plotted_layers.push(new_layer)
+            new_plotted_layers.unshift(new_layer)
             this.setPlotted(new_plotted_layers)
             this.addVectorTileLayertoMap(new_layer, this.map, this.map_options)
         })

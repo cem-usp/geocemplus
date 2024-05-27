@@ -218,12 +218,12 @@ function MainPane() {
             {olDivider ? (<SliderMap type='OL' map={map}  sliderEL={sliderEL} setRange={setDividerRangeValue} rangeValue={dividerRangeValue}
                         dividerX={dividerX} changeDX={setDividerX} mapGeoLayers={mapGeoLayers} />) : null}
             <Grid container>
-                    <Grid item style={{width: dividerX + "px"}} display={dividerMapillary ? 'block' : 'none'}>
-                        <Box>
-                            <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
-                            <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
-                        </Box>
-                    </Grid>
+                <Grid item style={{width: dividerX + "px"}} display={dividerMapillary ? 'block' : 'none'}>
+                    <Box>
+                        <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
+                        <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                    </Box>
+                </Grid>
                 <Grid item xs>
                     <Box>
                         <MapGeo 

@@ -29,6 +29,7 @@ export default function MultipleSelectCheckmarks(props) {
               id="demo-multiple-checkbox"
               multiple
               value={props.tooltipAttributes}
+              disabled={props.disabled}
               onChange={props.handleALFChange}
               renderValue={(selected) => {
                   const labels = selected.map(({attribute_label}) => attribute_label)

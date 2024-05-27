@@ -43,36 +43,59 @@ export default function Fillbar(props) {
     const handleLayerChange = (event) => {
         const chose_layer = event.target.value
 		setLayer(chose_layer);
-		setFAttribute(chose_layer.attribute_to_symbolize);
-        setPanel(chose_layer.panel)
+	};
 
-        //Set symbology as previous defined
-        if(chose_layer.attribute_to_symbolize != null && chose_layer.symbology != null) {
-            setMethod(chose_layer.symbology.method)
-            setNClasses(chose_layer.symbology.n_classes)
-            setColorScheme(chose_layer.symbology.color_scheme)
-            setPalette(chose_layer.symbology.palette)
-        }
+    useEffect(() => {
+		if(selectedLayer) {
+            //Checks if it has defined attribute
+            if(!selectedLayer.attribute_to_symbolize)
+                setFAttribute(null) 
 
-        //Set layer options as previous defined
-        if(chose_layer.ol_layer) {
-            setOpacity(chose_layer.ol_layer.getOpacity())
-            setVisibility(chose_layer.ol_layer.isVisible())
-        }
+            //Set symbology as previous defined
+            if(selectedLayer.attribute_to_symbolize != null && selectedLayer.symbology != null) {
+                setFAttribute(selectedLayer.attribute_to_symbolize) 
+                setMethod(selectedLayer.symbology.method)
+                setNClasses(selectedLayer.symbology.n_classes)
+                setColorScheme(selectedLayer.symbology.color_scheme)
+                setPalette(selectedLayer.symbology.palette)
+            }
 
-        //Set tooltip options as previous defined
-        if(chose_layer.tooltip.title !== null) {
-            setTooltipTitle(chose_layer.tooltip.title)
+            //Set layer options as previous defined
+            if(selectedLayer.ol_layer) {
+                setOpacity(selectedLayer.ol_layer.getOpacity())
+                setVisibility(selectedLayer.ol_layer.isVisible())
+            }
+
+            //Set tooltip options as previous defined
+            if(selectedLayer.tooltip.title !== null) {
+                setTooltipTitle(selectedLayer.tooltip.title)
+            } else {
+                setTooltipTitle('')
+            }
+            if(selectedLayer.tooltip.attributes !== null) {
+                setTooltipAttributes(selectedLayer.tooltip.attributes)
+            } else {
+                setTooltipAttributes([])
+            } 
+
         } else {
+            //Reset fields
+            setFAttribute(null) 
+            setMethod('quantile')
+            setNClasses(5)
+            setColorScheme('sequential')
+            setPalette(null)
+            setOpacity(1)
+            setVisibility(true)
             setTooltipTitle('')
-        }
-        if(chose_layer.tooltip.attributes !== null) {
-            setTooltipAttributes(chose_layer.tooltip.attributes)
-        } else {
             setTooltipAttributes([])
         }
 
-	};
+    }, [selectedLayer])
+
+    useEffect(() => {
+        if(!props.openFM) setLayer(null)
+    }, [props.openFM])
 
     // Tooltip options
     const [tooltipTitle, setTooltipTitle] = useState("")
@@ -143,7 +166,7 @@ export default function Fillbar(props) {
     }
 
     useEffect(() => {
-        if(fill_attribute !== null) {
+        if(fill_attribute && method && n_classes && color_scheme && palette) {
             props.mapGeoLayers.updateSymbology(selectedLayer, {
                 method: method,
                 n_classes: n_classes,
@@ -243,11 +266,11 @@ export default function Fillbar(props) {
                                 <Grid container spacing={0}>
                                     <Grid item xs={2}>
                                         <FormControlLabel  sx={{ maxWidth: '10%' }}
-                                        control={<Checkbox checked={visible} onChange={handleVisibilityChange} />} label="Visibilidade" />
+                                        control={<Checkbox disabled={!selectedLayer} checked={visible} onChange={handleVisibilityChange} />} />
                                     </Grid>
                                     <Grid item xs={8}  sx={{ alignSelf: 'center'}} >
                                         <Slider sx={{ width: '100%' }}
-                                            disabled={!visible}
+                                            disabled={!visible || !selectedLayer}
                                             getAriaLabel={() => 'Opacidade'}
                                             value={opacity}
                                             onChange={handleOpacityChange}
@@ -269,6 +292,7 @@ export default function Fillbar(props) {
                                     displayEmpty
                                     value={fill_attribute}
                                     onChange={handleFAttributeChange}
+                                    disabled={!selectedLayer}
                                     renderValue={(selected) => {
                                         if(selected === null) {
                                             return <em>Selecione um atributo</em>
@@ -302,6 +326,7 @@ export default function Fillbar(props) {
                                 <Select
                                     sx={{ mb: 1, maxWidth: '60%' }}
                                     value={panel}
+                                    disabled={!fill_attribute}
                                     onChange={handlePanelChange}
                                 >
                                     <MenuItem value={0}>
@@ -320,6 +345,7 @@ export default function Fillbar(props) {
                                     <ToggleButtonGroup sx={{mb: 2}}
                                         exclusive
                                         onChange={handleMethodChange}
+                                        disabled={!fill_attribute}
                                         value={method}
                                     >
                                         <MenuToogleBtn size='small' value="quantile">Quantil</MenuToogleBtn>
@@ -336,6 +362,7 @@ export default function Fillbar(props) {
                                         aria-label="Número de Classes"
                                         defaultValue={5}
                                         valueLabelDisplay="auto"
+                                        disabled={!fill_attribute}
                                         step={1}
                                         marks
                                         min={5}
@@ -355,6 +382,7 @@ export default function Fillbar(props) {
                                         exclusive
                                         onChange={handleColorSchemeChange}
                                         value={color_scheme}
+                                        disabled={!fill_attribute}
                                     >
                                         <MenuToogleBtn value="sequential">Sequencial</MenuToogleBtn>
                                         <MenuToogleBtn value="diverging">Divergente</MenuToogleBtn>
@@ -368,6 +396,7 @@ export default function Fillbar(props) {
                                 </InputLabel>
                                 <Container sx={{pb: 3}}>
                                     <SelectPalette 
+                                        disabled={!fill_attribute}
                                         scheme={color_scheme}
                                         setPalette={setPalette}
                                         steps={n_classes}
@@ -389,6 +418,7 @@ export default function Fillbar(props) {
                                         sx={{ minWidth: 200, mb: 1 }}
                                         value={tooltipTitle}
                                         onChange={handleTooltipTitleChange}
+                                        disabled={!selectedLayer}
                                     >
                                         <MenuItem value="">
                                             <em>Sem título</em>
@@ -401,6 +431,7 @@ export default function Fillbar(props) {
                                     attributes={attributes}
                                     tooltipAttributes={tooltipAttributes}
                                     handleALFChange={handleTooltipATsChange}
+                                    disabled={!selectedLayer}
                                 />
                             </Box>
                         </Collapse>

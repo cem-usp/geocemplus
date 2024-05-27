@@ -2,10 +2,6 @@ import React, { useEffect } from 'react';
 import Palette from '../../utils/Palette'
 
 //Buttons and other toolbar components
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 
 import ToggleButton from '@mui/material/ToggleButton';
@@ -27,9 +23,7 @@ export default function SelectPalette(props) {
     }
     
     useEffect(() => {
-        if(props.palette === null)
-            props.setPalette(menuItems[0].key)
-        
+        props.setPalette(menuItems[0].key)
     }, [props.scheme])
 
     return (
@@ -38,6 +32,7 @@ export default function SelectPalette(props) {
                 exclusive
                 value={props.palette}
                 onChange={props.handlePaletteChange}
+                disabled={props.disabled}
             >
                 {menuItems}
             </ToggleButtonGroup>
