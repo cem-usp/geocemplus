@@ -19,8 +19,7 @@ import Grid from '@mui/material/Grid';
 import ModalAttributes from './subcomponents/ModalAttributes';
 import {NavList} from './subcomponents/NavBarComponents';
 
-import Checkbox from '@mui/material/Checkbox';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 const geoservices = [
