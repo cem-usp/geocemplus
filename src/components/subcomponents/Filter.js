@@ -18,7 +18,7 @@ export default function FABFilter(props) {
     function getOrgName(moid) {
       const token = "MLY|9006973349373388|91a175c294e87cd0e18a346877811833"
     
-      const response = fetch(`https://graph.mapillary.com/${moid}?access_token=${token}&fields=name`)
+      fetch(`https://graph.mapillary.com/${moid}?access_token=${token}&fields=name`)
       .then(function (response) {
           return response.json();
       })
@@ -37,7 +37,7 @@ export default function FABFilter(props) {
     return (
       <Box sx={{ marginLeft: 5, top: 80, zIndex: 10}} className="position-fixed">
         <Fab aria-label="filtro" className={`mapi-filter${open ? " enter" : ""}`}> 
-          <SearchIcon gutterBottom onClick={handleChange} />
+          <SearchIcon onClick={handleChange} />
           <TextField className={`mapi-txtFilter${open ? " enter" : ""}`} id="standard-basic" 
             label="ID da Organização" variant="standard" value={props.mapilOID} 
             error={error}

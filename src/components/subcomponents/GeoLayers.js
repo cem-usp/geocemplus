@@ -608,14 +608,14 @@ export default class GeoLayers {
 
     setAttributeToSimbolize(pLayer, attribute) {
 
-        if(pLayer['attribute_to_symbolize'] != attribute) {
+        if(pLayer['attribute_to_symbolize'] !== attribute) {
             pLayer['attribute_to_symbolize'] = attribute
 			const features = pLayer.ol_layer.get('features')
 			let attr_values = []
             if(attribute !== null) {
-                features.map((feature) => {
+                features.forEach(feature => {
                     attr_values.push(feature.get(attribute.attribute))
-                })
+                });
             }
             pLayer.mapFill.setArrValues(attr_values) 
         }
@@ -656,7 +656,7 @@ export default class GeoLayers {
     }
 
     updatePanel(pLayer, panel) {
-        if(pLayer.panel != panel) {
+        if(pLayer.panel !== panel) {
             pLayer.panel = panel
             this.updateLayer(pLayer)
         }
@@ -672,9 +672,9 @@ export default class GeoLayers {
         }
         
         if(!hasComparePanel) {
-            this.activateSlider(0)
+            this.activateSlider(false)
         } else {
-            this.activateSlider(1)
+            this.activateSlider(true)
         }      
     }
     
@@ -891,7 +891,7 @@ export default class GeoLayers {
                 const titlesOfFeature = tooltips[0].filter((title) => feature.getKeys().includes(title.attribute))
                 const tooltipsOfFeature = tooltips[1].filter((attribute) => feature.getKeys().includes(attribute.attribute))
 				if(titlesOfFeature.length > 0) {
-                    titlesOfFeature.map((title) => {
+                    titlesOfFeature.forEach(title => {
                         const info = document.getElementById('attributeTitle_infomap_' + title.attribute);
                         if(!feature.get(title.attribute))
                             info.innerHTML = '&nbsp;'
@@ -899,25 +899,26 @@ export default class GeoLayers {
                             info.innerHTML = (isNaN(feature.get(title.attribute))) ? feature.get(title.attribute) : feature.get(title.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
                     })
                 }
-				
-                tooltipsOfFeature.map((attribute) => {
+                
+                tooltipsOfFeature.forEach(attribute => {
                     const info = document.getElementById('infomap_' + attribute.attribute);
                     if(!feature.get(attribute.attribute))
                         info.innerHTML = '&nbsp;'
                     else
                         info.innerHTML = (isNaN(feature.get(attribute.attribute))) ? feature.get(attribute.attribute) : feature.get(attribute.attribute).toLocaleString("pt-BR", {maximumFractionDigits: 4})
-                })
+                });
 
 			} else {
-				tooltips[0].map((title) => {
+                tooltips[0].forEach(title => {
 					const info = document.getElementById('attributeTitle_infomap_' + title.attribute);
 					info.innerHTML = '&nbsp;';
-				})
-				
-				tooltips[1].map((attribute) => {
+                });
+
+                tooltips[1].forEach(attribute => {
 					const info = document.getElementById('infomap_' + attribute.attribute);
 					info.innerHTML = '&nbsp;';
-				})
+                    
+                });
 			}
 		}
 

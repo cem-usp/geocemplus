@@ -6,8 +6,6 @@ import LayerList from './loadWFS'
 import Fillbar from './Fillbar' 
 import BottomBar from './BottomBar' 
 import { useState, useEffect, useRef } from 'react';
-import MenuItem from '@mui/material/MenuItem';
-import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
 import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
@@ -15,7 +13,7 @@ import Slider from './subcomponents/Slider.js';
 import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
-import {FullScreen, defaults as defaultControls} from 'ol/control.js';
+import {FullScreen} from 'ol/control.js';
 
 function MainPane() {
 
@@ -30,23 +28,6 @@ function MainPane() {
     const handleOpenBars = () => {
         setOpenBars(!openBars)
     }
-
-    //Update Attribute list options when layer changes
-    // const [attrList, setAttrList] = useState(null)
-    // const [filterAttrNames, setFilterAttrNames] = useState(null)
-    // useEffect(() => {
-	// 	const list = (attributes) ? attributes.map((attribute) =>
-	// 					<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
-	// 					) : null;
-		
-	// 	const filtered_attributes = (attributes) ? filterNumberAttributes(attributes) : null
-	// 	const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-	// 								<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
-	// 								) : null;
-		
-	// 	setAttrList(list)
-    //   	setFilterAttrNames(filtered_names)
-    // },[attributes])
 
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
     const handleBasicOptionsChange = (event, option) => {
@@ -65,7 +46,7 @@ function MainPane() {
 	//Initialize map
     const [fs_control, setFsControl] = useState(new FullScreen())
 
-	const initialMap = new Map({
+    const initialMap = new Map({
         controls: [],
 		view: new View({
 			center: [0, 0],
@@ -73,9 +54,6 @@ function MainPane() {
 			maxZoom: max_zoom,
 		}),
 	})
-
-    // Adiciona o título do mapa
-	// initialMap.addControl(new Control({element: controlEl}))
 
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
@@ -132,8 +110,6 @@ function MainPane() {
 
     //Mapillary Organization ID
     const [mapilOID, setMapilOID] = useState('');
-    //Mapillary Organization ID Found
-    const [moidFound, setMOIDFound] = useState(false);
     
     //rangeValue
     const [dividerRangeValue, setDividerRangeValue] = useState(0.5);
@@ -160,7 +136,7 @@ function MainPane() {
         //Updates panel
         const hasComparePanel = plotted_layers.some(layer => layer.panel === 1)
         if(!hasComparePanel)
-            turnOLDivider(0)
+            turnOLDivider(false)
         
         //Updates bottom legend
         mapGeoLayers.updateLegend()
@@ -180,8 +156,8 @@ function MainPane() {
             <Header
                 handleOpenBars={handleOpenBars}
              />
-            <Grid container className="position-fixed" sx={{ zIndex:  10, zIndex:  10,
-                         mt: '90px', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
+            <Grid container className="position-fixed" sx={{ zIndex:  10, mt: '90px', 
+            ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
                 <Grid item xs={12}>
                     <LayerList 
                         mapGeoLayers={mapGeoLayers}
@@ -237,7 +213,6 @@ function MainPane() {
                             fs_control={fs_control}
                             mapi_viewer={mapillary_viewer}
                             mapilOID={mapilOID}
-                            setMOIDFound={setMOIDFound}
                             setFsContro={setFsControl}
                         />
                     </Box>

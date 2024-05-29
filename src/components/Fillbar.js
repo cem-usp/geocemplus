@@ -113,6 +113,7 @@ export default function Fillbar(props) {
 
     const [attributes, setAttributes] = useState(null)
     const [attrList, setAttrList] = useState(null)
+    const [numAttrList, setNumAttrList] = useState(null)
 
     // Fill parameters state
 	const [fill_attribute, setFAttribute] = useState(null)
@@ -187,12 +188,12 @@ export default function Fillbar(props) {
 						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
 						) : null;
 		
-		// const filtered_attributes = (props.attributes) ? filterNumberAttributes(props.attributes) : null
-		// const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-		// 							<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
-		// 							) : null;
+		const filtered_attributes = (selectedLayer) ? filterNumberAttributes(selectedLayer.attributes) : null
+		const filtered_list = (filtered_attributes) ? filtered_attributes.map((attribute) =>
+									<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
+									) : null;
 		
-        // setFilterAttrNames(filtered_names)
+        setNumAttrList(filtered_list)
 		setAttrList(list)
         setAttributes( selectedLayer ? selectedLayer.attributes : null)
     },[selectedLayer])
@@ -304,7 +305,7 @@ export default function Fillbar(props) {
                                     <MenuItem value={null}>
                                         <em>Sem simbolização</em>
                                     </MenuItem>
-                                    {attrList}
+                                    {numAttrList}
                                 </Select>
                                 
                                 {/* Abre o modal de Atributos */}
