@@ -1,3 +1,4 @@
+import GeoLayers from './subcomponents/GeoLayers'
 import Box from '@mui/material/Box';
 import MapGeo from './MapGeo'
 import Header from "./Header";
@@ -5,80 +6,35 @@ import LayerList from './loadWFS'
 import Fillbar from './Fillbar' 
 import BottomBar from './BottomBar' 
 import { useState, useEffect, useRef } from 'react';
-import MenuItem from '@mui/material/MenuItem';
-import {filterNumberAttributes} from '../utils/UtilFunctions'
 import { Map, View } from 'ol';
-import {FullScreen} from 'ol/control.js';
 import { Grid } from '@mui/material';
 import MapillaryViewer from './Mapillary'
 import Slider from './subcomponents/Slider.js';
+import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
+import {FullScreen} from 'ol/control.js';
 
 function MainPane() {
-    const [layer_url, setLayerURL] = useState(null);
+
+    //Array of selected layers
+    const [counter, setCounter] = useState([]);
+    //Array of geolayers on the map
+    const [plotted_layers, setPlottedLayers] = useState([])
+
     const [attributes, setAttributes] = useState(null)
     
     const [openBars, setOpenBars] = useState('flex');
     const handleOpenBars = () => {
         setOpenBars(!openBars)
     }
-    
-    // Fill parameters state
-	const [fill_attribute, setFAttribute] = useState('')
-    const handleFAttributeChange = (event) => {
-		setFAttribute(event.target.value);
-	};
-    const [method, setMethod] = useState('quantile')
-    const handleMethodChange = (e) => {
-        setMethod(e.target.value)
-    }
-    const [n_classes, setNClasses] = useState(5)
-    const handleNClassesChange = (e) => {
-        setNClasses(e.target.value)
-    }
-    const [color_scheme, setColorScheme] = useState('sequential')
-    const handleColorSchemeChange = (e) => {
-		setColorScheme(e.target.value);
-	};
-    const [palette, setPalette] = useState('')
-	const handlePaletteChange = (e,v) => {
-        setPalette(v)
-    }    
-
-    const [attributeTitle, setAttributeTitle] = useState('')
-    const handleAttributeTitleChange = (e) => {
-        setAttributeTitle(e.target.value)
-    }
-    //Update Attribute list options when layer changes
-    const [attrList, setAttrList] = useState(null)
-    const [filterAttrNames, setFilterAttrNames] = useState(null)
-    useEffect(() => {
-		const list = (attributes) ? attributes.map((attribute) =>
-						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
-						) : null;
-		
-		const filtered_attributes = (attributes) ? filterNumberAttributes(attributes) : null
-		const filtered_names = (filtered_attributes) ? filtered_attributes.map((attribute) =>
-									<MenuItem key={attribute.pk} value={attribute.attribute}>{attribute.attribute_label}</MenuItem>
-									) : null;
-		
-		setAttrList(list)
-      	setFilterAttrNames(filtered_names)
-    },[attributes])
-    
-    const [attributesLF, setAttributesLF] = useState([])
-
-	const handleAttributesLFChange = (e) => {
-		setAttributesLF(e.target.value);
-	};
 
 	const [basicOptions, setBasicOptions] = useState(() => ['map']);
     const handleBasicOptionsChange = (event, option) => {
         let arr = [...basicOptions]
-        const teste = basicOptions.indexOf(option)
+        const isDeselected = basicOptions.indexOf(option)
 
-        if(teste > -1) arr.splice(teste, 1)
+        if(isDeselected > -1) arr.splice(isDeselected, 1)
         else arr = arr.concat(option)
 
         setBasicOptions(arr)
@@ -89,19 +45,15 @@ function MainPane() {
     const max_zoom = 20
 	//Initialize map
     const [fs_control, setFsControl] = useState(new FullScreen())
-    
-	const initialMap = new Map({
-		// interactions: defaultInteractions().extend([new Drag()]),
-        controls: [fs_control],
+
+    const initialMap = new Map({
+        controls: [],
 		view: new View({
 			center: [0, 0],
 			zoom: 2,
 			maxZoom: max_zoom,
 		}),
 	})
-
-    // Adiciona o título do mapa
-	// initialMap.addControl(new Control({element: controlEl}))
 
 	//Map Variable
 	const [map, setMap] = useState(initialMap)
@@ -150,18 +102,22 @@ function MainPane() {
     //Panel left size
     const [dividerX, setDividerX] = useState();
 
-    //Panel left size
-    const [dividerON, turnDivider] = useState(false);
+    //Turn ON/OFF Mapillary Slider Panel
+    const [dividerMapillary, turnDivider] = useState(false);
+
+    //Turn ON/OFF Compare / Open Layers (OL) Slider Panel
+    const [olDivider, turnOLDivider] = useState(false);
 
     //Mapillary Organization ID
     const [mapilOID, setMapilOID] = useState('');
-    //Mapillary Organization ID Found
-    const [moidFound, setMOIDFound] = useState(false);
+    
+    //rangeValue
+    const [dividerRangeValue, setDividerRangeValue] = useState(0.5);
     
     //Activate slider
     useEffect(() => {
         //Mapillary option
-        if(basicOptions.includes('mapillary') && dividerON === false) {
+        if(basicOptions.includes('mapillary') && dividerMapillary === false) {
             setDividerX()
             turnDivider(true)
             setOpenBars(false)
@@ -169,18 +125,43 @@ function MainPane() {
             turnDivider(false)
             setOpenBars(true)
         }
+
+        mapGeoLayers.updateView() //criar option separada
+
 	}, [basicOptions])
 
+    //Check and remove Slider if plotted_layers changes 
+    useEffect(() => {
+
+        //Updates panel
+        const hasComparePanel = plotted_layers.some(layer => layer.panel === 1)
+        if(!hasComparePanel)
+            turnOLDivider(false)
+        
+        //Updates bottom legend
+        mapGeoLayers.updateLegend()
+
+        //remove tooltip if any
+        mapGeoLayers.updateTooltipLegend() 
+
+    }, [plotted_layers])
+
+    const sliderEL = useRef(null);
+	
+    const mapGeoLayers = new GeoLayers(map, basicOptions, counter, setCounter,
+        plotted_layers, setPlottedLayers, turnOLDivider, sliderEL);
+        
     return (
         <Box>
             <Header
                 handleOpenBars={handleOpenBars}
              />
-            <Grid container className="position-fixed" sx={{ zIndex:  10, zIndex:  10,
-                         mt: '15vh', ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
+            <Grid container className="position-fixed" sx={{ zIndex:  10, mt: '90px', 
+            ml: '10px', maxWidth: '384px'}} rowSpacing={1}>
                 <Grid item xs={12}>
                     <LayerList 
-                        changeLayerURL={setLayerURL}
+                        mapGeoLayers={mapGeoLayers}
+                        plotted_layers={plotted_layers}
                         changeAttributes={setAttributes}
                         openBars={openBars}
                         openLM={openLM}
@@ -189,26 +170,13 @@ function MainPane() {
                 </Grid>
                 <Grid item xs={12}>
                     <Fillbar 
+                        mapGeoLayers={mapGeoLayers}
+                        plotted_layers={plotted_layers}
                         attributes={attributes}
-                        fill_attribute={fill_attribute}
-                        changeFAttribute={handleFAttributeChange}
-                        method={method}
-                        changeMethod={handleMethodChange}
-                        n_classes={n_classes}
-                        changeNClasses={handleNClassesChange}
-                        color_scheme={color_scheme}
-                        changeCScheme={handleColorSchemeChange}
-                        palette={palette}
-                        setPalette={setPalette}
-                        changePallete={handlePaletteChange}
-                        attributeTitle={attributeTitle}
-                        onAttributeTitleChange={handleAttributeTitleChange}
-                        attrList={attrList}
-                        attributesLF={attributesLF}
-                        handleALFChange={handleAttributesLFChange}
                         openBars={openBars}
                         handleClickOpenFM={handleClickOpenFM}
                         openFM={openFM}
+                        dividerMapillary={dividerMapillary}
                     />
                 </Grid>
             </Grid>
@@ -217,39 +185,35 @@ function MainPane() {
 				basicOptions={basicOptions}
 				onBasicOptionsChange={handleBasicOptionsChange}
                 fs_control={fs_control}
-                dividerON={dividerON}
+                dividerMapillary={dividerMapillary}
                 turnDivider={turnDivider}
-            />
-            {dividerON ? (<Slider map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+                plotted_layers={plotted_layers}
+                olDivider={olDivider}
+                />
+            {dividerMapillary ? (<Slider type='mapillary' map={map} dividerX={dividerX} changeDX={setDividerX} viewer={mapillary_viewer} />) : null}
+            {olDivider ? (<SliderMap type='OL' map={map}  sliderEL={sliderEL} setRange={setDividerRangeValue} rangeValue={dividerRangeValue}
+                        dividerX={dividerX} changeDX={setDividerX} mapGeoLayers={mapGeoLayers} />) : null}
             <Grid container>
-                    <Grid item style={{width: dividerX + "px"}} display={dividerON ? 'block' : 'none'}>
-                        <Box>
-                            <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
-                            <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
-                        </Box>
-                    </Grid>
+                <Grid item style={{width: dividerX + "px"}} display={dividerMapillary ? 'block' : 'none'}>
+                    <Box>
+                        <Filter mapilOID={mapilOID} setMapilOID={setMapilOID}/>
+                        <MapillaryViewer viewer={mapillary_viewer} changeViewer={setMViewer}/>
+                    </Box>
+                </Grid>
                 <Grid item xs>
                     <Box>
                         <MapGeo 
+                            mapGeoLayers={mapGeoLayers}
                             map={map}
                             max_zoom={max_zoom}
-                            layer_url={layer_url} 
+                            plotted_layers={plotted_layers}
+                            setPlottedLayers={setPlottedLayers}
                             attributes={attributes}
-                            fill_attribute={fill_attribute}
-                            method={method}
-                            n_classes={n_classes}
-                            color_scheme={color_scheme}
-                            palette={palette}
-                            attributeTitle={attributeTitle}
-                            attributesLF={attributesLF}
                             basicOptions={basicOptions}
                             fs_control={fs_control}
-                            setFAttribute={setFAttribute}
-                            setAttributesLF={setAttributesLF}
-                            setAttributeTitle={setAttributeTitle}
                             mapi_viewer={mapillary_viewer}
                             mapilOID={mapilOID}
-                            setMOIDFound={setMOIDFound}
+                            setFsContro={setFsControl}
                         />
                     </Box>
                 </Grid>

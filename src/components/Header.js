@@ -38,11 +38,11 @@ export default function Header(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'left'}}>
+          <Typography variant="body1" component="div" sx={{ flexGrow: 1, textAlign: 'left'}}>
             <img src='/logo_mapi.png' height="50px"/>
             MAPi
           </Typography>
-          <LinkBox>
+          <LinkBox sx={{ typography: 'body1' }}>
             <div>Fale Conosco</div>
             <div>Sistemas Interativos</div>
             <div>Copyright</div>

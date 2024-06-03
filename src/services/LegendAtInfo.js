@@ -26,21 +26,24 @@ export default function (props) {
     </ListItem>
   );
 
+  
+  const listTitles = props.titles.map((title) =>
+    <ListItem key={title.attribute}>
+      <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
+        {title.attribute_label}
+      </Typography>
+      <Typography variant="h5" component="div" id={"attributeTitle_infomap_" + title.attribute}>
+        
+      </Typography>
+    </ListItem>
+  );
+
     return (
         <div className="info ol-tooltip-legend">
             <Card>
                   <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
                     
-                    { (props.title != undefined && props.title !== '') &&
-                      <ListItem key={1}>
-                        <Typography sx={{ fontSize: 14 , mr:2}} color="text.secondary" gutterBottom>
-                          {props.title.attribute_label}
-                        </Typography>
-                        <Typography variant="h5" component="div" id="attributeTitle_infomap">
-                          
-                        </Typography>
-                      </ListItem>
-                    }
+                    { listTitles }
 
                     {listAttributes}
 

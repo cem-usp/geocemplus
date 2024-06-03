@@ -18,7 +18,7 @@ import Checkbox from '@mui/material/Checkbox';
 // };
 
 export default function MultipleSelectCheckmarks(props) {
-    const selected_labels = props.attributesLF.map(({attribute_label}) => attribute_label)
+    const selected_labels = (props.tooltipAttributes) ? props.tooltipAttributes.map(({attribute_label}) => attribute_label) : []
 
     return (
         <div >
@@ -28,7 +28,8 @@ export default function MultipleSelectCheckmarks(props) {
               labelId="demo-multiple-checkbox-label"
               id="demo-multiple-checkbox"
               multiple
-              value={props.attributesLF}
+              value={props.tooltipAttributes}
+              disabled={props.disabled}
               onChange={props.handleALFChange}
               renderValue={(selected) => {
                   const labels = selected.map(({attribute_label}) => attribute_label)

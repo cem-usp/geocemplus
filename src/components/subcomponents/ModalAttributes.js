@@ -25,7 +25,7 @@ export default function ModalAttributes(props) {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: 400,
+      width: '60%',
       bgcolor: 'background.paper',
       border: '2px solid #000',
       boxShadow: 24,
@@ -91,7 +91,7 @@ export default function ModalAttributes(props) {
                                 <StyledTableCell component="th" scope="row">
                                 {attribute.attribute_label}
                                 </StyledTableCell>
-                                <StyledTableCell align="right">{attribute.description}</StyledTableCell>
+                                <StyledTableCell align="left">{attribute.description}</StyledTableCell>
                             </StyledTableRow>
                         ))}
                         </TableBody>

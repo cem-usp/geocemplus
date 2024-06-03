@@ -117,11 +117,6 @@ html, body, .map-container {
   transition: all 0.25s;
   -webkit-transition: all 0.25s;
   position: absolute;
-  max-width: 250px !important;
-}
-
-.ol-legend.enter {
-  right: -228px;
 }
 
 .mapi-filter {

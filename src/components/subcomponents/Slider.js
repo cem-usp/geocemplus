@@ -18,6 +18,7 @@ export default function Slider(props) {
     useEffect(() => {
         dividerEL.current.style.left = props.dividerX + 'px'
         props.viewer.resize()
+
     }, [props.dividerX])
 
     useEffect(() => {
