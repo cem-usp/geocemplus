@@ -45,7 +45,7 @@ export default function LegendControl(props) {
     const attributes_share = 12 / props.fills.length
     const legendLayers = props.fills.map((mapFill) => 
         <Grid item xs={attributes_share}>
-            <Typography variant="body1" noWrap>
+            <Typography variant="body1" noWrap={true}>
                 {mapFill.attribute}
             </Typography>
             <Steps fill={mapFill} />
@@ -60,16 +60,16 @@ export default function LegendControl(props) {
 
     return (
         <ThemeProvider theme={theme}>
-            <Box className="ol-legend" sx={{right: (open) ? `${props.fills.length * -167}px` : '10px' }}>
+            <Box className="ol-legend" sx={{right: (open) ? `-26vw` : '0vw' }}>
                 <Grid container>
-                    <Grid item xs={1} className="ol-legend-header">
+                    <Grid item style={{width: "20px"}} className="ol-legend-header">
                         <Paper elevation={4} >
                             <Typography variant="button" display="block" gutterBottom onClick={handleChange}>
                                 Legendas
                             </Typography>
                         </Paper>
                     </Grid>
-                    <Grid item xs={11}>
+                    <Grid item style={{width: "500px"}}>
                         <Paper elevation={4} >
                             <Grid container>
                                 {legendLayers}

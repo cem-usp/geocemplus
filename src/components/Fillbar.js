@@ -187,9 +187,13 @@ export default function Fillbar(props) {
     },[method, n_classes, palette, fill_attribute, panel])
 
     useEffect(() => {
-		const list = (selectedLayer) ? selectedLayer.attributes.map((attribute) =>
-						<MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem>
-						) : null;
+		const list = (selectedLayer) ? 
+            selectedLayer.attributes.map((attribute) => {
+                return (attribute.attribute_label) ? 
+                    <MenuItem key={attribute.pk} value={attribute}>{attribute.attribute_label}</MenuItem> 
+                : null
+            }
+		) : null;
 		
 		const filtered_attributes = (selectedLayer) ? filterNumberAttributes(selectedLayer.attributes) : null
 		const filtered_list = (filtered_attributes) ? filtered_attributes.map((attribute) =>
@@ -420,7 +424,7 @@ export default function Fillbar(props) {
                                     <Select
                                     labelId="select-title-var-filled-label"
                                     id="title-var-select-filled"
-                                        sx={{ minWidth: 200, mb: 1 }}
+                                        sx={{ width: 200, mb: 1 }}
                                         value={tooltipTitle}
                                         onChange={handleTooltipTitleChange}
                                         disabled={!selectedLayer}
