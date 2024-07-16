@@ -45,7 +45,7 @@ export default function Header(props) {
           <LinkBox sx={{ typography: 'body1' }}>
             <div><a href="mailto:suporte.cem@usp.br?subject=[MAPi]">Fale Conosco</a></div>
             <div><a href="https://centrodametropole.fflch.usp.br/pt-br/sistemas-interativos" target='_blank'>Sistemas Interativos</a></div>
-            <div>Copyright</div>
+            <div><a href="/manual_mapi_v1.1.1.pdf" target='_blank'>Manual do Usuário</a></div>
             <div><LanguageIcon />Português (Brasil)</div>
           </LinkBox>
           <Box sx={{mx: 2}}>
