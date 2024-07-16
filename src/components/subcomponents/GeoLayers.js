@@ -105,7 +105,23 @@ export default class GeoLayers {
         new_plotted_layers.splice(layerIndexToRemove, 1);
         this.removeHighlight(this.plotted[layerIndexToRemove])
         this.setPlotted(new_plotted_layers)
+        this.updatePanelAtRight(new_plotted_layers)
         this.removeLayerOfMap(this.plotted[layerIndexToRemove])
+    }
+
+    updatePanelAtRight(layers) {
+        //Check if all layers on the right side
+        if(layers.every(layer => layer.panel === 1)) {
+            const new_plotted_layers = [...layers];
+            new_plotted_layers.forEach(layer => {
+                layer.panel = 0
+            })
+            this.setPlotted(new_plotted_layers)
+            this.removeComparePanelEvents()
+        } else {
+            if(!layers.some(layer => layer.panel === 1))
+                this.removeComparePanelEvents()
+        }
     }
 
     updateLayer(layer) {
@@ -701,8 +717,8 @@ export default class GeoLayers {
     canCompare() {
         if(this.plotted.length < 2)
             return false
-        else 
-            return this.plotted.some(layer => layer.panel === 0)
+        else
+            return this.plotted.filter(layer => layer.panel === 0).length > 1
     }
 
     applyComparePanelEvents() {
@@ -711,10 +727,9 @@ export default class GeoLayers {
         //Get Standard and Compare Panel layers
         const layersStandardPane = this.plotted.filter(layer => layer.panel === 0)
         const layersComparePane = this.plotted.filter(layer => layer.panel === 1)
-
         //Check and apply Standard panel
         layersStandardPane.forEach(layer => {
-            if(layer.ol_layer.get('prerenderEvt') === undefined) {
+            // if(layer.ol_layer.get('prerenderEvt') === undefined) {
                 const prerenderEvt = layer.ol_layer.on('prerender',  event => {
                     const ctx = event.context;
                     const mapSize = this.map.getSize();
@@ -746,12 +761,11 @@ export default class GeoLayers {
                 layer.ol_layer.set('prerenderEvt', prerenderEvt)
                 layer.ol_layer.set('postrenderEvt', postrenderEvt)
 
-            }
+            // }
         }); 
 
         //Check and apply Compare panel
         layersComparePane.forEach(layer => {
-            if(layer.ol_layer.get('prerenderEvt') === undefined) {
                 const prerenderEvt = layer.ol_layer.on('prerender',  event => {
                     const ctx = event.context;
                     const mapSize = this.map.getSize();
@@ -783,7 +797,6 @@ export default class GeoLayers {
                 layer.ol_layer.set('prerenderEvt', prerenderEvt)
                 layer.ol_layer.set('postrenderEvt', postrenderEvt)
 
-            }
         });
     }
 

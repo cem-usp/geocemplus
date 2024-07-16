@@ -78,6 +78,8 @@ export default function Fillbar(props) {
                 setTooltipAttributes([])
             } 
 
+            setPanel(selectedLayer.panel)
+
         } else {
             //Reset fields
             setFAttribute(null) 
@@ -89,6 +91,7 @@ export default function Fillbar(props) {
             setVisibility(true)
             setTooltipTitle('')
             setTooltipAttributes([])
+            setPanel(0)
         }
 
     }, [selectedLayer])
