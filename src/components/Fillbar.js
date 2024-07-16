@@ -312,13 +312,14 @@ export default function Fillbar(props) {
                                 <IconButton onClick={handleOpenAM}>
                                     <HelpIcon />
                                 </IconButton>
-
-                                <ModalAttributes
-                                open={openAM}
-                                close={handleCloseAM}
-                                attributes={attributes}
-                                >
-                                </ModalAttributes>
+                                
+                                {!selectedLayer ? null : 
+                                    <ModalAttributes
+                                    open={openAM}
+                                    close={handleCloseAM}
+                                    layerModal={selectedLayer.metadata}
+                                    />
+                                }
 
                                 <InputLabel sx={{ textAlign: 'left', color: 'black', py: 1, ml:5 }}>
                                     Painel

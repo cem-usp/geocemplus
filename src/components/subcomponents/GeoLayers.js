@@ -37,6 +37,20 @@ export default class GeoLayers {
         this.dividerRange = dividerRange
     }
 
+    getGeoCEMLayerMetadata(layer_id) {
+        return fetch("https://geocem.centrodametropole.fflch.usp.br/api/v2/layers/" + layer_id + "/")
+            .then(function (response) {
+                return response.json();
+            })
+            .then((response) => {
+                return response.layer
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro" + err);
+            });
+
+    }
+
     addLayer(geocem_layer_id) {
         //Retrieve Layer details
         fetch("https://geocem.centrodametropole.fflch.usp.br/api/layers/"+ geocem_layer_id)
@@ -60,8 +74,14 @@ export default class GeoLayers {
                     title: null,
                     attributes: null
                 },
-                ol_layer: null
+                ol_layer: null,
+                metadata: null
             }
+
+            this.getGeoCEMLayerMetadata(geocem_layer_id).then((metadata) => {
+                new_layer.metadata = metadata
+            })
+
             this.setCounter(++this.counter)
 
             this.getLayerAttributes(geocem_layer_id).then( attributes => {

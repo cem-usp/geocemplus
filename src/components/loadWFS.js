@@ -57,17 +57,11 @@ export default function LayerList(props) {
     const [selectedLayer, setSelectedLayer] = useState(0);
 
     //Handle Attributes Modal
-    // const [attributesModal, setAttributesModal] = useState(null)
     const [layerModal, setLayerModal] = useState(null)
     const [openAM, setOpenAM] = useState(false)
     const handleOpenAM = (layer_id) => {
         const req_meta = getGeoCEMLayerMetadata(layer_id)
         req_meta.then((metadata) => {
-            console.log('metadata', metadata)
-            console.log('title', metadata.title)
-            console.log('raw_abstract', metadata.raw_abstract)
-            console.log('detail_url', metadata.detail_url)
-            console.log('attribute_set', metadata.attribute_set)
             setLayerModal(metadata)
             setOpenAM(true)
         })
@@ -126,20 +120,6 @@ export default function LayerList(props) {
     const handleRemoveLayer = (layer_id) => () => {
         props.mapGeoLayers.removeLayer(layer_id);
     };
-
-    function getGeoCEMLayerAttributes(layer_id) {
-        return fetch(geoservices[0].baseurl + "v2/layers/" + layer_id + "/attribute_set")
-            .then(function (response) {
-                return response.json();
-            })
-            .then((response) => {
-                return response.attributes
-            })
-            .catch((err) => {
-                console.error("ops! ocorreu um erro" + err);
-            });
-
-    }
 
     function getGeoCEMLayerMetadata(layer_id) {
         return fetch(geoservices[0].baseurl + "v2/layers/" + layer_id + "/")
@@ -359,7 +339,7 @@ export default function LayerList(props) {
 
                 </NavList>
             </Paper>
-            {!layerModal ? '' : 
+            {!layerModal ? null : 
                 <ModalAttributes
                 open={openAM}
                 close={handleCloseAM}
