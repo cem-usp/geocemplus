@@ -112,7 +112,7 @@ html, body, .map-container {
 }
 
 .ol-legend {
-  bottom: 10px;
+  bottom: 60px;
   right: 10px;
   transition: all 0.25s;
   -webkit-transition: all 0.25s;

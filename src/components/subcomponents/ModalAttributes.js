@@ -65,13 +65,18 @@ export default function ModalAttributes(props) {
             onClose={props.close}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
-        >
-            <Box sx={modalStyle}>
+        >   
+          <Box sx={modalStyle}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
-                Atributos da Camada
+                <b>Camada</b> {props.layerModal.title}
             </Typography>
+            <p>
+              {props.layerModal.raw_abstract}
+            </p>
+            <p>
+              <a href={props.layerModal.detail_url} target="_blank">Mais recursos da camada</a>
+            </p>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                {!props.attributes ? '' : 
                     <TableContainer component={Paper}>
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
@@ -82,8 +87,8 @@ export default function ModalAttributes(props) {
                         </TableHead>
                         <TableBody>
                         {(rowsPerPage > 0
-                            ? props.attributes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : props.attributes
+                            ? props.layerModal.attribute_set.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : props.layerModal.attribute_set
                             ).map((attribute) => (
                             <StyledTableRow
                                 key={attribute.pk}
@@ -97,7 +102,7 @@ export default function ModalAttributes(props) {
                         </TableBody>
                         <TableFooter>
                             <TablePagination 
-                            count={props.attributes.length}
+                            count={props.layerModal.attribute_set.length}
                             onPageChange={handleChangePage}
                             page={page}
                             rowsPerPage={5}
@@ -106,9 +111,9 @@ export default function ModalAttributes(props) {
                         </TableFooter>
                     </Table>
                     </TableContainer>
-                }
             </Typography>
-            </Box>
+          </Box>
+          
         </Modal>
     )
 }

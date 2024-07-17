@@ -57,12 +57,12 @@ export default function LayerList(props) {
     const [selectedLayer, setSelectedLayer] = useState(0);
 
     //Handle Attributes Modal
-    const [attributesModal, setAttributesModal] = useState(null)
+    const [layerModal, setLayerModal] = useState(null)
     const [openAM, setOpenAM] = useState(false)
     const handleOpenAM = (layer_id) => {
-        const req_attributes = getGeoCEMLayerAttributes(layer_id)
-        req_attributes.then((attributes_response) => {
-            setAttributesModal(attributes_response)
+        const req_meta = getGeoCEMLayerMetadata(layer_id)
+        req_meta.then((metadata) => {
+            setLayerModal(metadata)
             setOpenAM(true)
         })
     };
@@ -121,13 +121,13 @@ export default function LayerList(props) {
         props.mapGeoLayers.removeLayer(layer_id);
     };
 
-    function getGeoCEMLayerAttributes(layer_id) {
-        return fetch(geoservices[0].baseurl + "v2/layers/" + layer_id + "/attribute_set")
+    function getGeoCEMLayerMetadata(layer_id) {
+        return fetch(geoservices[0].baseurl + "v2/layers/" + layer_id + "/")
             .then(function (response) {
                 return response.json();
             })
             .then((response) => {
-                return response.attributes
+                return response.layer
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro" + err);
@@ -339,11 +339,13 @@ export default function LayerList(props) {
 
                 </NavList>
             </Paper>
-            <ModalAttributes
-            open={openAM}
-            close={handleCloseAM}
-            attributes={attributesModal}
-            />
+            {!layerModal ? null : 
+                <ModalAttributes
+                open={openAM}
+                close={handleCloseAM}
+                layerModal={layerModal}
+                />
+            }
         </Box>
       )
 }
