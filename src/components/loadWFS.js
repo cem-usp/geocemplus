@@ -268,8 +268,19 @@ export default function LayerList(props) {
         })
         .then((promises) => {
             Promise.all(promises)
-            .then((categories) => setGeoCEMCats(categories));
+            .then((categories) => {
+                setGeoCEMCats(filterLayers(categories))
+            })
         })
+    }
+
+    function filterLayers(categories) {
+        categories.forEach((cat) => {
+            const newLayers = cat.layers.filter((layer) => layer.keywords.includes('MAPi'))
+            cat.layers = newLayers
+        })
+        
+        return categories.filter((cat) => cat.layers.length > 0)
     }
 
     function createCatList(props) {

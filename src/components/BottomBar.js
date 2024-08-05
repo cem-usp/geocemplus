@@ -10,6 +10,7 @@ import {Add as AddIcon, Remove as RemoveIcon, Map as MapIcon,
         Fullscreen as FullscreenIcon,
         Share as ShareIcon, Streetview as StreetviewIcon} from '@mui/icons-material';
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
+import Tooltip from '@mui/material/Tooltip';
 
 //Button toogle style
 const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
@@ -72,73 +73,87 @@ export default function BootomBar(props) {
         className="position-fixed">
             
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <Button value="zoom_in" variant="contained" aria-label="zoom_in" 
-                sx={{backgroundColor: "#042E6F", minWidth: '5px', fontSize: '1rem'}}
-                onClick={() => {
-                    const map_view = props.map.getView()
-                    const curr_zoom = map_view.getZoom()
-                    map_view.setZoom(curr_zoom+0.5)
-                }}>
-                    <AddIcon sx={{fontSize: '1rem'}}/>
-                </Button>
+                <Tooltip title='Aumentar o zoom'>
+                    <Button value="zoom_in" variant="contained" aria-label="zoom_in" 
+                    sx={{backgroundColor: "#042E6F", minWidth: '5px', fontSize: '1rem'}}
+                    onClick={() => {
+                        const map_view = props.map.getView()
+                        const curr_zoom = map_view.getZoom()
+                        map_view.setZoom(curr_zoom+0.5)
+                    }}>
+                        <AddIcon sx={{fontSize: '1rem'}}/>
+                    </Button>
+                </Tooltip>
             </StyledGridItem>
             
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <Button value="zoom_out" variant="contained" aria-label="zoom_out" 
-                sx={{backgroundColor: "#042E6F", minWidth: '5px', fontSize: '1rem'}}
-                onClick={() => {
-                    const map_view = props.map.getView()
-                    const curr_zoom = map_view.getZoom()
-                    map_view.setZoom(curr_zoom-0.5)
-                }}>
-                    <RemoveIcon sx={{fontSize: '1rem'}} />
-                </Button>
+                <Tooltip title='Diminuir o zoom'>
+                    <Button value="zoom_out" variant="contained" aria-label="zoom_out" 
+                    sx={{backgroundColor: "#042E6F", minWidth: '5px', fontSize: '1rem'}}
+                    onClick={() => {
+                        const map_view = props.map.getView()
+                        const curr_zoom = map_view.getZoom()
+                        map_view.setZoom(curr_zoom-0.5)
+                    }}>
+                        <RemoveIcon sx={{fontSize: '1rem'}} />
+                    </Button>
+                </Tooltip>
             </StyledGridItem>
             
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <Button value="full_screen" aria-label="full_screen" variant="contained" 
-                onClick={() => props.fs_control.element.querySelector('button').click()}
-                sx={{backgroundColor: "#042E6F", minWidth: '5px'}} 
-                >
-                    <FullscreenIcon sx={{fontSize: '1rem'}} />
-                </Button>
+                <Tooltip title='Tela cheia'>
+                    <Button value="full_screen" aria-label="full_screen" variant="contained" 
+                    onClick={() => props.fs_control.element.querySelector('button').click()}
+                    sx={{backgroundColor: "#042E6F", minWidth: '5px'}} 
+                    >
+                        <FullscreenIcon sx={{fontSize: '1rem'}} />
+                    </Button>
+                </Tooltip>
             </StyledGridItem>
 
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <StyledToggleButton value="bounds" aria-label="bounds" 
-                selected={props.basicOptions.includes('bounds')} 
-                onChange={props.onBasicOptionsChange}>
-                    <PushPinIcon sx={{fontSize: '1rem'}} />
-                </StyledToggleButton>
+                <Tooltip title='Fixar mapa'>
+                    <StyledToggleButton value="bounds" aria-label="bounds" 
+                    selected={props.basicOptions.includes('bounds')} 
+                    onChange={props.onBasicOptionsChange}>
+                        <PushPinIcon sx={{fontSize: '1rem'}} />
+                    </StyledToggleButton>
+                </Tooltip>
             </StyledGridItem>
 
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
+                <Tooltip title={(props.basicOptions.includes('map') ? 'Desativar' : 'Ativar') + ' Camada-base'}>
                 <StyledToggleButton value="map" aria-label="map" 
-                selected={props.basicOptions.includes('map')} 
-                onChange={props.onBasicOptionsChange}>
-                    <MapIcon sx={{fontSize: '1rem'}} />
-                </StyledToggleButton>
+                    selected={props.basicOptions.includes('map')} 
+                    onChange={props.onBasicOptionsChange}>
+                        <MapIcon sx={{fontSize: '1rem'}} />
+                    </StyledToggleButton>
+                </Tooltip>
             </StyledGridItem>
 
             <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <StyledToggleButton value="mapillary" aria-label="mapillary" 
-                selected={props.basicOptions.includes('mapillary')} 
-                disabled={props.olDivider}
-                onChange={props.onBasicOptionsChange}>
-                    <StreetviewIcon sx={{fontSize: '1rem'}} />
-                </StyledToggleButton>
+                <Tooltip title={(props.basicOptions.includes('mapillary') ? 'Desativar' : 'Ativar') + ' Mapillary'}>
+                    <StyledToggleButton value="mapillary" aria-label="mapillary" 
+                    selected={props.basicOptions.includes('mapillary')} 
+                    disabled={props.olDivider}
+                    onChange={props.onBasicOptionsChange}>
+                        <StreetviewIcon sx={{fontSize: '1rem'}} />
+                    </StyledToggleButton>
+                </Tooltip>
             </StyledGridItem>
 
-            <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
-                <ExportPNGButton map={props.map}/>
-            </StyledGridItem>
+            <Tooltip title='Exportar mapa como imagem'>
+                <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
+                    <ExportPNGButton map={props.map}/>
+                </StyledGridItem>
+            </Tooltip>
 
-            <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
+            {/* <StyledGridItem item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5}>
                 <Button variant="contained"
                 sx={{backgroundColor: "#042E6F", minWidth: '5px'}}>
                     <ShareIcon sx={{fontSize: '1rem'}} />
                 </Button>
-            </StyledGridItem>
+            </StyledGridItem> */}
 
             <Grid item xs={12} sm={(props.dividerMapillary) ? 12 : 1.5} sx={{justifyContent: 'end', display: {xs: 'inline-flex', sm: 'none'}, alignItems: 'flex-end'}}  >
                 <Button value="" variant="contained" aria-label="" 
