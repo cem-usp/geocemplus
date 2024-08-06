@@ -8,7 +8,7 @@ import VectorLayer from 'ol/layer/Vector';
 import center from '@turf/center';
 import { bbox, points, bboxPolygon, featureCollection } from '@turf/turf'
 import { View } from 'ol';
-import { Fill, Style, Stroke } from 'ol/style';
+import {Circle, Fill, Style, Stroke } from 'ol/style';
 import {getControl, getLayersByType} from '../ol-utils/Utils'
 import {Fill as MapFill} from '../../utils/Fill'
 import {getRenderPixel} from 'ol/render.js';
@@ -563,6 +563,13 @@ export default class GeoLayers {
 				color: 'white',
 				width: 4,
 			}),
+            image: new Circle({
+              stroke: new Stroke({
+                color: '#3399CC',
+                width: 5.25,
+              }),
+              radius: 10,
+            }),
 		});
 
 		//Overlay Feature
