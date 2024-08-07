@@ -64,14 +64,14 @@ export default function LegendControl(props) {
         <ThemeProvider theme={theme}>
             <Box className="ol-legend" sx={{right: (open) ? `-26vw` : '0vw' }}>
                 <Grid container>
-                    <Grid item style={{width: "20px"}} className="ol-legend-header">
+                    <Grid item style={{width: "1vw"}} className="ol-legend-header">
                         <Paper elevation={4} >
                             <Typography variant="button" display="block" gutterBottom onClick={handleChange}>
                                 Legendas
                             </Typography>
                         </Paper>
                     </Grid>
-                    <Grid item style={{width: "500px"}}>
+                    <Grid item style={{width: "27vw"}}>
                         <Paper elevation={4} >
                             <Grid container>
                                 {legendLayers}
