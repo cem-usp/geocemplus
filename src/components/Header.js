@@ -10,7 +10,10 @@ import { styled } from '@mui/material/styles';
 const LinkBox = styled(Box)(({ theme }) => ({
   display: 'grid',
   gap: 1,
-  gridTemplateColumns: 'repeat(2, 1fr)',
+  gridTemplateColumns: 'repeat(2, 1fr)'
+}))
+
+const LinkBoxItem = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     display: 'none',
   },
@@ -43,16 +46,17 @@ export default function Header(props) {
             MAPi
           </Typography>
           <LinkBox sx={{ typography: 'body1' }}>
-            <div><a href="mailto:suporte.cem@usp.br?subject=[MAPi]">Fale Conosco</a></div>
-            <div><a href="https://centrodametropole.fflch.usp.br/pt-br/sistemas-interativos" target='_blank'>Sistemas Interativos</a></div>
-            <div><a href="/manual_mapi_v1.1.1.pdf" target='_blank'>Manual do Usuário</a></div>
-            <div><LanguageIcon />Português (Brasil)</div>
+            <LinkBoxItem><a href="https://forms.gle/LGy8eHpimw5K2sYs9" target='_blank'><b>Mapeamento Colaborativo</b></a></LinkBoxItem>
+            <LinkBoxItem><a href="https://centrodametropole.fflch.usp.br/pt-br/sistemas-interativos" target='_blank'>Sistemas Interativos</a></LinkBoxItem>
+            <LinkBoxItem><a href="/manual_mapi_v1.1.1.pdf" target='_blank'>Manual do Usuário</a></LinkBoxItem>
+            <div><a href="mailto:suporte.cem@usp.br?subject=[MAPi]">suporte.cem@usp.br</a></div>
+            {/* <div><LanguageIcon />Português (Brasil)</div> */}
           </LinkBox>
-          <Box sx={{mx: 2}}>
-          <a href="https://geocem.centrodametropole.fflch.usp.br/" target='_blank'><img src='/logo_geocem.png'/></a>
-          </Box>
+          {/* <Box sx={{ typography: 'body1', mx: 2}}>
+            <a href="https://geocem.centrodametropole.fflch.usp.br/" target='_blank'><img src='/logo_geocem.png'/></a>
+          </Box> */}
           <LogoCEMBox sx={{mr: 2}}>
-          <a href="https://centrodametropole.fflch.usp.br/pt-br/" target='_blank'><img src='/logo_cem.png'/></a>
+            <a href="https://centrodametropole.fflch.usp.br/pt-br/" target='_blank'><img src='/logo_cem.png'/></a>
           </LogoCEMBox>
         </Toolbar>
       </AppBar>
