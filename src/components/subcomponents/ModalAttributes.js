@@ -58,6 +58,9 @@ export default function ModalAttributes(props) {
       const handleChangePage = (event, newPage) => {
         setPage(newPage);
       };
+
+    //Filter attributes with label filled
+    const attributes = props.layerModal.attribute_set.filter(attribute => attribute.attribute_label)
     
     return (
         <Modal
@@ -87,8 +90,8 @@ export default function ModalAttributes(props) {
                         </TableHead>
                         <TableBody>
                         {(rowsPerPage > 0
-                            ? props.layerModal.attribute_set.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : props.layerModal.attribute_set
+                            ? attributes.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            : attributes
                             ).map((attribute) => (
                             <StyledTableRow
                                 key={attribute.pk}
@@ -102,7 +105,7 @@ export default function ModalAttributes(props) {
                         </TableBody>
                         <TableFooter>
                             <TablePagination 
-                            count={props.layerModal.attribute_set.length}
+                            count={attributes.length}
                             onPageChange={handleChangePage}
                             page={page}
                             rowsPerPage={5}

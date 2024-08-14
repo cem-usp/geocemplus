@@ -186,7 +186,7 @@ export default function LayerList(props) {
                                                         </Grid>
                                                         <Grid item xs={2} sx={{ alignSelf: 'center' }}>
                                                             {/* Abre o modal de Atributos */}
-                                                            <IconButton onClick={() => handleOpenAM(layer.id)}>
+                                                            <IconButton onClick={() => handleOpenAM(layer.geocem_id)}>
                                                                 <HelpIcon />
                                                             </IconButton>
                                                         </Grid>

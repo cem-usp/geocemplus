@@ -64,6 +64,7 @@ export default class GeoLayers {
             const mapFill = new MapFill()
             const new_layer = {
                 id: (this.counter + 1),
+                geocem_id: geocem_layer_id,
                 name: response.title,
                 geojson_link: https_json,
                 attribute_to_symbolize: null,
