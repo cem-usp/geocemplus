@@ -49,7 +49,7 @@ export default function Header(props) {
             <LinkBoxItem><a href="https://web.mapi.orioro.design/" target='_self'><b>Novo Mapi (beta)</b></a></LinkBoxItem>
             <LinkBoxItem><a href="https://centrodametropole.fflch.usp.br/pt-br/sistemas-interativos" target='_blank'>Sistemas Interativos</a></LinkBoxItem>
             <LinkBoxItem><a href="/manual_mapi_v1.1.1.pdf" target='_blank'>Manual do Usuário</a></LinkBoxItem>
-            <div><a href="mailto:suporte.cem@usp.br?subject=[MAPi]">suporte.cem@usp.br</a></div>
+            <div><a href="mailto:mapi.cem@usp.br">mapi.cem@usp.br</a></div>
             {/* <div><LanguageIcon />Português (Brasil)</div> */}
           </LinkBox>
           {/* <Box sx={{ typography: 'body1', mx: 2}}>
