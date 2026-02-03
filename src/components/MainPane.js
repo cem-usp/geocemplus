@@ -14,6 +14,7 @@ import SliderMap from './subcomponents/SliderMap.js';
 import '../side-by-side.css';
 import Filter from './subcomponents/Filter.js'
 import {FullScreen} from 'ol/control.js';
+import IntroModal from './IntroModal.js';
 
 function MainPane() {
 
@@ -218,6 +219,7 @@ function MainPane() {
                     </Box>
                 </Grid>
             </Grid>
+            <IntroModal />
         </Box>
     
     );

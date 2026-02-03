@@ -1,0 +1,7 @@
+services:
+  app:
+    build:
+      context: .
+      target: production # <--- Aponta para a imagem final limpa
+    ports:
+      - "80:3000"
